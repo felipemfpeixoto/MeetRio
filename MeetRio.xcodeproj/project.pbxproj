@@ -6,6 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		35705F9B2CA7291300A23889 /* PostHog in Frameworks */ = {isa = PBXBuildFile; productRef = 35705F9A2CA7291300A23889 /* PostHog */; };
+		35705F9E2CA7292C00A23889 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 35705F9D2CA7292C00A23889 /* GoogleSignIn */; };
+		35705FA02CA7292C00A23889 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 35705F9F2CA7292C00A23889 /* GoogleSignInSwift */; };
+		35705FA32CA7296C00A23889 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 35705FA22CA7296B00A23889 /* FirebaseAnalytics */; };
+		35705FA52CA7296C00A23889 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 35705FA42CA7296C00A23889 /* FirebaseAuth */; };
+		35705FA72CA7296C00A23889 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 35705FA62CA7296C00A23889 /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		35705F0D2CA7289C00A23889 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +38,22 @@
 		35705F162CA7289C00A23889 /* MeetRioUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MeetRioUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		35705FA92CA72A1E00A23889 /* Exceptions for "MeetRio" folder in "MeetRio" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 35705EFB2CA7289A00A23889 /* MeetRio */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		35705EFE2CA7289A00A23889 /* MeetRio */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				35705FA92CA72A1E00A23889 /* Exceptions for "MeetRio" folder in "MeetRio" target */,
+			);
 			path = MeetRio;
 			sourceTree = "<group>";
 		};
@@ -52,6 +74,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35705FA02CA7292C00A23889 /* GoogleSignInSwift in Frameworks */,
+				35705FA52CA7296C00A23889 /* FirebaseAuth in Frameworks */,
+				35705F9B2CA7291300A23889 /* PostHog in Frameworks */,
+				35705FA32CA7296C00A23889 /* FirebaseAnalytics in Frameworks */,
+				35705F9E2CA7292C00A23889 /* GoogleSignIn in Frameworks */,
+				35705FA72CA7296C00A23889 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +140,12 @@
 			);
 			name = MeetRio;
 			packageProductDependencies = (
+				35705F9A2CA7291300A23889 /* PostHog */,
+				35705F9D2CA7292C00A23889 /* GoogleSignIn */,
+				35705F9F2CA7292C00A23889 /* GoogleSignInSwift */,
+				35705FA22CA7296B00A23889 /* FirebaseAnalytics */,
+				35705FA42CA7296C00A23889 /* FirebaseAuth */,
+				35705FA62CA7296C00A23889 /* FirebaseFirestore */,
 			);
 			productName = MeetRio;
 			productReference = 35705EFC2CA7289A00A23889 /* MeetRio.app */;
@@ -195,6 +229,11 @@
 			);
 			mainGroup = 35705EF32CA7289A00A23889;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				35705F992CA7291300A23889 /* XCRemoteSwiftPackageReference "posthog-ios" */,
+				35705F9C2CA7292C00A23889 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				35705FA12CA7296B00A23889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 35705EFD2CA7289A00A23889 /* Products */;
 			projectDirPath = "";
@@ -399,11 +438,13 @@
 				DEVELOPMENT_TEAM = 973F3TA6FW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MeetRio/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -428,11 +469,13 @@
 				DEVELOPMENT_TEAM = 973F3TA6FW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MeetRio/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -558,6 +601,66 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		35705F992CA7291300A23889 /* XCRemoteSwiftPackageReference "posthog-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PostHog/posthog-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.12.5;
+			};
+		};
+		35705F9C2CA7292C00A23889 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+		35705FA12CA7296B00A23889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		35705F9A2CA7291300A23889 /* PostHog */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35705F992CA7291300A23889 /* XCRemoteSwiftPackageReference "posthog-ios" */;
+			productName = PostHog;
+		};
+		35705F9D2CA7292C00A23889 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35705F9C2CA7292C00A23889 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		35705F9F2CA7292C00A23889 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35705F9C2CA7292C00A23889 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+		35705FA22CA7296B00A23889 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35705FA12CA7296B00A23889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		35705FA42CA7296C00A23889 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35705FA12CA7296B00A23889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		35705FA62CA7296C00A23889 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35705FA12CA7296B00A23889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 35705EF42CA7289A00A23889 /* Project object */;
 }
