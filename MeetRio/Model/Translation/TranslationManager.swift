@@ -13,18 +13,20 @@ import Translation
 final class TranslationManager {
     var configuration: TranslationSession.Configuration?
     
-    var translatedTexts: [String?] = [nil]
+    var translatedTexts: [String?] = [nil, nil]
+    
+    var languageAvailable: LanguageAvailability.Status {
+        get async {
+            return await checkLanguageAvailability()
+        }
+    }
     
     func translateAllAtOnce(using session: TranslationSession, _ isShowing: Binding<Bool>) async {
         Task { @MainActor in
-            print("Mengo")
             let requests: [TranslationSession.Request] = translatedTexts.map {
                 // Map each item into a request.
                 TranslationSession.Request(sourceText: $0!)
             }
-            
-            print("Mengo2")
-
 
             do {
                 let responses = try await session.translations(from: requests)
@@ -37,7 +39,14 @@ final class TranslationManager {
                 // Handle any errors.
                 print("Deu merda aqui: \(error)")
             }
-            isShowing.wrappedValue.toggle()
+            
+            isShowing.wrappedValue = true
         }
+    }
+    
+    private func checkLanguageAvailability() async -> LanguageAvailability.Status {
+        let availability = LanguageAvailability()
+        let languageAvailability = await availability.status(from: Locale.Language(identifier: "en_US"), to: Locale.Language(identifier: Locale.preferredLanguages.first!))
+        return languageAvailability
     }
 }

@@ -260,14 +260,13 @@ struct NewEventPageViewIOS18: View {
                 .ignoresSafeArea()
         }
         .sheet(isPresented: $showingCredits) {
-            EventPageDetaislView(event: event)
+            EventPageDetaislViewIOS18(event: event, translationManager: translationManager)
                 .presentationDetents([.fraction(0.12), .large])
                 .presentationCornerRadius(20)
                 .interactiveDismissDisabled(true)
                 .presentationBackgroundInteraction(.enabled)
                 .background(EmptyView())
         }
-        
         .onAppear{
             if loggedCase == .registered{
                 Task{
@@ -307,8 +306,12 @@ struct NewEventPageViewIOS18: View {
                         buttonGoing
                     }
                     Button {
-                        showingCredits.toggle()
-                        triggerTranslation()
+                        Task {
+                            if translationManager.languageAvailable == .supported {
+                                showingCredits.toggle()
+                            }
+                            triggerTranslation()
+                        }
                     } label: {
                         Image(systemName: "translate")
                             .font(.title)
@@ -429,7 +432,7 @@ struct NewEventPageViewIOS18: View {
     private func triggerTranslation() {
         if translationManager.configuration == nil {
             // Set the language pairing.
-            translationManager.configuration = TranslationSession.Configuration(source: Locale.Language(identifier: "en"))
+            translationManager.configuration = TranslationSession.Configuration(source: Locale.Language(identifier: "en"), target: Locale.Language(identifier: Locale.preferredLanguages.first!))
         } else {
             // Invalidate the previous configuration.
             translationManager.configuration?.invalidate()
