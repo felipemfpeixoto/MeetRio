@@ -40,10 +40,34 @@ struct NewEventPageView: View{
     @State private var showingCredits = true
     @State var going: Bool = false
     
+    let myEvent = CalendarEvent(
+        name: "Reunião de Equipe",
+        startDate: Date(), // Data de início atual
+        endDate: Date().addingTimeInterval(3600), // Evento com duração de 1 hora
+        locationName: "Escritório Central",
+        latitude: 37.33072,
+        longitude: -122.02962,
+        street: "1 Infinite Loop",
+        city: "Cupertino",
+        state: "CA",
+        postalCode: "95014",
+        country: "United States",
+        isoCountryCode: "US"
+    )
+    
     var body: some View{
         VStack {
             header
                 .padding()
+            Button(action: {
+                myEvent.reciveAndDonateInteraction(eventData: myEvent)
+            }, label: {
+                Text("Adicionar Evento")
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+            })
             Spacer()
             if event.description != ""{
                 footer
@@ -243,10 +267,34 @@ struct NewEventPageViewIOS18: View {
     
     @State var translationManager: TranslationManager = TranslationManager() // declarando com o tipo mais abstrato que conforme com a versão do ios necessária
     
+    let myEvent = CalendarEvent(
+        name: "Reunião de Equipe",
+        startDate: Date(), // Data de início atual
+        endDate: Date().addingTimeInterval(3600), // Evento com duração de 1 hora
+        locationName: "Escritório Central",
+        latitude: 37.33072,
+        longitude: -122.02962,
+        street: "1 Infinite Loop",
+        city: "Cupertino",
+        state: "CA",
+        postalCode: "95014",
+        country: "United States",
+        isoCountryCode: "US"
+    )
+    
     var body: some View{
         VStack {
             header
                 .padding()
+            Button(action: {
+                myEvent.reciveAndDonateInteraction(eventData: myEvent)
+            }, label: {
+                Text("Adicionar Evento")
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+            })
             Spacer()
             if event.description != ""{
                 footer
