@@ -96,12 +96,12 @@ struct SearchScreenView: View{
         }
         
         
-        if sheetViewModel.selectedSafetyRating > 0 {
-            filteredEvents = filteredEvents.filter {
-                Int($0.safetyRate) == sheetViewModel.selectedSafetyRating
-            }
-        }
-        
+//        if sheetViewModel.selectedSafetyRating > 0 {
+//            filteredEvents = filteredEvents.filter {
+//                Int($0.safetyRate) == sheetViewModel.selectedSafetyRating
+//            }
+//        }
+//        
         return filteredEvents
     }
 }

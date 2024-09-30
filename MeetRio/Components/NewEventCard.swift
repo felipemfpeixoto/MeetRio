@@ -24,8 +24,6 @@ struct NewEventCard: View {
     
     let event: EventDetails
     
-//    let hour = "11am"
-    let tags:[String] = ["Drink", "Beach"]
     let calendar = Calendar.current
     
     @State var isLoading: Bool = false
@@ -41,80 +39,96 @@ struct NewEventCard: View {
     ]
     
     var body: some View {
-        Image(uiImage: UIImage(data: (event.photo ?? UIImage(named: "defaultImage")!.pngData())!)!)
-            .resizable()
-            .scaledToFill()
-            .frame(width: screenWidth/1.4, height: screenWidth/1.8)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .overlay{
-                ZStack{
-                    VStack{
-                        HStack{
-                            Spacer()
-                            if loggedCase == .registered{
-                                buttonGoing
-                                    .padding()
+        ZStack {
+            Image(uiImage: UIImage(data: (event.photo ?? UIImage(named: "defaultImage")!.pngData())!)!)
+                .resizable()
+                .scaledToFill()
+                .frame(width: screenWidth/1.4, height: screenWidth/1.8)
+                
+            
+                .overlay{
+                    dateComponent
+                        .padding()
+                }
+                
+                .overlay(alignment: .bottom){
+                    Rectangle()
+                        .fill(Color.clear)
+                        .frame(height: self.screenWidth / 5)
+                        .background(
+                            ZStack {
+                                BlurView(style: .systemUltraThinMaterial)
                             }
-                        }
-                        Spacer()
-                        RoundedRectangle(cornerRadius: 20.0)
-                            .frame(width: screenWidth/1.6, height: 20)
-                            .blur(radius: 15.0)
-                            .opacity(0.3)
-                            .padding()
-                    }
-                    
-                    HStack{
-                        VStack(alignment: .leading){
-                            Spacer()
-                            dateComponent
-                            Text(event.name)
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .multilineTextAlignment(.leading)
-                            
-                            Text(event.address.street)
-                                
-                            HStack{
-                                ForEach(tags, id: \.self) { tag in
-                                    Text("#\(tag)")
+                        )
+                        .overlay(alignment: .leading){
+                            VStack(alignment: .leading, spacing: -5){
+                                Text(event.name)
+                                    .fontWeight(.semibold)
+                                    .padding(.bottom, 3)
+                                Text(event.address.neighborhood)
                                     
-                                }
+                                    
                                 
-                                Spacer()
                                 
-//                                Image(systemName: "clock")
-//                                    .fontWeight(.semibold)
-//                                Text(hour)
-//                                    .fontWeight(.semibold)
-                            }.font(.caption)
-                            
+                            }
+                            .offset(y: -3)
+                            .padding([.bottom, .horizontal])
+                            .foregroundStyle(.white)
+                                
                         }
-                        Spacer()
+                            
+                    .clipped()
+                }
+            
+                .overlay(alignment: .bottomLeading){
+                    HStack{
+                        ForEach(event.tags, id: \.self){ tag in
+                            Text("#\(tag)")
+                                .font(.footnote)
+                        }
                     }
+                    .padding()
+                    .foregroundStyle(.white)
+                }
+            
+                .overlay(alignment: .bottomTrailing){
+                    HStack{
+                        Image(systemName: "clock")
+                            .offset(x: 3)
+                        Text(event.formattedHour(from: event.dateDetails.startHour))
+                    }
+                    .font(.caption)
+                    .fontWeight(.medium)
                     .foregroundStyle(.white)
                     .padding()
                 }
-            }
-            .onAppear{
-                if loggedCase == .registered {
-                    Task {
-                        do {
-                            guard let userID = UserManager.shared.hospede?.id else {
-//                                print("ID do usuário ou evento está nulo.")
-//                                print(UserManager.shared.hospede as Any)
-                                return
-                            }
-                            let going = try await FirestoreManager.shared.imGoing(userID, eventID: event.id!)
-                            self.going = going
-//                            print("Status de 'indo' atualizado: \(going)")
-                        } catch {
-                            print("Erro ao tentar marcar o evento como 'indo': \(error.localizedDescription)")
-                        }
+                
+                .overlay(alignment: .topTrailing){
+                    if loggedCase == .registered {
+                        buttonGoing
+                            .padding()
+                    }
+                }
+            
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                
+            
+        }
+        .onAppear {
+            if loggedCase == .registered {
+                Task {
+                    guard let userID = UserManager.shared.hospede?.id else { return }
+                    do {
+                        let going = try await FirestoreManager.shared.imGoing(userID, eventID: event.id!)
+                        self.going = going
+                    } catch {
+                        print("Erro ao tentar marcar o evento como 'indo': \(error.localizedDescription)")
                     }
                 }
             }
+        }
     }
+
     
     var dateComponent: some View {
         VStack {
@@ -124,10 +138,11 @@ struct NewEventCard: View {
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
                     VStack(spacing: 0.0) {
-                        Text("\(event.dateDetails.prefix(3))")
-                            .fontWeight(.semibold)
+                        Text("\(event.formattedDayOfWeek())")
                             
-//                        Text("\(calendar.component(.day, from: event.dateDetails.startDate))")
+                        Text("\(event.formattedDay())")
+                            .fontWeight(.semibold)
+                        
                     }.foregroundStyle(.black)
                 }
                 .frame(width: 48, height: 50)
@@ -140,66 +155,83 @@ struct NewEventCard: View {
     
     var buttonGoing: some View {
         Button(action: {
-            isLoading = true
+            going.toggle()
+            
             guard let userID = UserManager.shared.hospede?.id, let eventID = event.id else {
                 // Mostre um alerta ou toast informando que o usuário ou o evento não foi carregado corretamente
+                showAlert(title: "Erro", message: "Usuário ou evento não carregado corretamente.")
                 return
             }
             
-            if !going {
-                Task {
-                    do {
-                        try await FirestoreManager.shared.createGoingEvent(userID, eventID)
-                        going = true
-                        selectedFavorite = event
-                        PostHogSDK.shared.capture("MarcouPresenca")
-                    } catch {
-                        print("Erro ao marcar presença: \(error)")
-                        going = false // Reverte o estado se falhar
-                        // Mostre um alerta ou toast sobre o erro
-                    }
-                    isLoading.toggle()
-                }
-            } else {
-                Task {
-                    do {
-                        try await FirestoreManager.shared.deleteGoingEvent(userID, eventID)
-                        going = false
-                        selectedFavorite = nil
-                    } catch {
-                        print("Erro ao desmarcar presença: \(error)")
-                        going = true // Reverte o estado se falhar
-                        // Mostre um alerta ou toast sobre o erro
-                    }
-                    isLoading.toggle()
-                }
-            }
+            // Desativa o botão durante o carregamento
+            isLoading = true
             
-            
-            
+            // Verifica se o usuário está marcando ou desmarcando presença
+//            if !going {
+//                marcarPresenca(userID: userID, eventID: eventID)
+//            } else {
+//                desmarcarPresenca(userID: userID, eventID: eventID)
+//            }
         }, label: {
             if isLoading {
                 ProgressView()
-                    .padding(5)
+                    .padding(8)
                     .background(
-                        RoundedRectangle(cornerRadius: 10)
+                        RoundedRectangle(cornerRadius: 12)
                             .foregroundStyle(.white)
-                        )
+                    )
             } else {
-                Image(systemName: going ? "checkmark.seal.fill" : "checkmark.seal")
-                    .foregroundStyle(going ? .green : .black)
-                    .padding(5)
+                Image(systemName: going ? "checkmark.seal.fill" :"checkmark.seal")
+                    .foregroundStyle(.black)
+                    .padding(8)
                     .background(
-                        RoundedRectangle(cornerRadius: 10)
+                        RoundedRectangle(cornerRadius: 12)
                             .foregroundStyle(.white)
                     )
             }
         })
-        .disabled(UserManager.shared.hospede?.id == nil || event.id == nil || isLoading)
+        //.disabled(UserManager.shared.hospede?.id == nil || event.id == nil || isLoading)
+    }
+    
+    func marcarPresenca(userID: String, eventID: String) {
+        Task {
+            do {
+                try await FirestoreManager.shared.createGoingEvent(userID, eventID)
+                going = true
+                selectedFavorite = event
+                PostHogSDK.shared.capture("MarcouPresenca")
+            } catch {
+                print("Erro ao marcar presença: \(error)")
+                going = false // Reverte o estado se falhar
+                showAlert(title: "Erro", message: "Não foi possível marcar sua presença.")
+            }
+            isLoading.toggle()
+        }
     }
 
+    func desmarcarPresenca(userID: String, eventID: String) {
+        Task {
+            do {
+                try await FirestoreManager.shared.deleteGoingEvent(userID, eventID)
+                going = false
+                selectedFavorite = nil
+            } catch {
+                print("Erro ao desmarcar presença: \(error)")
+                going = true // Reverte o estado se falhar
+                showAlert(title: "Erro", message: "Não foi possível desmarcar sua presença.")
+            }
+            isLoading.toggle()
+        }
+    }
+
+    // Exemplo de função para exibir um alerta
+    func showAlert(title: String, message: String) {
+        // Aqui você pode implementar a lógica para exibir um alerta ou um toast
+        // Por exemplo, em SwiftUI você pode usar um Alert:
+        print("\(title): \(message)") // Apenas um print como exemplo
+    }
 }
 
-//#Preview {
-//    NewEventCard()
-//}
+#Preview {
+    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), event: MockData.eventDetails)
+}

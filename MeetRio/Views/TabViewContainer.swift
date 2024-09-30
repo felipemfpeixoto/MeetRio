@@ -69,3 +69,5 @@ struct TabViewContainer: View {
         
     }
 }
+
+// MockData.eventDetails

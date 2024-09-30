@@ -10,8 +10,7 @@ import SwiftUI
 import CoreLocation
 import PostHog
 
-struct EventPageDetaislView: View{
-    
+struct EventPageDetaislView: View {
     let screenWidth = UIScreen.main.bounds.width
     let screenHeight = UIScreen.main.bounds.height
     
@@ -19,209 +18,45 @@ struct EventPageDetaislView: View{
     @State var isAlsoGoing: [Hospede] = []
     
     let event: EventDetails
-    
-    var reviewList: [Review] = [Review(rate: 4, date: Date.now, description: "Muito bom, gostei bastante do local. bem refrigerado e comida boa. Porém a música deixa a desejar."), Review(rate: 2, date: Date.now, description: "Não gostei, achei muito ruim.")]
+    let reviewList: [Review] = [Review(rate: 4, date: Date.now, description: "Muito bom, gostei bastante do local."), Review(rate: 2, date: Date.now, description: "Não gostei.")]
     
     @State var isLoading = false
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 20){
-                PeopleGoing
+            VStack(spacing: 15) {
+                PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
+                    .padding([.horizontal, .bottom])
                     .padding(.top, 30)
-                if let buyURL = event.buyURL {
-                    buyButton
+                
+                if event.buyURL != nil {
+                    BuyButtonView(buyURL: event.buyURL)
                         .padding()
                 }
-                location
                 
-                tips
+                LocationView(event: event)
+                    .padding()
                 
-//                Reviews
+                TipsView(tips: event.tips)
+                    .padding()
             }
             .onAppear {
-                Task {
-                    isLoading = true
-                    isAlsoGoing = try await FirestoreManager.shared.getGoingEvent(event.id!)
-                    isLoading = false
-                }
-            }
-//            .sheet(isPresented: $isSheetOpen){
-//                ReviewView()
-//            }
-        }
-    }
-    
-    var PeopleGoing: some View{
-        VStack{
-            HStack{
-                Text("Who is algo going")
-                    .font(.title2.bold())
-                    .padding(.horizontal, 27)
-                Spacer()
-                
-//                Button(action: {
-//                    //TODO: COLOCAR UM NAVIGATION PARA VER TODOS QUE VAO
-//                }, label: {
-//                    Text("See all")
-//                        .foregroundStyle(.gray)
-//                        .padding(.horizontal)
-//                })
-            }
-            
-            if isLoading {
-                ProgressView()
-            } else {
-                if isAlsoGoing.count == 0 {
-                    Text("No one is going yet")
-                } else {
-                    ScrollView(.horizontal, showsIndicators: false){
-                        HStack{
-                            ForEach(isAlsoGoing, id: \.self.id){ hospede in
-                                PersonWhoGoes(hospede: hospede)
-                                    .padding(.leading, 1)
-                                
-                            }
-                        }
-                    }
-                    
-                }
+                loadPeopleGoing()
             }
         }
-        
-        
     }
     
-    var buyButton: some View {
-        Button(action: {
-            PostHogSDK.shared.capture("ClicouComprar")
-            if let url = URL(string: event.buyURL!) {
-                UIApplication.shared.open(url)
-            }
-        }) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .foregroundStyle(.black)
-                Text("BUY NOW")
-                    .foregroundStyle(.marcaTexto)
-                    .font(Font.custom("Bricolage Grotesque", size: 23))
-                    .fontWeight(.semibold)
-            }
-        }
-        .frame(height: 55)
-    }
-    
-    var location: some View{
-        VStack(alignment: .leading){
-            Text("Location")
-                .font(.title2.bold())
-            
-            MapView(coordinate: CLLocationCoordinate2D(latitude: event.location.latitude, longitude: event.location.longitude), appleMapsURL: URL(string: "\(event.url)"))
-            
-            Text(event.address.details ?? "")
-            Text("\(event.address.street), \(event.address.number)")
-                .fontWeight(.light)
+    func loadPeopleGoing() {
+        Task {
+            isLoading = true
+            isAlsoGoing = try await FirestoreManager.shared.getGoingEvent(event.id!)
+            isLoading = false
         }
     }
-    
-    var tips: some View{
-        VStack(alignment: .leading){
-            Text("Tips")
-                .padding(.horizontal, 15)
-                .font(.title2.bold())
-            
-            Text(event.tips ?? "")
-                .fontWeight(.regular)
-                .padding(.vertical, 5)
-                .padding(.horizontal, 15)
-        }
-    }
-    
-    
-    var Reviews: some View{
-        VStack{
-            HStack{
-                Text("Reviews")
-                    .fontWeight(.bold)
-                
-                Spacer()
-                Button(action: {
-                    // TODO: Fazer ação do botão para adicionar Review em um evento
-                    isSheetOpen.toggle()
-                }, label: {
-                    Image(systemName: "plus.circle")
-                        .foregroundStyle(Color.black)
-                })
-               
-                
-            }
-            .font(.title2)
-            .padding(.horizontal, 10)
-            
-            ScrollView(.horizontal, showsIndicators: false){
-                HStack{
-                    ForEach(reviewList, id: \.self){ el in
-                        RoundedRectangle(cornerRadius: 20.0)
-                            .frame(width: screenWidth * 0.85, height: screenHeight * 0.20)
-                            .foregroundColor(.white)
-                            .shadow(radius: 5, y: 5)
-                            .overlay {
-                                VStack(alignment: .leading, spacing: 10) {
-                                    HStack {
-                                        HStack(spacing: 0.0){
-                                            
-                                            ForEach((0..<Int(el.rate)), id: \.self){_ in
-                                                Image(systemName: "star.fill")
-                                                    .font(.caption2)
-                                            }
-                                            
-                                            if el.rate.truncatingRemainder(dividingBy: 1) != 0 {
-                                                Image(systemName: "star.leadinghalf.filled")
-                                                    .font(.caption2)
-                                            }
-                                        }
-                                        
-                                        Text("\(dateToString(date: el.date))")
-                                            .font(.caption)
-                                    }
-                                    .padding(.vertical, 5)
-                                    
-                                    Text("\(el.description)")
-                                        .font(.footnote)
-                                        .lineLimit(3)
-                                        .truncationMode(.tail)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    Spacer()
-                                }
-                                .padding()
-                            }
-                            .padding()
-                    }
-                }
-                
-            }
-            
-        }
-        .padding(.horizontal)
-    }
-    
-    
-    func dateToString(date: Date) -> String{
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMMM yyyy" // Formato para "Maio 2024"
-        let dateString = dateFormatter.string(from: date)
-        
-        return dateString
-    }
-    
 }
 
-
-
-
 @available(iOS 18, *)
-struct EventPageDetaislViewIOS18: View{
-    
+struct EventPageDetaislViewIOS18: View {
     let screenWidth = UIScreen.main.bounds.width
     let screenHeight = UIScreen.main.bounds.height
     
@@ -229,205 +64,171 @@ struct EventPageDetaislViewIOS18: View{
     @State var isAlsoGoing: [Hospede] = []
     
     let event: EventDetails
-    
-    var reviewList: [Review] = [Review(rate: 4, date: Date.now, description: "Muito bom, gostei bastante do local. bem refrigerado e comida boa. Porém a música deixa a desejar."), Review(rate: 2, date: Date.now, description: "Não gostei, achei muito ruim.")]
+    let reviewList: [Review] = [Review(rate: 4, date: Date.now, description: "Muito bom, gostei bastante do local."), Review(rate: 2, date: Date.now, description: "Não gostei.")]
     
     @State var isLoading = false
     let translationManager: TranslationManager
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 20){
-                PeopleGoing
+            VStack(spacing: 15) {
+                PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
+                    .padding([.horizontal, .bottom])
                     .padding(.top, 30)
+                
                 if let buyURL = event.buyURL {
-                    buyButton
+                    BuyButtonView(buyURL: buyURL)
                         .padding()
                 }
-                location
                 
-                tips
+                LocationView(event: event)
+                    .padding()
                 
-//                Reviews
+                TipsView(tips: event.tips)
+                    .padding()
             }
             .onAppear {
-                Task {
-                    isLoading = true
-                    isAlsoGoing = try await FirestoreManager.shared.getGoingEvent(event.id!)
-                    isLoading = false
-                }
-                translationManager.translatedTexts[1] = event.tips
+                loadPeopleGoingAndTranslateTips()
             }
-//            .sheet(isPresented: $isSheetOpen){
-//                ReviewView()
-//            }
         }
     }
     
-    var PeopleGoing: some View{
-        VStack{
-            HStack{
-                Text("Who is algo going")
-                    .font(.title2.bold())
-                    .padding(.horizontal, 27)
-                Spacer()
-                
-//                Button(action: {
-//                    //TODO: COLOCAR UM NAVIGATION PARA VER TODOS QUE VAO
-//                }, label: {
-//                    Text("See all")
-//                        .foregroundStyle(.gray)
-//                        .padding(.horizontal)
-//                })
-            }
+    func loadPeopleGoingAndTranslateTips() {
+        Task {
+            isLoading = true
+            isAlsoGoing = try await FirestoreManager.shared.getGoingEvent(event.id!)
+            isLoading = false
+            translationManager.translatedTexts[1] = event.tips
+        }
+    }
+}
+
+struct PeopleGoingView: View {
+    let isLoading: Bool
+    let isAlsoGoing: [Hospede]
+    
+    var body: some View {
+        VStack {
+            Text("Who is also going")
+                .font(Font.custom("Bricolage Grotesque", size: 23).bold())
+                .frame(maxWidth: .infinity, alignment: .leading)
             
             if isLoading {
                 ProgressView()
+            } else if isAlsoGoing.isEmpty {
+                Text("No one is going yet")
+                    .padding(.top, 5)
             } else {
-                if isAlsoGoing.count == 0 {
-                    Text("No one is going yet")
-                } else {
-                    ScrollView(.horizontal, showsIndicators: false){
-                        HStack{
-                            ForEach(isAlsoGoing, id: \.self.id){ hospede in
-                                PersonWhoGoes(hospede: hospede)
-                                    .padding(.leading, 1)
-                                
-                            }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(isAlsoGoing, id: \.self.id) { hospede in
+                            PersonWhoGoes(hospede: hospede)
+                                .padding(.leading, 1)
                         }
                     }
-                    
                 }
             }
         }
-        
-        
     }
+}
+
+
+struct BuyButtonView: View {
+    let buyURL: String?
     
-    var buyButton: some View {
-        Button(action: {
-            PostHogSDK.shared.capture("ClicouComprar")
-            if let url = URL(string: event.buyURL!) {
-                UIApplication.shared.open(url)
-            }
-        }) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .foregroundStyle(.black)
-                Text("BUY NOW")
-                    .foregroundStyle(.marcaTexto)
-                    .font(Font.custom("Bricolage Grotesque", size: 23))
-                    .fontWeight(.semibold)
-            }
-        }
-        .frame(height: 55)
-    }
-    
-    var location: some View{
-        VStack(alignment: .leading){
-            Text("Location")
-                .font(.title2.bold())
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Tickets")
+                .font(Font.custom("Bricolage Grotesque", size: 23).bold())
+                .padding(.bottom, 5)
+                .frame(maxWidth: .infinity, alignment: .leading)
             
-            MapView(coordinate: CLLocationCoordinate2D(latitude: event.location.latitude, longitude: event.location.longitude), appleMapsURL: URL(string: "\(event.url)"))
+            Button(action: {
+                PostHogSDK.shared.capture("ClicouComprar")
+                if let url = URL(string: buyURL!) {
+                    UIApplication.shared.open(url)
+                }
+            }, label: {
+                Text("Buy now")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10.0)
+                            .foregroundStyle(Color("Blue1"))
+                    )
+            })
+        }
+    }
+}
+
+
+struct LocationView: View {
+    let event: EventDetails
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Location")
+                .font(Font.custom("Bricolage Grotesque", size: 23).bold())
+                .padding(.bottom, 5)
             
             Text(event.address.details ?? "")
+                .foregroundStyle(Color("DarkBlue"))
+                .fontWeight(.bold)
+            
             Text("\(event.address.street), \(event.address.number)")
-                .fontWeight(.light)
+                .fontWeight(.regular)
+                .padding(.bottom, 10)
+            
+            MapView(coordinate: CLLocationCoordinate2D(latitude: event.address.location.latitude, longitude: event.address.location.longitude), appleMapsURL: URL(string: event.address.location.mapURL ?? ""))
+                .frame(width: UIScreen.main.bounds.width * 0.9, height: UIScreen.main.bounds.height * 0.2, alignment: .center)
         }
     }
+}
+
+
+struct TipsView: View {
+    let tips: String?
     
-    var tips: some View{
-        VStack(alignment: .leading){
+    var body: some View {
+        VStack(alignment: .leading) {
             Text("Tips")
-                .padding(.horizontal, 15)
+                .font(Font.custom("Bricolage Grotesque", size: 23).bold())
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.title2.bold())
             
-            Text(translationManager.translatedTexts[1] ?? event.tips ?? "")
+            Text(tips ?? "")
                 .fontWeight(.regular)
                 .padding(.vertical, 5)
                 .padding(.horizontal, 15)
         }
     }
-    
-    
-    var Reviews: some View{
-        VStack{
-            HStack{
-                Text("Reviews")
-                    .fontWeight(.bold)
-                
-                Spacer()
-                Button(action: {
-                    // TODO: Fazer ação do botão para adicionar Review em um evento
-                    isSheetOpen.toggle()
-                }, label: {
-                    Image(systemName: "plus.circle")
-                        .foregroundStyle(Color.black)
-                })
-               
-                
-            }
-            .font(.title2)
-            .padding(.horizontal, 10)
-            
-            ScrollView(.horizontal, showsIndicators: false){
-                HStack{
-                    ForEach(reviewList, id: \.self){ el in
-                        RoundedRectangle(cornerRadius: 20.0)
-                            .frame(width: screenWidth * 0.85, height: screenHeight * 0.20)
-                            .foregroundColor(.white)
-                            .shadow(radius: 5, y: 5)
-                            .overlay {
-                                VStack(alignment: .leading, spacing: 10) {
-                                    HStack {
-                                        HStack(spacing: 0.0){
-                                            
-                                            ForEach((0..<Int(el.rate)), id: \.self){_ in
-                                                Image(systemName: "star.fill")
-                                                    .font(.caption2)
-                                            }
-                                            
-                                            if el.rate.truncatingRemainder(dividingBy: 1) != 0 {
-                                                Image(systemName: "star.leadinghalf.filled")
-                                                    .font(.caption2)
-                                            }
-                                        }
-                                        
-                                        Text("\(dateToString(date: el.date))")
-                                            .font(.caption)
-                                    }
-                                    .padding(.vertical, 5)
-                                    
-                                    Text("\(el.description)")
-                                        .font(.footnote)
-                                        .lineLimit(3)
-                                        .truncationMode(.tail)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    Spacer()
-                                }
-                                .padding()
-                            }
-                            .padding()
-                    }
-                }
-                
-            }
-            
-        }
-        .padding(.horizontal)
-    }
-    
-    
-    func dateToString(date: Date) -> String{
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMMM yyyy" // Formato para "Maio 2024"
-        let dateString = dateFormatter.string(from: date)
-        
-        return dateString
-    }
-    
 }
-//
+
+
 //#Preview{
-//    EventPageDetaislView(event: EventDetails(name: "Mengo", description: "tengo", dateDetails: DateDetails(startDate: Date(), endDate: Date(), isRecurring: false), address: AddressDetails(street: "Rua", number: "2", details: "", referencePoint: nil, neighborhood: "Gávea", postalCode: "2211"), location: LocationDetails(latitude: -22.0, longitude: -49.0), safetyRate: 5))
+//    if #available(iOS 18.0, *) {
+//        EventPageDetaislViewIOS18(
+//            event: EventDetails(
+//                id: "12345",
+//                name: "Festival de Música",
+//                photo: UIImage(named: "festival.jpg")?.pngData(),
+//                description: "Um evento incrível de música ao vivo com várias atrações!",
+//                dateDetails: "Sábado, 14 de Outubro de 2024 - 18h",
+//                address: AddressDetails(street: "Avenida dos Artistas", number: "0", details: "Ipanema Beach Hostel", neighborhood: "Rio de Janeiro"),
+//                location: LocationDetails(
+//                    latitude: -22.9068,
+//                    longitude: -43.1729
+//                ),
+//                eventCategory: "Música",
+//                safetyRate: 4.8,
+//                tags: ["Música", "Festival", "Ao Vivo", "Diversão"],
+//                tips: "Leve protetor solar e chegue cedo para garantir bons lugares.",
+//                url: "https://www.festivaldemusica.com",
+//                buyURL: "https://www.festivaldemusica.com/comprar"
+//            ), translationManager: TranslationManager()
+//        )
+//    }
 //}
+

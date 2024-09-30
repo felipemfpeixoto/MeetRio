@@ -8,68 +8,68 @@
 import Foundation
 import SwiftUI
 
-let eventsBD: [EventDetails] = [
-    EventDetails(
-        name: "Barzin Ipanema",
-        photo: UIImage(named: "AlbaBotafogo_2")?.pngData(),
-        description: "Lounge + Nightclub at Barzin Ipanema. Parties, DJs, and shows. Corporate events.",
-        dateDetails: "Every Thursday",
-        address: AddressDetails(
-            street: "R. Vinícius de Moraes",
-            number: "75",
-            details: nil,
-            referencePoint: nil,
-            neighborhood: ""
-        ),
-        location: LocationDetails(latitude: -22.984491723078044, longitude: -43.20298671705616),
-        eventCategory: "bemBrazil",
-        safetyRate: 5,
-        tags: ["#party", "#drinks", "#club", "#OpenVibes"],
-        tips: "Try the local drinks and bring ID: The Barzin is known for its well-crafted cocktails, so make sure to order a caipirinha or explore other typical Brazilian drinks like a caipiroska or batida de coco. Also, remember to bring a photo ID, as it's common for bars in Rio to check identification at the entrance—carrying your passport or a copy will ensure you avoid any issues.",
-        url: "https://maps.apple.com/?address=Rua Vinícius de Moraes, 75, Ipanema, Rio de Janeiro - RJ, 22411-010, Brazil&ll=-22.984619,-43.202950&q=Rua Vinícius de Moraes, 75",
-        buyURL: "https://www.bembrasilrio.net/event-details/barzin-ipanema-2024-09-05-23-00"
-    ),
-    EventDetails(
-        name: "Barzin Ipanema",
-        photo: UIImage(named: "BarzinIpanema")?.pngData(),
-        description: "Lounge + Nightclub at Barzin Ipanema. Parties, DJs, and shows. Corporate events.",
-        dateDetails: "Every Friday",
-        address: AddressDetails(
-            street: "R. Vinícius de Moraes",
-            number: "75",
-            details: nil,
-            referencePoint: nil,
-            neighborhood: ""
-        ),
-        location: LocationDetails(latitude: -22.984491723078044, longitude: -43.20298671705616),
-        eventCategory: "bemBrazil",
-        safetyRate: 5,
-        tags: ["#party", "#drinks", "#club", "#OpenVibes"],
-        tips: nil,
-        url: "https://maps.apple.com/?address=Rua Vinícius de Moraes, 75, Ipanema, Rio de Janeiro - RJ, 22411-010, Brazil&ll=-22.984619,-43.202950&q=Rua Vinícius de Moraes, 75",
-        buyURL: "https://www.bembrasilrio.net/event-details/barzin-ipanema-2024-09-07-23-00"
-    ),
-    EventDetails(
-        name: "Boat Party",
-        photo: UIImage(named: "BoatParty")?.pngData(),
-        description: "Rio’s best boat party since 2008 Embarque (Boarding): 00h Saida (Departure): 00:30h Retorno (Return): 04AM",
-        dateDetails: "Every Tuesday",
-        address: AddressDetails(
-            street: "Marina da Glória",
-            number: "Av. Infante Dom Henrique",
-            details: nil,
-            referencePoint: nil,
-            neighborhood: ""
-        ),
-        location: LocationDetails(latitude: -22.91959324576121, longitude: -43.1699556539722),
-        eventCategory: "bemBrazil",
-        safetyRate: 5,
-        tags: ["#NightTour", "#boat", "#drinks"],
-        tips: "Dress comfortably and be prepared: Rio’s weather is typically warm, so opt for light, comfortable clothing. However, it’s wise to bring a light jacket as the sea breeze can get cooler in the evening. Also, be sure to carry some cash, as not all boats may accept credit or debit cards.",
-        url: "https://maps.apple.com/?address=Avenida Infante Dom Henrique, s/n, Glória, Rio de Janeiro - RJ, 20021-140, Brazil&auid=9182745026652784348&ll=-22.919599,-43.168900&lsp=9902&q=Marina da Gloria",
-        buyURL: "https://www.bembrasilrio.net/venda-de-ingressos"
-    )
-]
+//let eventsBD: [EventDetails] = [
+//    EventDetails(
+//        name: "Barzin Ipanema",
+//        photo: UIImage(named: "AlbaBotafogo_2")?.pngData(),
+//        description: "Lounge + Nightclub at Barzin Ipanema. Parties, DJs, and shows. Corporate events.",
+//        dateDetails: "Every Thursday",
+//        address: AddressDetails(
+//            street: "R. Vinícius de Moraes",
+//            number: "75",
+//            details: nil,
+//            referencePoint: nil,
+//            neighborhood: ""
+//        ),
+//        location: LocationDetails(latitude: -22.984491723078044, longitude: -43.20298671705616),
+//        eventCategory: "bemBrazil",
+//        safetyRate: 5,
+//        tags: ["#party", "#drinks", "#club", "#OpenVibes"],
+//        tips: "Try the local drinks and bring ID: The Barzin is known for its well-crafted cocktails, so make sure to order a caipirinha or explore other typical Brazilian drinks like a caipiroska or batida de coco. Also, remember to bring a photo ID, as it's common for bars in Rio to check identification at the entrance—carrying your passport or a copy will ensure you avoid any issues.",
+//        url: "https://maps.apple.com/?address=Rua Vinícius de Moraes, 75, Ipanema, Rio de Janeiro - RJ, 22411-010, Brazil&ll=-22.984619,-43.202950&q=Rua Vinícius de Moraes, 75",
+//        buyURL: "https://www.bembrasilrio.net/event-details/barzin-ipanema-2024-09-05-23-00"
+//    ),
+//    EventDetails(
+//        name: "Barzin Ipanema",
+//        photo: UIImage(named: "BarzinIpanema")?.pngData(),
+//        description: "Lounge + Nightclub at Barzin Ipanema. Parties, DJs, and shows. Corporate events.",
+//        dateDetails: "Every Friday",
+//        address: AddressDetails(
+//            street: "R. Vinícius de Moraes",
+//            number: "75",
+//            details: nil,
+//            referencePoint: nil,
+//            neighborhood: ""
+//        ),
+//        location: LocationDetails(latitude: -22.984491723078044, longitude: -43.20298671705616),
+//        eventCategory: "bemBrazil",
+//        safetyRate: 5,
+//        tags: ["#party", "#drinks", "#club", "#OpenVibes"],
+//        tips: nil,
+//        url: "https://maps.apple.com/?address=Rua Vinícius de Moraes, 75, Ipanema, Rio de Janeiro - RJ, 22411-010, Brazil&ll=-22.984619,-43.202950&q=Rua Vinícius de Moraes, 75",
+//        buyURL: "https://www.bembrasilrio.net/event-details/barzin-ipanema-2024-09-07-23-00"
+//    ),
+//    EventDetails(
+//        name: "Boat Party",
+//        photo: UIImage(named: "BoatParty")?.pngData(),
+//        description: "Rio’s best boat party since 2008 Embarque (Boarding): 00h Saida (Departure): 00:30h Retorno (Return): 04AM",
+//        dateDetails: "Every Tuesday",
+//        address: AddressDetails(
+//            street: "Marina da Glória",
+//            number: "Av. Infante Dom Henrique",
+//            details: nil,
+//            referencePoint: nil,
+//            neighborhood: ""
+//        ),
+//        location: LocationDetails(latitude: -22.91959324576121, longitude: -43.1699556539722),
+//        eventCategory: "bemBrazil",
+//        safetyRate: 5,
+//        tags: ["#NightTour", "#boat", "#drinks"],
+//        tips: "Dress comfortably and be prepared: Rio’s weather is typically warm, so opt for light, comfortable clothing. However, it’s wise to bring a light jacket as the sea breeze can get cooler in the evening. Also, be sure to carry some cash, as not all boats may accept credit or debit cards.",
+//        url: "https://maps.apple.com/?address=Avenida Infante Dom Henrique, s/n, Glória, Rio de Janeiro - RJ, 20021-140, Brazil&auid=9182745026652784348&ll=-22.919599,-43.168900&lsp=9902&q=Marina da Gloria",
+//        buyURL: "https://www.bembrasilrio.net/venda-de-ingressos"
+//    )
+//]
 
 
 

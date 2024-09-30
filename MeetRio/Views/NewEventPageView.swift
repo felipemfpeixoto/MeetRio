@@ -191,7 +191,7 @@ struct NewEventPageView: View{
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
                     VStack(spacing: 0.0) {
-                        Text("\(event.dateDetails.prefix(3))")
+                        Text("\(event.dateDetails)")
                             .fontWeight(.semibold)
                             
 //                        Text("\(calendar.component(.day, from: event.dateDetails.startDate))")
@@ -434,7 +434,7 @@ struct NewEventPageViewIOS18: View {
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
                     VStack(spacing: 0.0) {
-                        Text("\(event.dateDetails.prefix(3))")
+                        Text("\(event.dateDetails)")
                             .fontWeight(.semibold)
                             
 //                        Text("\(calendar.component(.day, from: event.dateDetails.startDate))")
@@ -488,3 +488,4 @@ struct NewEventPageViewIOS18: View {
     }
     
 }
+

@@ -143,12 +143,12 @@ struct YourEventsView: View{
             filteredEvents = filteredEvents.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
         
-        // TODO: Depois tem que mudar esse binding de sheetViewModel
-        if sheetViewModel.selectedSafetyRating > 0 {
-            filteredEvents = filteredEvents.filter {
-                Int($0.safetyRate) == sheetViewModel.selectedSafetyRating
-            }
-        }
+//        // TODO: Depois tem que mudar esse binding de sheetViewModel
+//        if sheetViewModel.selectedSafetyRating > 0 {
+//            filteredEvents = filteredEvents.filter {
+//                Int($0.safetyRate) == sheetViewModel.selectedSafetyRating
+//            }
+//        }
         
         return filteredEvents
     }

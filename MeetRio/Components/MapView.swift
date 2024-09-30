@@ -22,10 +22,10 @@ struct MapView: View {
         Map(position: $camera) {
             Marker("", coordinate: coordinate)
         }
-        .frame(width: screenWidth * 0.85, height: screenHeight * 0.23)
+        //.frame(width: screenWidth * 0.85, height: screenHeight * 0.23)
         .mask(
-            RoundedRectangle(cornerRadius: 20.0)
-                .frame(width: screenWidth * 0.85, height: screenHeight * 0.23)
+            RoundedRectangle(cornerRadius: 30.0)
+                //.frame(width: screenWidth * 0.85, height: screenHeight * 0.23)
         )
         .onAppear {
             setRegion(coordinate)
