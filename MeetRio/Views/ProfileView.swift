@@ -70,9 +70,6 @@ struct ProfileView: View {
                 
             }
         }
-        .onAppear {
-            print("Profile logged: \(loggedCase)")
-        }
     }
     
     var background: some View{
