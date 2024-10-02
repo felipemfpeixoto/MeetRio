@@ -92,16 +92,16 @@ struct EventPageContent: View {
         Button(action: {
             calendarBool = true
             
-            if let startDateTime = event.dateDetails.startDateTime,
-               let endDateTime = event.dateDetails.endDateTime{
+            if let startDateTime = event.dateDetails?.startDateTime,
+               let endDateTime = event.dateDetails?.endDateTime{
                 
-                let endHour = event.dateDetails.endHour
-                let startHour = event.dateDetails.startHour
+                let endHour = event.dateDetails?.endHour
+                let startHour = event.dateDetails?.startHour
                 
                 let myEvent = CalendarEvent(
                     name: event.name,
-                    startDate: event.mergeData(date: startDateTime, withHour: startHour),
-                    endDate: event.mergeData(date: endDateTime, withHour: endHour),
+                    startDate: event.mergeData(date: startDateTime, withHour: startHour!),
+                    endDate: event.mergeData(date: endDateTime, withHour: endHour!),
                     locationName: event.name,
                     latitude: event.address.location.latitude,
                     longitude: event.address.location.longitude,
@@ -162,11 +162,14 @@ struct EventPageContent: View {
                 }
                 .padding(.trailing)
 
-            eventHour
-                .background {
-                    RoundedRectangle(cornerRadius: 15)
-                        .foregroundStyle(Color("DarkGreen"))
-                }
+            if event.dateDetails != nil {
+                eventHour
+                    .background {
+                        RoundedRectangle(cornerRadius: 15)
+                            .foregroundStyle(Color("DarkGreen"))
+                    }
+            }
+            
         }
     }
 
@@ -177,13 +180,14 @@ struct EventPageContent: View {
     }
 
     var eventHour: some View {
+        
         HStack {
             Image(systemName: "clock")
-            Text(event.formattedHour(from: event.dateDetails.startHour))
+            Text(event.formattedHour(from: event.dateDetails!.startHour))
             +
             Text(" - ")
             +
-            Text(event.formattedHour(from: event.dateDetails.endHour))
+            Text(event.formattedHour(from: event.dateDetails!.endHour))
         }
         .fontWeight(.semibold)
         .padding(10)

@@ -107,15 +107,17 @@ struct NewEventCard: View {
                 }
             
                 .overlay(alignment: .bottomTrailing){
-                    HStack{
-                        Image(systemName: "clock")
-                            .offset(x: 3)
-                        Text(event.formattedHour(from: event.dateDetails.startHour))
+                    if (event.dateDetails != nil){
+                        HStack{
+                            Image(systemName: "clock")
+                                .offset(x: 3)
+                            Text(event.formattedHour(from: event.dateDetails!.startHour))
+                        }
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.white)
+                        .padding()
                     }
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.white)
-                    .padding()
                 }
                 
                 .overlay(alignment: .topTrailing){

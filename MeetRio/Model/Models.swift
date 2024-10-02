@@ -35,12 +35,13 @@ class EventDetails: Codable, Identifiable {
     // Basic Information
     var name: String
     var address: AddressDetails
-    var dateDetails: DateDetails
+    var dateDetails: DateDetails?
     var description: String
     var photoURL: String? // URL of the main image
     var photoData: Data?
     
     // Extra Information
+    var dayWeek: String?
     var buyURL: String?
     var otherPictureURLs: [String]? // URLs of other images
     var otherPictureData: [Data]?// Data of other images
@@ -68,13 +69,13 @@ class EventDetails: Codable, Identifiable {
     func formattedDayOfWeek() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "EEE" // Formato para 3 letras do dia da semana
-        return dateFormatter.string(from: dateDetails.startDateTime ?? Date())
+        return dateFormatter.string(from: dateDetails?.startDateTime ?? Date())
     }
     
     func formattedDay() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "d" // Formato para retornar apenas o dia do mês (1, 2, 15, etc.)
-        return dateFormatter.string(from: dateDetails.startDateTime ?? Date())
+        return dateFormatter.string(from: dateDetails?.startDateTime ?? Date())
     }
     
     func formattedHour(from hourString: String) -> String {
