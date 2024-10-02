@@ -260,9 +260,27 @@ struct NewEventPageViewIOS18: View {
     @State var translationManager: TranslationManager = TranslationManager()
     @State var changeSheet: Bool = true // Controla a exibição da sheet do evento
     @State var showTranslationSheet: Bool = false // Controla a exibição da sheet de tradução
+    
+    @State var isNotDismissable = true
 
     var body: some View {
         EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool)
+            .navigationBarTitle(event.name, displayMode: .inline)
+            .navigationBarBackButtonHidden(true)
+            .navigationBarItems(leading:
+                                    Button(action: {
+                                        print("Clicou no botão de voltar")
+                                        saiDaView()
+                                    }, label: {
+                                        HStack {
+                                            Image(systemName: "chevron.left")
+                                                .font(.system(size: 18))
+                                            Text("Back")
+                                                .font(.system(size: 18))
+                                        }
+                                        .foregroundStyle(.white)
+                                        .fontWeight(.semibold)
+                                    }))
             .overlay(alignment: .topTrailing) {
                 translationButton
                     .padding()
@@ -271,7 +289,7 @@ struct NewEventPageViewIOS18: View {
                 EventPageDetaislViewIOS18(event: event, translationManager: translationManager)
                     .presentationDetents([.fraction(0.32), .large])
                     .presentationCornerRadius(20)
-                    .interactiveDismissDisabled(true)
+                    .interactiveDismissDisabled(isNotDismissable)
                     .presentationBackgroundInteraction(.enabled)
                     .background(EmptyView())
             }
@@ -288,6 +306,7 @@ struct NewEventPageViewIOS18: View {
                 // Use the session the task provides to translate the text.
                 await translationManager.translateAllAtOnce(using: session, isShowing: $changeSheet)
             }
+            
     }
 
     var translationButton: some View {
@@ -314,6 +333,12 @@ struct NewEventPageViewIOS18: View {
         } else {
             translationManager.configuration?.invalidate()
         }
+    }
+    
+    private func saiDaView() {
+        changeSheet = false
+        isNotDismissable = false
+        dismiss()
     }
 }
 
