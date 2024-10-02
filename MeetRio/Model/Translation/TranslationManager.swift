@@ -21,7 +21,7 @@ final class TranslationManager {
         }
     }
     
-    func translateAllAtOnce(using session: TranslationSession, _ isShowing: Binding<Bool>) async {
+    func translateAllAtOnce(using session: TranslationSession, isShowing: Binding<Bool>) async {
         Task { @MainActor in
             let requests: [TranslationSession.Request] = translatedTexts.map {
                 // Map each item into a request.

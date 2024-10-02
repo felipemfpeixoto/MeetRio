@@ -125,7 +125,7 @@ struct EventPageDetaislViewIOS18: View {
             isAlsoGoing = try await FirestoreManager.shared.getGoingEvent(event.id!)
             isLoading = false
             // MARK: EU APENAS COMENTEI PQ AS TIPS AGORA SÃO BULLETS
-//            translationManager.translatedTexts[1] = event.tips
+            translationManager.translatedTexts[1] = event.tips.first
         }
     }
 }

@@ -284,21 +284,19 @@ struct NewEventPageViewIOS18: View {
                 PostHogSDK.shared.capture("ViuDetalhesEvento")
                 translationManager.translatedTexts[0] = event.description
             }
-           
+            .translationTask(translationManager.configuration) { session in
+                // Use the session the task provides to translate the text.
+                await translationManager.translateAllAtOnce(using: session, isShowing: $changeSheet)
+            }
     }
 
     var translationButton: some View {
         Button {
-            
             Task {
                 if await translationManager.languageAvailable == .supported {
                     changeSheet = false
-                    translationManager.translatedTexts[0] = event.description
-                    triggerTranslation()
                 }
-                else{
-                    changeSheet = true
-                }
+                triggerTranslation()
             }
         } label: {
             Image(systemName: "translate")

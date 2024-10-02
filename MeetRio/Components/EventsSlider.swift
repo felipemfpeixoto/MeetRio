@@ -11,7 +11,7 @@ import SwiftUI
 struct EventsSlider: View {
     
     let title: String
-    let eventCategory: String?
+    let eventCategory: String
     
     @Binding var isLoading: Bool
     @Binding var searchText: String
@@ -105,14 +105,10 @@ struct EventsSlider: View {
     }
     
     func fazOget() async throws {
-        guard let category = eventCategory else {
-            events = []
-            return
-        }
         
         do {
             isLoading = true
-            let fetchedEvents = try await FirestoreManager.shared.getLabeledEvents(category)
+            let fetchedEvents = try await FirestoreManager.shared.getLabeledEvents(eventCategory)
             self.events = fetchedEvents
             isLoading = false
         } catch {
