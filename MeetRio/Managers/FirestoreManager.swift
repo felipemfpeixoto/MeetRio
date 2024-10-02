@@ -17,8 +17,11 @@ class FirestoreManager {
     private init() {}
     
     let db = Firestore.firestore()
+    let cache = EventCache.shared
     
     var allEvents: [EventDetails] = []
+    
+    let collection = "TesteEvents"
     
     var weekEvents: [Int: [EventDetails]] = [
         Calendar.current.component(.day, from: Date()) : [],
@@ -29,17 +32,37 @@ class FirestoreManager {
     
     func getAllEvents() async {
         do {
-            let querySnapshot = try await db.collection("Events").getDocuments()
+            print("Starting getAllEvents()")
+            
+            let querySnapshot = try await db.collection(collection).getDocuments()
+            print("Successfully fetched documents from Firestore. Document count: \(querySnapshot.documents.count)")
+            
+            self.allEvents = []  // Clear the events array before populating
+            
             for document in querySnapshot.documents {
-                self.allEvents = []
-                if let event = try? document.data(as: EventDetails.self) {
+                print("Processing document with ID: \(document.documentID)")
+                print("Document data: \(document.data())") // Print raw data for inspection
+                
+                do {
+                    let event = try document.data(as: EventDetails.self)
                     self.allEvents.append(event)
+                    print("Event appended: \(event)")
+                } catch {
+                    print("Failed to parse document data into EventDetails for document ID: \(document.documentID). Error: \(error)")
                 }
             }
+
+            
+            // Cache the allEvents
+            cache.setEvents(allEvents, forCategory: "allEvents")
+            print("All events have been cached under the category 'allEvents'")
+            print("Total events fetched and stored: \(allEvents.count)")
+            
         } catch {
-            print("Error getting documents 1: \(error)")
+            print("Error getting documents: \(error)")
         }
     }
+
     
     func getSpecificDayEvent(selectedDate: Date) async -> [EventDetails] {
         let calendar = Calendar.current
@@ -55,8 +78,16 @@ class FirestoreManager {
             return calendar.date(byAdding: components, to: startOfDay)!
         }()
         
+        let cacheKey = "events_\(startOfDay.timeIntervalSince1970)_\(endOfDay.timeIntervalSince1970)"
+        
+        // Check cache first
+        if let cachedEvents = cache.getEvents(forCategory: cacheKey) {
+            print("Events loaded from cache for date: \(selectedDate)")
+            return cachedEvents
+        }
+        
         do {
-            let querySnapshot = try await db.collection("Events")
+            let querySnapshot = try await db.collection(collection)
                 .whereField("dateDetails.startDate", isGreaterThanOrEqualTo: startOfDay)
                 .whereField("dateDetails.startDate", isLessThanOrEqualTo: endOfDay)
                 .getDocuments()
@@ -68,17 +99,26 @@ class FirestoreManager {
                     events.append(event)
                 }
             }
+            // Cache the events
+            cache.setEvents(events, forCategory: cacheKey)
             return events
         } catch {
-            print("Error getting documents 2: \(error)") // Handle the error in the future
+            print("Error getting documents: \(error)")
         }
         return []
     }
     
     func getLabeledEvents(_ queryName: String) async -> [EventDetails] {
+        // Check cache first
+        if let cachedEvents = cache.getEvents(forCategory: queryName) {
+            print("Events loaded from cache for category: \(queryName)")
+            print(cachedEvents)
+            return cachedEvents
+        }
+        
         do {
-            let querySnapshot = try await db.collection("Events")
-                .whereField("eventCategory", isEqualTo: "\(queryName)")
+            let querySnapshot = try await db.collection(collection)
+                .whereField("eventCategory", isEqualTo: queryName)
                 .getDocuments()
             var events: [EventDetails] = []
             for document in querySnapshot.documents {
@@ -86,39 +126,34 @@ class FirestoreManager {
                     events.append(event)
                 }
             }
-//            print("Quantidade eventos \(queryName): ", events.count)
+            // Cache the events
+            cache.setEvents(events, forCategory: queryName)
             return events
         } catch {
-            print("Error getting documents 3: \(error)") // Handle the error in the future
+            print("Error getting documents: \(error)")
         }
         return []
     }
     
-}
-
-// MARK: Extension responsável pelos objetos de relação IsGoingEvent
-extension FirestoreManager {
+    // MARK: - IsGoingEvent Related Methods
     
     func imGoing(_ userID: String, eventID: String) async throws -> Bool {
         do {
-            // Consultando a coleção "IsGoingEvent" para verificar se o usuário está associado ao evento
             let querySnapshot = try await db.collection("IsGoingEvent")
                 .whereField("userID", isEqualTo: userID)
                 .whereField("eventID", isEqualTo: eventID)
                 .getDocuments()
-            
-            // Se houver documentos retornados, isso significa que o usuário está indo ao evento
             return !querySnapshot.isEmpty
         } catch {
             print("Error checking if user is going to event: \(error)")
             return false
         }
     }
-
-    func userGoingEvents(_ userId: String) async -> [EventDetails]{
+    
+    func userGoingEvents(_ userId: String) async -> [EventDetails] {
         do {
             let querySnapshot = try await db.collection("IsGoingEvent")
-                .whereField("userID", isEqualTo: "\(userId)")
+                .whereField("userID", isEqualTo: userId)
                 .getDocuments()
             var events: [GoingEvent] = []
             
@@ -127,45 +162,41 @@ extension FirestoreManager {
                     events.append(event)
                 }
             }
-            print("qtd events: ", events.count)
+            print("Number of events: ", events.count)
             var eventList: [EventDetails] = []
             for going in events {
-                let event = try await FirestoreManager.shared.db.collection("Events").document(going.eventID).getDocument(as: EventDetails.self)
+                let event = try await db.collection("Events").document(going.eventID).getDocument(as: EventDetails.self)
                 eventList.append(event)
             }
+            // Optionally cache user-specific events
             return eventList
-
         } catch {
-            print("Error getting documents 4: \(error)") // Handle the error in the future
+            print("Error getting documents: \(error)")
         }
         return []
     }
     
     func getGoingEvent(_ eventID: String) async -> [Hospede] {
         do {
-            print("eventID: \(eventID)")
             let querySnapshot = try await db.collection("IsGoingEvent")
-                .whereField("eventID", isEqualTo: "\(eventID)")
+                .whereField("eventID", isEqualTo: eventID)
                 .getDocuments()
             var events: [GoingEvent] = []
-            print("Passou")
             for document in querySnapshot.documents {
                 if let event = try? document.data(as: GoingEvent.self) {
                     events.append(event)
                 }
             }
-            print("qtd events: ", events.count)
+            print("Number of events: ", events.count)
             var usersGoing: [Hospede] = []
             for going in events {
-                print("Passou 2")
-                let hospede = try await FirestoreManager.shared.db.collection("Hospedes").document(going.userID).getDocument(as: Hospede.self)
-                print("Passou 3")
+                let hospede = try await db.collection("Hospedes").document(going.userID).getDocument(as: Hospede.self)
                 usersGoing.append(hospede)
             }
+            // Optionally cache event attendees
             return usersGoing
-
         } catch {
-            print("Error getting documents 5: \(error)") // Handle the error in the future
+            print("Error getting documents: \(error)")
         }
         return []
     }
@@ -173,8 +204,9 @@ extension FirestoreManager {
     func createGoingEvent(_ userID: String, _ eventID: String) async {
         do {
             let newGoing = GoingEvent(eventID: eventID, userID: userID)
-            try self.db.collection("IsGoingEvent").addDocument(from: newGoing)
+            try db.collection("IsGoingEvent").addDocument(from: newGoing)
             print("Going created")
+            // Invalidate cache if necessary
         } catch {
             print(error.localizedDescription)
         }
@@ -182,48 +214,45 @@ extension FirestoreManager {
     
     func deleteGoingEvent(_ userID: String, _ eventID: String) async {
         do {
-            let newGoing = GoingEvent(eventID: eventID, userID: userID)
-            let query = try self.db.collection("IsGoingEvent").whereField("eventID", isEqualTo: eventID).whereField("userID", isEqualTo: userID)
+            let query = db.collection("IsGoingEvent")
+                .whereField("eventID", isEqualTo: eventID)
+                .whereField("userID", isEqualTo: userID)
             let querySnapshot = try await query.getDocuments()
             let document = querySnapshot.documents.first
             try await document?.reference.delete()
             print("Going deleted")
+            // Invalidate cache if necessary
         } catch {
-            print("Deu erro ao deletar goind: ", error.localizedDescription)
+            print("Error deleting going event: ", error.localizedDescription)
         }
     }
     
     func removeGoingEvent(_ userID: String) async {
         let collectionRef = db.collection("IsGoingEvent")
-
         do {
-            // Procura por documentos onde userID e eventID correspondem
             let querySnapshot = try await collectionRef
                 .whereField("userID", isEqualTo: userID)
                 .getDocuments()
-            
-            // Itera sobre os documentos encontrados e remove cada um
             for document in querySnapshot.documents {
                 try await collectionRef.document(document.documentID).delete()
                 print("Successfully removed user from IsGoingEvent.")
             }
+            // Invalidate cache if necessary
         } catch {
             print("Error removing user from IsGoingEvent: \(error.localizedDescription)")
         }
     }
-}
-
-extension FirestoreManager {
+    
+    // MARK: - Hospede Related Methods
     
     func deleteHospede(_ userID: String) async {
         let collectionRef = db.collection("Hospedes")
-        
         do {
             try await collectionRef.document(userID).delete()
-            print("Perfil de Hospede deletado com sucesso")
+            print("Hospede profile deleted successfully")
+            // Invalidate cache if necessary
         } catch {
             print("Error deleting hospede")
         }
     }
-    
 }

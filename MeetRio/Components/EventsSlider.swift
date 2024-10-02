@@ -35,14 +35,14 @@ struct EventsSlider: View {
         .onChange(of: deuRefresh) {
             Task {
                 Task {
-                    await loadEventsFromCacheOrDB()
+                    try await fazOget()
                 }
             }
         }
         .onAppear {
             if !viuPrimeira {
                 Task {
-                    await loadEventsFromCacheOrDB()
+                    try await fazOget()
                     viuPrimeira = true
                 }
             }
@@ -112,35 +112,12 @@ struct EventsSlider: View {
         
         do {
             isLoading = true
-            let fetchedEvents = try await EventManager.shared.fetchEvents(forCategory: category)
+            let fetchedEvents = try await FirestoreManager.shared.getLabeledEvents(category)
             self.events = fetchedEvents
             isLoading = false
         } catch {
             print("Erro ao buscar eventos: \(error)")
             isLoading = false
-        }
-    }
-    
-    func loadEventsFromCacheOrDB() async {
-        // Tenta carregar os eventos do cache
-        if let cachedEvents = EventCache.shared.getEvents(forCategory: "Festival") {
-            print("Carregando eventos do cache")
-            self.events = cachedEvents
-            self.isLoading = false
-            print(cachedEvents, self.events)
-        } else {
-            // Se o cache estiver vazio, busca os eventos do banco de dados (Firebase, por exemplo)
-            print("Cache vazio, buscando eventos do banco de dados")
-            do {
-                let fetchedEvents = try await FirestoreManager.shared.getLabeledEvents("bemBrazil")
-                self.events = fetchedEvents
-                self.isLoading = false
-                // Atualiza o cache com os eventos buscados
-                EventCache.shared.setEvents(fetchedEvents, forCategory: "bemBrazil")
-            } catch {
-                print("Erro ao buscar eventos do banco de dados: \(error)")
-                self.isLoading = false
-            }
         }
     }
 }

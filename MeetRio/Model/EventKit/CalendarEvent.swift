@@ -21,7 +21,7 @@ class CalendarEvent {
     let street: String
     let city: String
     let state: String
-    let postalCode: String
+    //let postalCode: String
     let country: String
     let isoCountryCode: String
     
@@ -34,7 +34,7 @@ class CalendarEvent {
         }
     }
     
-    init(name: String, startDate: Date, endDate: Date, locationName: String, latitude: Double, longitude: Double, street: String, city: String, state: String, postalCode: String, country: String, isoCountryCode: String) {
+    init(name: String, startDate: Date, endDate: Date, locationName: String, latitude: Double, longitude: Double, street: String, city: String, state: String, country: String, isoCountryCode: String) {
         self.name = name
         self.startDate = startDate
         self.endDate = endDate
@@ -44,7 +44,7 @@ class CalendarEvent {
         self.street = street
         self.city = city
         self.state = state
-        self.postalCode = postalCode
+        //self.postalCode = postalCode
         self.country = country
         self.isoCountryCode = isoCountryCode
         CalendarEvent.loadEventCount()
@@ -74,7 +74,7 @@ class CalendarEvent {
         myAddress.street = eventData.street
         myAddress.city = eventData.city
         myAddress.state = eventData.state
-        myAddress.postalCode = eventData.postalCode
+        //myAddress.postalCode = eventData.postalCode
         myAddress.country = eventData.country
         myAddress.isoCountryCode = eventData.isoCountryCode
         

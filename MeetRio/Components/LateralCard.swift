@@ -17,7 +17,7 @@ struct LateralCard: View {
     
     var body: some View {
         HStack(spacing: 0.0){
-            Image(uiImage: (event.photo != nil ? UIImage(data: event.photo!) : UIImage(systemName: "caipiImage"))!)
+            Image(uiImage: (event.photoData != nil ? UIImage(data: event.photoData!) : UIImage(systemName: "caipiImage"))!)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 128, height: 125)
@@ -43,7 +43,6 @@ struct LateralCard: View {
             Spacer()
             
             VStack{
-                //            Ícone de lixeira no canto superior direito
                 Button(action: {
                     showingAlert.toggle()
                 }) {

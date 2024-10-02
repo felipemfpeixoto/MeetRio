@@ -29,7 +29,6 @@ struct Hostel: Codable {
     var location: LocationDetails
 }
 
-
 class EventDetails: Codable, Identifiable {
     @DocumentID var id: String?
     
@@ -38,26 +37,28 @@ class EventDetails: Codable, Identifiable {
     var address: AddressDetails
     var dateDetails: DateDetails
     var description: String
-    var photo: Data?
+    var photoURL: String? // URL of the main image
+    var photoData: Data?
     
     // Extra Information
     var buyURL: String?
-    var otherPictures: [Data]
+    var otherPictureURLs: [String]? // URLs of other images
+    var otherPictureData: [Data]?// Data of other images
     var tags: [String]
-    var tips: String?
+    var tips: [String]
     var safetyRate: Float?
     var eventCategory: String
     
-    // Inicializador
-    init(id: String?, name: String, address: AddressDetails, dateDetails: DateDetails, description: String, photo: Data?, buyURL: String?, otherPictures: [Data], tags: [String], tips: String?, safetyRate: Float?, eventCategory: String) {
+    // Initializer
+    init(id: String?, name: String, address: AddressDetails, dateDetails: DateDetails, description: String, photoURL: String?, buyURL: String?, otherPictureURLs: [String], tags: [String], tips: [String], safetyRate: Float?, eventCategory: String) {
         self.id = id
         self.name = name
         self.address = address
         self.dateDetails = dateDetails
         self.description = description
-        self.photo = photo
+        self.photoURL = photoURL
         self.buyURL = buyURL
-        self.otherPictures = otherPictures
+        self.otherPictureURLs = otherPictureURLs
         self.tags = tags
         self.tips = tips
         self.safetyRate = safetyRate
@@ -67,44 +68,173 @@ class EventDetails: Codable, Identifiable {
     func formattedDayOfWeek() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "EEE" // Formato para 3 letras do dia da semana
-        return dateFormatter.string(from: dateDetails.startDate)
+        return dateFormatter.string(from: dateDetails.startDateTime ?? Date())
     }
     
     func formattedDay() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "d" // Formato para retornar apenas o dia do mês (1, 2, 15, etc.)
-        return dateFormatter.string(from: dateDetails.startDate)
+        return dateFormatter.string(from: dateDetails.startDateTime ?? Date())
     }
     
-    func formattedHour(from hour: Int) -> String {
+    func formattedHour(from hourString: String) -> String {
+        // Tenta dividir a string no formato "HH:mm" para obter a hora
+        let components = hourString.split(separator: ":")
+        
+        // Garantir que haja ao menos uma parte válida para a hora
+        guard let hourComponent = components.first, let hour = Int(hourComponent) else {
+            return hourString // Se a string não for válida, retorna como está
+        }
+
+        // Verificar se é AM ou PM
         let isPM = hour >= 12
-        let formattedHour = hour % 12 == 0 ? 12 : hour % 12 // Converte 0 ou 12 para 12, e qualquer outra hora para o formato de 12h
-        let suffix = isPM ? "pm" : "am"
+        let formattedHour = hour % 12 == 0 ? 12 : hour % 12 // Converte 0 ou 12 para 12, e outras horas para formato 12h
+        let suffix = isPM ? "PM" : "AM"
+        
+        // Retornar a hora formatada
         return String(format: "%02d%@", formattedHour, suffix) // Formata com dois dígitos
+    }
+
+    
+    func mergeData(date: Date, withHour hourString: String) -> Date {
+        var calendar = Calendar.current
+        calendar.timeZone = TimeZone.current // Define o fuso horário
+
+        // Separa os componentes de data (dia, mês, ano) da `date`
+        var dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+
+        // Divide a string "HH:mm" para obter a hora e o minuto
+        let timeComponents = hourString.split(separator: ":")
+        
+        // Tenta extrair a hora e os minutos
+        guard let hourComponent = timeComponents.first,
+              let hour = Int(hourComponent),
+              let minuteComponent = timeComponents.last,
+              let minute = Int(minuteComponent) else {
+            return date // Se a string for inválida, retorna a data original
+        }
+
+        // Adiciona a hora e o minuto extraídos da string aos componentes de data
+        dateComponents.hour = hour
+        dateComponents.minute = minute
+
+        // Combina os componentes para criar uma nova `Date`
+        return calendar.date(from: dateComponents) ?? date
+    }
+
+    
+    // MARK: - Image Loading Methods
+    
+    // Load main photo data from URL
+    func loadPhotoData(completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let photoURLString = self.photoURL, let url = URL(string: photoURLString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
+            return
+        }
+        print(photoURL)
+        // Start a data task to download the image
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            if let data = data {
+                self.photoData = data
+                completion(.success(()))
+            } else {
+                completion(.failure(NSError(domain: "No data", code: -1, userInfo: nil)))
+            }
+        }.resume()
+    }
+    
+    // Load other pictures data from URLs
+    func loadOtherPicturesData(completion: @escaping (Result<Void, Error>) -> Void) {
+        let group = DispatchGroup()
+        var tempDataArray: [Data] = []
+        var encounteredError: Error?
+        
+        guard let otherPictureURLs else {
+            return
+        }
+        for pictureURLString in otherPictureURLs {
+            if let url = URL(string: pictureURLString) {
+                group.enter()
+                URLSession.shared.dataTask(with: url) { data, response, error in
+                    defer { group.leave() }
+                    
+                    if let error = error {
+                        encounteredError = error
+                    } else if let data = data {
+                        tempDataArray.append(data)
+                    }
+                }.resume()
+            }
+        }
+        
+        group.notify(queue: .main) {
+            if let error = encounteredError {
+                completion(.failure(error))
+            } else {
+                self.otherPictureData = tempDataArray
+                completion(.success(()))
+            }
+        }
     }
 }
 
 
 struct DateDetails: Codable {
-    var startDate: Date
-    var startHour: Int
-    var endHour: Int
+    var startDate: String // Date as a string from Firestore
+    var endDate: String
+    var startHour: String // Time as a string from Firestore
+    var endHour: String
+    
+    // Computed properties to get Date objects
+    var startDateTime: Date? {
+        return DateDetails.combineDateAndTime(dateString: startDate, timeString: startHour)
+    }
+    
+    var endDateTime: Date? {
+        return DateDetails.combineDateAndTime(dateString: endDate, timeString: endHour)
+    }
+    
+    static func combineDateAndTime(dateString: String, timeString: String) -> Date? {
+        let dateFormatter = DateFormatter()
+        
+        let sanitizedDateString = dateString.replacingOccurrences(of: ".", with: "")
+        
+        dateFormatter.dateFormat = "dd 'de' MMM 'de' yyyy HH:mm"
+        dateFormatter.locale = Locale(identifier: "pt_BR")
+        
+        let combinedString = "\(sanitizedDateString) \(timeString)"
+//        print("Combined string: \(combinedString)")
+        
+        if let date = dateFormatter.date(from: combinedString) {
+            return date
+        } else {
+            print("Failed to parse date from string: \(combinedString)")
+            return nil
+        }
+    }
+
 }
 
-
-struct LocationDetails: Codable {
-    var latitude: Double
-    var longitude: Double
-    var mapURL: String?
-}
 
 struct AddressDetails: Codable {
     var street: String
     var number: String
     var neighborhood: String
     var location: LocationDetails
+    var cep: String
     var details: String?
     var referencePoint: String?
+}
+
+struct LocationDetails: Codable {
+    var latitude: Double
+    var longitude: Double
+    var mapURL: String?
 }
 
 // Relações

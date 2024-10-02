@@ -8,7 +8,6 @@
 import UIKit
 import Foundation
 
-// Dados fictícios para testes
 struct MockData {
     static let eventDetails: EventDetails = {
         let testLocation = LocationDetails(
@@ -22,20 +21,22 @@ struct MockData {
             number: "123",
             neighborhood: "Centro",
             location: testLocation,
+            cep: "",
             details: "Perto do Museu",
             referencePoint: "Ao lado do parque"
         )
         
         let testDateDetails = DateDetails(
-            startDate: stringToDate("2024-10-14") ?? Date(),
-            startHour: 18,
-            endHour: 22
+            startDate: "2024-10-14", // Now using String for the date
+            endDate: "2024-10-14",
+            startHour: "18:00", // Now using String for the hour
+            endHour: "22:00"
         )
         
-        let photoData = UIImage(named: "AlbaBotafogo")?.pngData()
-        
-        let photoData1 = UIImage(named: "AlbaBotafogo_Pequeno")?.pngData()
-        let photoData2 = UIImage(named: "MundoLingo_Botafogo_Pequeno")?.pngData()
+        // Replace UIImage to URLs for photos
+        let photoURL = "https://example.com/AlbaBotafogo.png"
+        let otherPictureURL1 = "https://example.com/AlbaBotafogo_Pequeno.png"
+        let otherPictureURL2 = "https://example.com/MundoLingo_Botafogo_Pequeno.png"
         
         let testEvent = EventDetails(
             id: "test_event_123",
@@ -43,11 +44,11 @@ struct MockData {
             address: testAddress,
             dateDetails: testDateDetails,
             description: "Um evento incrível de música ao vivo com várias atrações!",
-            photo: photoData,
+            photoURL: photoURL, // Using URL string instead of Data
             buyURL: "https://comprar.ingresso.com/festival",
-            otherPictures: [photoData1!, photoData2!],
+            otherPictureURLs: [otherPictureURL1, otherPictureURL2], // Using URLs array instead of Data
             tags: ["Música", "Festival", "Ao Vivo"],
-            tips: "Chegue cedo para garantir um bom lugar.",
+            tips: ["Ar livre", "Para todos", "Drinks gratuitos", "Cool music", "maneiro"],
             safetyRate: 4.5,
             eventCategory: "Festival"
         )
@@ -55,6 +56,7 @@ struct MockData {
         return testEvent
     }()
 }
+
 
 func stringToDate(_ dateString: String, format: String = "yyyy-MM-dd") -> Date? {
     let dateFormatter = DateFormatter()

@@ -75,7 +75,7 @@ struct HomeView: View{
             VStack{
                 Spacer()
                 if selectedFavorite != nil {
-                    AddedToFavoriteCard(eventImage: ((selectedFavorite?.photo) ?? UIImage(named: "defaultImage")?.pngData())!, selectedScreen: $selectedScreen)
+                    AddedToFavoriteCard(eventImage: ((selectedFavorite?.photoData) ?? UIImage(named: "defaultImage")?.pngData())!, selectedScreen: $selectedScreen)
                         .padding()
                         .task {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {

@@ -23,25 +23,38 @@ struct EventPageDetaislView: View {
     @State var isLoading = false
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 15) {
-                PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
-                    .padding([.horizontal, .bottom])
+        ZStack {
+            Color("BackgroundWhite")
+                .ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 15) {
+                    
+                    HStack{
+                        if let buyURL = event.buyURL {
+                            BuyButtonView(buyURL: buyURL)
+                        }
+                        
+                        // Compartilhar evento
+                        shareEvent()
+                    }
+                    .padding(.horizontal)
                     .padding(.top, 30)
-                
-                if event.buyURL != nil {
-                    BuyButtonView(buyURL: event.buyURL)
+                    
+                    PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
+                        .padding()
+                    
+                    OtherPhotos(photos: event.otherPictureData ?? [])
+                        .padding()
+                    
+                    LocationView(event: event)
+                        .padding()
+                    
+                    TipsView(tips: event.tips)
                         .padding()
                 }
-                
-                LocationView(event: event)
-                    .padding()
-                
-                TipsView(tips: event.tips)
-                    .padding()
-            }
-            .onAppear {
-                loadPeopleGoing()
+                .onAppear {
+                    loadPeopleGoing()
+                }
             }
         }
     }
@@ -70,25 +83,38 @@ struct EventPageDetaislViewIOS18: View {
     let translationManager: TranslationManager
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 15) {
-                PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
-                    .padding([.horizontal, .bottom])
+        ZStack{
+            Color("BackgroundWhite")
+                .ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 15) {
+                    
+                    HStack{
+                        if let buyURL = event.buyURL {
+                            BuyButtonView(buyURL: buyURL)
+                        }
+                        
+                        // Compartilhar evento
+                        shareEvent()
+                    }
+                    .padding(.horizontal)
                     .padding(.top, 30)
-                
-                if let buyURL = event.buyURL {
-                    BuyButtonView(buyURL: buyURL)
+                    
+                    PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
+                        .padding()
+                    
+                    OtherPhotos(photos: event.otherPictureData ?? [])
+                    
+                    
+                    LocationView(event: event)
+                        .padding()
+                    
+                    TipsView(tips: event.tips)
                         .padding()
                 }
-                
-                LocationView(event: event)
-                    .padding()
-                
-                TipsView(tips: event.tips)
-                    .padding()
-            }
-            .onAppear {
-                loadPeopleGoingAndTranslateTips()
+                .onAppear {
+                    loadPeopleGoingAndTranslateTips()
+                }
             }
         }
     }
@@ -98,7 +124,8 @@ struct EventPageDetaislViewIOS18: View {
             isLoading = true
             isAlsoGoing = try await FirestoreManager.shared.getGoingEvent(event.id!)
             isLoading = false
-            translationManager.translatedTexts[1] = event.tips
+            // MARK: EU APENAS COMENTEI PQ AS TIPS AGORA SÃO BULLETS
+//            translationManager.translatedTexts[1] = event.tips
         }
     }
 }
@@ -133,36 +160,89 @@ struct PeopleGoingView: View {
 }
 
 
+struct OtherPhotos: View {
+    let photos: [Data]
+
+    var body: some View {
+        let screenWidth = UIScreen.main.bounds.width
+        
+        VStack {
+            TabView {
+                ForEach(0..<photos.count, id: \.self) { index in
+                    if let uiImage = UIImage(data: photos[index]) {
+                        ZStack {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: screenWidth * 0.9, height: 210)
+                                .cornerRadius(20)
+                                .shadow(radius: 5)
+                                .padding(.horizontal, 10)
+
+                            VStack {
+                                Spacer()
+                                HStack(spacing: 8) {
+                                    ForEach(0..<photos.count, id: \.self) { dotIndex in
+                                        Circle()
+                                            .fill(dotIndex == index ? Color.white : Color.gray.opacity(0.7))
+                                            .frame(width: 8, height: 8)
+                                    }
+                                }
+                                .padding(.bottom, 40)
+                            }
+                        }
+                    }
+                }
+            }
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            .frame(height: 230)
+        }
+    }
+}
+
+struct shareEvent: View{
+    var body: some View {
+        Image(systemName: "square.and.arrow.up")
+            .font(.title2)
+            .fontWeight(.bold)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+    }
+}
+
 struct BuyButtonView: View {
     let buyURL: String?
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Tickets")
-                .font(Font.custom("Bricolage Grotesque", size: 23).bold())
-                .padding(.bottom, 5)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
+//            Text("Tickets")
+//                .font(Font.custom("Bricolage Grotesque", size: 23).bold())
+//                .padding(.bottom, 5)
+//                .frame(maxWidth: .infinity, alignment: .leading)
+//            
             Button(action: {
                 PostHogSDK.shared.capture("ClicouComprar")
                 if let url = URL(string: buyURL!) {
                     UIApplication.shared.open(url)
                 }
             }, label: {
-                Text("Buy now")
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10.0)
-                            .foregroundStyle(Color("Blue1"))
-                    )
+                HStack{
+                    Image(systemName: "ticket")
+                    Text("Buy now")
+                    
+                }
+                .font(.title2)
+                .fontWeight(.semibold)
+                .foregroundStyle(.white)
+                .padding(8)
+                .background(
+                    RoundedRectangle(cornerRadius: 10.0)
+                        .foregroundStyle(Color("DarkGreen"))
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
             })
         }
     }
 }
-
 
 struct LocationView: View {
     let event: EventDetails
@@ -173,8 +253,8 @@ struct LocationView: View {
                 .font(Font.custom("Bricolage Grotesque", size: 23).bold())
                 .padding(.bottom, 5)
             
-            Text(event.address.details ?? "")
-                .foregroundStyle(Color("DarkBlue"))
+            Text(event.address.details ?? event.name)
+                .foregroundStyle(Color("DarkGreen"))
                 .fontWeight(.bold)
             
             Text("\(event.address.street), \(event.address.number)")
@@ -189,46 +269,65 @@ struct LocationView: View {
 
 
 struct TipsView: View {
-    let tips: String?
-    
+    let tips: [String] // Agora recebe uma lista de dicas
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("Tips")
                 .font(Font.custom("Bricolage Grotesque", size: 23).bold())
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.title2.bold())
+                .padding(.bottom, 10)
             
-            Text(tips ?? "")
-                .fontWeight(.regular)
-                .padding(.vertical, 5)
-                .padding(.horizontal, 15)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 15) {
+                    ForEach(0..<tips.count, id: \.self) { index in
+                        HStack(spacing: 10) {
+                            Image(systemName: iconForTip(tip: tips[index]))
+                                .foregroundStyle(Color.green)
+                            Text(tips[index])
+                                .fontWeight(.regular)
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.white)
+                                .shadow(radius: 2, y: 2)
+                        )
+                        .padding(.vertical)
+                        .padding(.horizontal, 5)
+                        .offset(y: -15)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 5)
+    }
+    
+    // Função para retornar o ícone apropriado para cada dica
+    private func iconForTip(tip: String) -> String {
+        if tip.contains("noite") || tip.contains("dormir") {
+            return "moon.fill"
+        } else if tip.contains("comida") || tip.contains("Drinks") {
+            return "wineglass.fill"
+        } else {
+            return "chair.fill"
         }
     }
 }
 
+#Preview{
+    
+    if #available(iOS 18.0, *) {
+        EventPageDetaislViewIOS18(
+            event: MockData.eventDetails, translationManager: TranslationManager()
+        )
+    }
+    // ou
+    //EventPageDetaislView(event: MockData.eventDetails)
+}
 
-//#Preview{
-//    if #available(iOS 18.0, *) {
-//        EventPageDetaislViewIOS18(
-//            event: EventDetails(
-//                id: "12345",
-//                name: "Festival de Música",
-//                photo: UIImage(named: "festival.jpg")?.pngData(),
-//                description: "Um evento incrível de música ao vivo com várias atrações!",
-//                dateDetails: "Sábado, 14 de Outubro de 2024 - 18h",
-//                address: AddressDetails(street: "Avenida dos Artistas", number: "0", details: "Ipanema Beach Hostel", neighborhood: "Rio de Janeiro"),
-//                location: LocationDetails(
-//                    latitude: -22.9068,
-//                    longitude: -43.1729
-//                ),
-//                eventCategory: "Música",
-//                safetyRate: 4.8,
-//                tags: ["Música", "Festival", "Ao Vivo", "Diversão"],
-//                tips: "Leve protetor solar e chegue cedo para garantir bons lugares.",
-//                url: "https://www.festivaldemusica.com",
-//                buyURL: "https://www.festivaldemusica.com/comprar"
-//            ), translationManager: TranslationManager()
-//        )
-//    }
-//}
 

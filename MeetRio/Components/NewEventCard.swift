@@ -28,6 +28,8 @@ struct NewEventCard: View {
     
     @State var isLoading: Bool = false
     
+    @State var photo: Data? = nil
+    
     let weekdays = [
         "Sun",
         "Mon",
@@ -40,12 +42,12 @@ struct NewEventCard: View {
     
     var body: some View {
         ZStack {
-            Image(uiImage: UIImage(data: (event.photo ?? UIImage(named: "defaultImage")!.pngData())!)!)
+            
+            Image(uiImage: (UIImage(data: photo ?? UIImage(named: "defaultImage")?.pngData() ?? Data()) ?? UIImage(named: "defaultImage"))!)
                 .resizable()
                 .scaledToFill()
                 .frame(width: screenWidth/1.4, height: screenWidth/1.8)
                 
-            
                 .overlay{
                     dateComponent
                         .padding()
@@ -79,7 +81,20 @@ struct NewEventCard: View {
                             
                     .clipped()
                 }
-            
+                .onAppear{
+                    event.loadPhotoData { result in
+                        switch result {
+                        case .success():
+                            print("Imagem principal baixada com sucesso")
+                            // Aqui você pode atualizar a UI para mostrar a imagem, por exemplo:
+                            photo = event.photoData
+                            print(photo)
+                        case .failure(let error):
+                            print("Erro ao baixar a imagem principal: \(error)")
+                        }
+                    }
+
+                }
                 .overlay(alignment: .bottomLeading){
                     HStack{
                         ForEach(event.tags, id: \.self){ tag in

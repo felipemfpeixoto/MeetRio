@@ -47,8 +47,8 @@ struct EventCard: View {
     
     var imageComponent: some View {
         ZStack {
-            if event.photo != nil {
-                Image(uiImage: UIImage(data: event.photo!)!)
+            if event.photoData != nil {
+                Image(uiImage: UIImage(data: event.photoData!)!)
                     .resizable()
                     .scaledToFill()
                     .clipShape(RoundedRectangle(cornerRadius: 20))
