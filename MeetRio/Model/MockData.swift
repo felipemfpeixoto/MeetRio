@@ -8,8 +8,9 @@
 import UIKit
 import Foundation
 
+
 struct MockData {
-    static let eventDetails: EventDetails = {
+    static let eventDetails: EventDetailsApi = {
         let testLocation = LocationDetails(
             latitude: -22.9068,
             longitude: -43.1729,
@@ -38,7 +39,7 @@ struct MockData {
         let otherPictureURL1 = "https://example.com/AlbaBotafogo_Pequeno.png"
         let otherPictureURL2 = "https://example.com/MundoLingo_Botafogo_Pequeno.png"
         
-        let testEvent = EventDetails(
+        let testEvent = EventDetailsApi(
             id: "test_event_123",
             name: "Festival de Música",
             address: testAddress,

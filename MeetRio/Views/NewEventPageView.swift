@@ -92,13 +92,15 @@ struct EventPageContent: View {
         Button(action: {
             calendarBool = true
             
+            let myEvent: CalendarEvent
+            
             if let startDateTime = event.dateDetails?.startDateTime,
                let endDateTime = event.dateDetails?.endDateTime{
                 
                 let endHour = event.dateDetails?.endHour
                 let startHour = event.dateDetails?.startHour
                 
-                let myEvent = CalendarEvent(
+                myEvent = CalendarEvent(
                     name: event.name,
                     startDate: event.mergeData(date: startDateTime, withHour: startHour!),
                     endDate: event.mergeData(date: endDateTime, withHour: endHour!),
@@ -114,6 +116,25 @@ struct EventPageContent: View {
                 
                 myEvent.reciveAndDonateInteraction(eventData: myEvent)
             }
+            else{
+                myEvent = CalendarEvent(
+                    name: event.name,
+                    startDate: event.mergeData(date: Date(), withHour: "16:00"),
+                    endDate: event.mergeData(date: Date(), withHour: "23:43"),
+                    locationName: event.name,
+                    latitude: event.address.location.latitude,
+                    longitude: event.address.location.longitude,
+                    street: event.address.street,
+                    city: "Rio de Janeiro",
+                    state: "RJ",
+                    country: "Brazil",
+                    isoCountryCode: "BR"
+                )
+                
+                myEvent.reciveAndDonateInteraction(eventData: myEvent)
+            }
+            
+            
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
                 calendarBool = false
@@ -210,9 +231,17 @@ struct EventPageContent: View {
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
                     VStack(spacing: 0.0) {
-                        Text("\(event.formattedDayOfWeek())")
-                        Text("\(event.formattedDay())")
-                            .fontWeight(.semibold)
+                        if event.dayWeek != nil {
+                            Text(event.dayWeek!.prefix(3))
+                            Text("\(event.returnDayOfWeek(day: event.dayWeek!))")
+                                .fontWeight(.semibold)
+                            
+                        }
+                        else{
+                            Text("\(event.formattedDayOfWeek())")
+                            Text("\(event.formattedDay())")
+                                .fontWeight(.semibold)
+                        }
                     }
                     .foregroundStyle(.black)
                 }
@@ -382,7 +411,7 @@ struct NewEventPageView: View {
     if #available(iOS 18.0, *) {
         NewEventPageViewIOS18(
             loggedCase: .constant(.anonymous),
-            event: MockData.eventDetails,
+            event: EventDetails(apiResponse: MockData.eventDetails),
             going: false,
             calendarBool: false
         )

@@ -29,42 +29,40 @@ struct Hostel: Codable {
     var location: LocationDetails
 }
 
-class EventDetails: Codable, Identifiable {
-    @DocumentID var id: String?
-    
-    // Basic Information
-    var name: String
-    var address: AddressDetails
-    var dateDetails: DateDetails?
-    var description: String
-    var photoURL: String? // URL of the main image
-    var photoData: Data?
-    
-    // Extra Information
+@Observable
+class EventDetails: Identifiable{
+    // Propriedades
+    var id: String?
+   var name: String
+   var address: AddressDetails
+   var dateDetails: DateDetails?
+   var description: String
+   var photoURL: String?
+   var photoData: Data?
+   var buyURL: String?
+   var otherPictureURLs: [String]?
+    var otherPictureData: [Data]?
+   var tags: [String]
+   var tips: [String]
+   var safetyRate: Float?
+   var eventCategory: String
     var dayWeek: String?
-    var buyURL: String?
-    var otherPictureURLs: [String]? // URLs of other images
-    var otherPictureData: [Data]?// Data of other images
-    var tags: [String]
-    var tips: [String]
-    var safetyRate: Float?
-    var eventCategory: String
-    
-    // Initializer
-    init(id: String?, name: String, address: AddressDetails, dateDetails: DateDetails, description: String, photoURL: String?, buyURL: String?, otherPictureURLs: [String], tags: [String], tips: [String], safetyRate: Float?, eventCategory: String) {
-        self.id = id
-        self.name = name
-        self.address = address
-        self.dateDetails = dateDetails
-        self.description = description
-        self.photoURL = photoURL
-        self.buyURL = buyURL
-        self.otherPictureURLs = otherPictureURLs
-        self.tags = tags
-        self.tips = tips
-        self.safetyRate = safetyRate
-        self.eventCategory = eventCategory
-    }
+
+   // Inicializador que recebe a resposta da API e carrega os dados na classe EventDetails
+   init(apiResponse: EventDetailsApi) {
+       self.name = apiResponse.name
+       self.address = apiResponse.address
+       self.dateDetails = apiResponse.dateDetails
+       self.description = apiResponse.description
+       self.photoURL = apiResponse.photoURL
+       self.buyURL = apiResponse.buyURL
+       self.otherPictureURLs = apiResponse.otherPictureURLs
+       self.tags = apiResponse.tags
+       self.tips = apiResponse.tips
+       self.safetyRate = apiResponse.safetyRate
+       self.eventCategory = apiResponse.eventCategory
+       self.dayWeek = apiResponse.dayWeek
+   }
     
     func formattedDayOfWeek() -> String {
         let dateFormatter = DateFormatter()
@@ -77,6 +75,36 @@ class EventDetails: Codable, Identifiable {
         dateFormatter.dateFormat = "d" // Formato para retornar apenas o dia do mês (1, 2, 15, etc.)
         return dateFormatter.string(from: dateDetails?.startDateTime ?? Date())
     }
+
+    func returnDayOfWeek(day: String) -> Int {
+        let daysOfWeek: [String: Int] = [
+            "Sunday": 1,
+            "Monday": 2,
+            "Tuesday": 3,
+            "Wednesday": 4,
+            "Thursday": 5,
+            "Friday": 6,
+            "Saturday": 7
+        ]
+        
+        guard let targetWeekday = daysOfWeek[day.capitalized] else {
+            print("Invalid day provided.")
+            return 0
+        }
+        
+        let calendar = Calendar.current
+        let today = Date()
+        
+        let currentWeekday = calendar.component(.weekday, from: today)
+        
+        let daysUntilNext = (targetWeekday - currentWeekday + 7) % 7
+        
+        let nextDate = calendar.date(byAdding: .day, value: daysUntilNext == 0 ? 7 : daysUntilNext, to: today)!
+        
+        return calendar.component(.day, from: nextDate)
+    }
+
+    
     
     func formattedHour(from hourString: String) -> String {
         // Tenta dividir a string no formato "HH:mm" para obter a hora
@@ -127,26 +155,14 @@ class EventDetails: Codable, Identifiable {
     // MARK: - Image Loading Methods
     
     // Load main photo data from URL
-    func loadPhotoData(completion: @escaping (Result<Void, Error>) -> Void) {
+    func loadPhotoData() async -> Data? {
         guard let photoURLString = self.photoURL, let url = URL(string: photoURLString) else {
-            completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
-            return
+            return nil
         }
-        print(photoURL)
         // Start a data task to download the image
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            
-            if let data = data {
-                self.photoData = data
-                completion(.success(()))
-            } else {
-                completion(.failure(NSError(domain: "No data", code: -1, userInfo: nil)))
-            }
-        }.resume()
+        let response = try? await URLSession.shared.data(from: url)
+        return response?.0
+        
     }
     
     // Load other pictures data from URLs
@@ -181,6 +197,45 @@ class EventDetails: Codable, Identifiable {
                 completion(.success(()))
             }
         }
+    }
+}
+
+class EventDetailsApi: Codable {
+    @DocumentID var id: String?
+    
+    // Basic Information
+    var name: String
+    var address: AddressDetails
+    var dateDetails: DateDetails?
+    var description: String
+    var photoURL: String? // URL of the main image
+    var photoData: Data?
+    
+    // Extra Information
+    var dayWeek: String?
+    var buyURL: String?
+    var otherPictureURLs: [String]? // URLs of other images
+    var otherPictureData: [Data]?// Data of other images
+    var tags: [String]
+    var tips: [String]
+    var safetyRate: Float?
+    var eventCategory: String
+    
+    // Initializer
+    init(id: String?, name: String, address: AddressDetails, dateDetails: DateDetails, description: String, photoURL: String?, buyURL: String?, otherPictureURLs: [String], tags: [String], tips: [String], safetyRate: Float?, eventCategory: String) {
+        self.id = id
+        self.name = name
+        self.address = address
+        self.dateDetails = dateDetails
+        self.description = description
+        self.photoURL = photoURL
+        self.buyURL = buyURL
+        self.otherPictureURLs = otherPictureURLs
+        self.tags = tags
+        self.tips = tips
+        self.safetyRate = safetyRate
+        self.eventCategory = eventCategory
+        
     }
 }
 
@@ -227,7 +282,7 @@ struct AddressDetails: Codable {
     var number: String
     var neighborhood: String
     var location: LocationDetails
-    var cep: String
+    var cep: String?
     var details: String?
     var referencePoint: String?
 }

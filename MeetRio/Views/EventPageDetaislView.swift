@@ -277,6 +277,9 @@ struct TipsView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
+            
+            
+            
             Text("Tips")
                 .font(Font.custom("Bricolage Grotesque", size: 23).bold())
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -323,11 +326,9 @@ struct TipsView: View {
     
     if #available(iOS 18.0, *) {
         EventPageDetaislViewIOS18(
-            event: MockData.eventDetails, translationManager: TranslationManager()
+            event: EventDetails(apiResponse: MockData.eventDetails), translationManager: TranslationManager()
         )
     }
     // ou
     //EventPageDetaislView(event: MockData.eventDetails)
 }
-
-

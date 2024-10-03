@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import PostHog
+import CachedAsyncImage
 
 struct NewEventCard: View {
     
@@ -28,8 +29,6 @@ struct NewEventCard: View {
     
     @State var isLoading: Bool = false
     
-    @State var photo: Data? = nil
-    
     let weekdays = [
         "Sun",
         "Mon",
@@ -41,95 +40,9 @@ struct NewEventCard: View {
     ]
     
     var body: some View {
-        ZStack {
-            
-            Image(uiImage: (UIImage(data: photo ?? UIImage(named: "defaultImage")?.pngData() ?? Data()) ?? UIImage(named: "defaultImage"))!)
-                .resizable()
-                .scaledToFill()
-                .frame(width: screenWidth/1.4, height: screenWidth/1.8)
-                
-                .overlay{
-                    dateComponent
-                        .padding()
-                }
-                
-                .overlay(alignment: .bottom){
-                    Rectangle()
-                        .fill(Color.clear)
-                        .frame(height: self.screenWidth / 5)
-                        .background(
-                            ZStack {
-                                BlurView(style: .systemUltraThinMaterial)
-                            }
-                        )
-                        .overlay(alignment: .leading){
-                            VStack(alignment: .leading, spacing: -5){
-                                Text(event.name)
-                                    .fontWeight(.semibold)
-                                    .padding(.bottom, 3)
-                                Text(event.address.neighborhood)
-                                    
-                                    
-                                
-                                
-                            }
-                            .offset(y: -3)
-                            .padding([.bottom, .horizontal])
-                            .foregroundStyle(.white)
-                                
-                        }
-                            
-                    .clipped()
-                }
-                .onAppear{
-                    event.loadPhotoData { result in
-                        switch result {
-                        case .success():
-                            print("Imagem principal baixada com sucesso")
-                            // Aqui você pode atualizar a UI para mostrar a imagem, por exemplo:
-                            photo = event.photoData
-                            print(photo)
-                        case .failure(let error):
-                            print("Erro ao baixar a imagem principal: \(error)")
-                        }
-                    }
-
-                }
-                .overlay(alignment: .bottomLeading){
-                    HStack{
-                        ForEach(event.tags, id: \.self){ tag in
-                            Text("#\(tag)")
-                                .font(.footnote)
-                        }
-                    }
-                    .padding()
-                    .foregroundStyle(.white)
-                }
-            
-                .overlay(alignment: .bottomTrailing){
-                    if (event.dateDetails != nil){
-                        HStack{
-                            Image(systemName: "clock")
-                                .offset(x: 3)
-                            Text(event.formattedHour(from: event.dateDetails!.startHour))
-                        }
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.white)
-                        .padding()
-                    }
-                }
-                
-                .overlay(alignment: .topTrailing){
-                    if loggedCase == .registered {
-                        buttonGoing
-                            .padding()
-                    }
-                }
-            
+        VStack {
+            eventImage
                 .clipShape(RoundedRectangle(cornerRadius: 20))
-                
-            
         }
         .onAppear {
             if loggedCase == .registered {
@@ -145,7 +58,110 @@ struct NewEventCard: View {
             }
         }
     }
+    
+    @ViewBuilder
+    var eventImage: some View {
+        CachedAsyncImage(url: URL(string: event.photoURL!),
+                         transaction: Transaction(animation: .easeInOut)
+        ) {phase in
+            switch phase {
+            case .empty:
+                Color.blue
+                    .frame(width: screenWidth/1.4, height: screenWidth/1.8)
+            case .success(let image):
+                image
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: screenWidth/1.4, height: screenWidth/1.8)
+                    .overlay{
+                        dateComponent
+                            .padding()
+                    }
+                    
+                    .overlay(alignment: .bottom){ background }
+                    .overlay(alignment: .bottomLeading){ tags }
+                
+                    .overlay(alignment: .bottomTrailing){ dateDetails }
+                    
+                    .overlay(alignment: .topTrailing){
+                        if loggedCase == .registered {
+                            buttonGoing
+                                .padding()
+                        }
+                    }
+                
+            case .failure(let error):
+                Color.red
+                    .frame(width: screenWidth/1.4, height: screenWidth/1.8)
+            default:
+                EmptyView()
+            }
+        
+            
+        }
+        
+        // Falta Default
+    }
+    
+    @ViewBuilder
+    var background: some View {
+        Rectangle()
+            .fill(Color.clear)
+            .frame(height: self.screenWidth / 5)
+            .background(
+                ZStack {
+                    BlurView(style: .systemUltraThinMaterial)
+                }
+            )
+            .overlay(alignment: .leading){ details }
+                
+        .clipped()
+    }
+    
+    @ViewBuilder
+    var details: some View {
+        VStack(alignment: .leading, spacing: -5){
+            Text(event.name)
+                .fontWeight(.semibold)
+                .padding(.bottom, 3)
+            Text(event.address.neighborhood)
+                
+                
+            
+            
+        }
+        .offset(y: -3)
+        .padding([.bottom, .horizontal])
+        .foregroundStyle(.white)
+            
+    }
+    
+    @ViewBuilder
+    var tags: some View {
+        HStack{
+            ForEach(event.tags, id: \.self){ tag in
+                Text("#\(tag)")
+                    .font(.footnote)
+            }
+        }
+        .padding()
+        .foregroundStyle(.white)
+    }
 
+    @ViewBuilder
+    var dateDetails: some View {
+        if (event.dateDetails != nil){
+            HStack{
+                Image(systemName: "clock")
+                    .offset(x: 3)
+                Text(event.formattedHour(from: event.dateDetails!.startHour))
+            }
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundStyle(.white)
+            .padding()
+        }
+    }
     
     var dateComponent: some View {
         VStack {
@@ -155,12 +171,19 @@ struct NewEventCard: View {
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
                     VStack(spacing: 0.0) {
-                        Text("\(event.formattedDayOfWeek())")
+                        if event.dayWeek != nil {
+                            Text(event.dayWeek!.prefix(3))
+                            Text("\(event.returnDayOfWeek(day: event.dayWeek!))")
+                                .fontWeight(.semibold)
                             
-                        Text("\(event.formattedDay())")
-                            .fontWeight(.semibold)
-                        
-                    }.foregroundStyle(.black)
+                        }
+                        else{
+                            Text("\(event.formattedDayOfWeek())")
+                            Text("\(event.formattedDay())")
+                                .fontWeight(.semibold)
+                        }
+                    }
+                    .foregroundStyle(.black)
                 }
                 .frame(width: 48, height: 50)
                 Spacer()
@@ -250,5 +273,5 @@ struct NewEventCard: View {
 }
 
 #Preview {
-    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), event: MockData.eventDetails)
+    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), event: EventDetails(apiResponse: MockData.eventDetails))
 }

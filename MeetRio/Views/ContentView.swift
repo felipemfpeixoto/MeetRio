@@ -42,12 +42,12 @@ struct ContentView: View {
 
         }
         
-        .onAppear(){
+        .onAppear{
             Task{
                 await FirestoreManager.shared.getAllEvents()
             }
         }
-        
+      
         .onAppear {
                 let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
                 print("(ContentView - OnAppear) AuthUser = \(authUser?.uid)")

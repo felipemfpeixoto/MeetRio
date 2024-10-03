@@ -44,14 +44,23 @@ class FirestoreManager {
                 print("Document data: \(document.data())") // Print raw data for inspection
                 
                 do {
-                    let event = try document.data(as: EventDetails.self)
+                    let apiResponse = try document.data(as: EventDetailsApi.self)
+                    let event = EventDetails(apiResponse: apiResponse)
                     self.allEvents.append(event)
                     print("Event appended: \(event)")
                 } catch {
                     print("Failed to parse document data into EventDetails for document ID: \(document.documentID). Error: \(error)")
+                    return
                 }
             }
-
+            
+            for event in allEvents {
+                print("====== aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ======")
+                print(event.photoData)
+                let data = await event.loadPhotoData()
+                event.photoData = data
+                print("oi", event.photoData)
+            }
             
             // Cache the allEvents
             cache.setEvents(allEvents, forCategory: "allEvents")
@@ -95,7 +104,8 @@ class FirestoreManager {
             var events: [EventDetails] = []
             
             for document in querySnapshot.documents {
-                if let event = try? document.data(as: EventDetails.self) {
+                if let apiResponse = try? document.data(as: EventDetailsApi.self) {
+                    let event = EventDetails(apiResponse: apiResponse)
                     events.append(event)
                 }
             }
@@ -122,7 +132,8 @@ class FirestoreManager {
                 .getDocuments()
             var events: [EventDetails] = []
             for document in querySnapshot.documents {
-                if let event = try? document.data(as: EventDetails.self) {
+                if let apiResponse = try? document.data(as: EventDetailsApi.self) {
+                    let event = EventDetails(apiResponse: apiResponse)
                     events.append(event)
                 }
             }
@@ -165,7 +176,8 @@ class FirestoreManager {
             print("Number of events: ", events.count)
             var eventList: [EventDetails] = []
             for going in events {
-                let event = try await db.collection("Events").document(going.eventID).getDocument(as: EventDetails.self)
+                let apiResponse = try await db.collection("Events").document(going.eventID).getDocument(as: EventDetailsApi.self)
+                let event = EventDetails(apiResponse: apiResponse)
                 eventList.append(event)
             }
             // Optionally cache user-specific events

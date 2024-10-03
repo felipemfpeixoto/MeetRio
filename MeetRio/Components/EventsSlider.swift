@@ -109,8 +109,8 @@ struct EventsSlider: View {
         do {
             isLoading = true
             let fetchedEvents = try await FirestoreManager.shared.getLabeledEvents(eventCategory)
-            self.events = fetchedEvents
             isLoading = false
+            self.events = fetchedEvents
         } catch {
             print("Erro ao buscar eventos: \(error)")
             isLoading = false
