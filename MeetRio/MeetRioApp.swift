@@ -40,11 +40,6 @@ struct MeetRioApp: App {
         WindowGroup {
             NavigationStack {
                 ContentView(didStartSignUpFlow: $didStartSignUpFlow)
-//                if #available(iOS 18.0, *) {
-//                    TesteView()
-//                } else {
-//                    // Fallback on earlier versions
-//                }
             }
             .onChange(of: scenePhase) {
                 switch scenePhase {
