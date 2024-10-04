@@ -32,47 +32,29 @@ class FirestoreManager {
     
     func getAllEvents() async {
         do {
-            print("Starting getAllEvents()")
-            
             let querySnapshot = try await db.collection(collection).getDocuments()
-            print("Successfully fetched documents from Firestore. Document count: \(querySnapshot.documents.count)")
-            
             self.allEvents = []  // Clear the events array before populating
             
             for document in querySnapshot.documents {
-                print("Processing document with ID: \(document.documentID)")
-                print("Document data: \(document.data())") // Print raw data for inspection
-                
                 do {
-                    let apiResponse = try document.data(as: EventDetailsApi.self)
-                    let event = EventDetails(apiResponse: apiResponse)
-                    self.allEvents.append(event)
-                    print("Event appended: \(event)")
+                    // MARK: Tem forma melhor de fazer com certeza
+                    let id = document.documentID
+                    let apiResponse = try document.data(as: EventDetails.self)
+                    apiResponse.id = id
+                    self.allEvents.append(apiResponse)
                 } catch {
                     print("Failed to parse document data into EventDetails for document ID: \(document.documentID). Error: \(error)")
                     return
                 }
             }
             
-            for event in allEvents {
-                print("====== aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ======")
-                print(event.photoData)
-                let data = await event.loadPhotoData()
-                event.photoData = data
-                print("oi", event.photoData)
-            }
-            
             // Cache the allEvents
             cache.setEvents(allEvents, forCategory: "allEvents")
-            print("All events have been cached under the category 'allEvents'")
-            print("Total events fetched and stored: \(allEvents.count)")
-            
         } catch {
             print("Error getting documents: \(error)")
         }
     }
 
-    
     func getSpecificDayEvent(selectedDate: Date) async -> [EventDetails] {
         let calendar = Calendar.current
         
@@ -104,9 +86,9 @@ class FirestoreManager {
             var events: [EventDetails] = []
             
             for document in querySnapshot.documents {
-                if let apiResponse = try? document.data(as: EventDetailsApi.self) {
-                    let event = EventDetails(apiResponse: apiResponse)
-                    events.append(event)
+                if let apiResponse = try? document.data(as: EventDetails.self) {
+                    apiResponse.id = document.documentID
+                    events.append(apiResponse)
                 }
             }
             // Cache the events
@@ -132,9 +114,9 @@ class FirestoreManager {
                 .getDocuments()
             var events: [EventDetails] = []
             for document in querySnapshot.documents {
-                if let apiResponse = try? document.data(as: EventDetailsApi.self) {
-                    let event = EventDetails(apiResponse: apiResponse)
-                    events.append(event)
+                if let apiResponse = try? document.data(as: EventDetails.self) {
+                    apiResponse.id = document.documentID
+                    events.append(apiResponse)
                 }
             }
             // Cache the events
@@ -163,6 +145,7 @@ class FirestoreManager {
     
     func userGoingEvents(_ userId: String) async -> [EventDetails] {
         do {
+            var eventList: [EventDetails] = []
             let querySnapshot = try await db.collection("IsGoingEvent")
                 .whereField("userID", isEqualTo: userId)
                 .getDocuments()
@@ -171,14 +154,10 @@ class FirestoreManager {
             for document in querySnapshot.documents {
                 if let event = try? document.data(as: GoingEvent.self) {
                     events.append(event)
+                    let goingEvent = try await db.collection("Events").document(event.eventID).getDocument(as: EventDetails.self)
+                    goingEvent.id = document.documentID
+                    eventList.append(goingEvent)
                 }
-            }
-            print("Number of events: ", events.count)
-            var eventList: [EventDetails] = []
-            for going in events {
-                let apiResponse = try await db.collection("Events").document(going.eventID).getDocument(as: EventDetailsApi.self)
-                let event = EventDetails(apiResponse: apiResponse)
-                eventList.append(event)
             }
             // Optionally cache user-specific events
             return eventList

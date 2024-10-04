@@ -34,12 +34,12 @@ struct MeetRioApp: App {
     
     // Variáveis para teste de tradução
     @State var showsTranslation: Bool = false
-    let text: String = "Sol bonito"
 
     var body: some Scene {
         WindowGroup {
             NavigationStack {
                 ContentView(didStartSignUpFlow: $didStartSignUpFlow)
+//                TesteView()
             }
             .onChange(of: scenePhase) {
                 switch scenePhase {

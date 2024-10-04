@@ -13,6 +13,8 @@ class EventCache {
     private let cache = NSCache<NSString, NSArray>()
     private var cacheKeys: Set<String> = [] // Para armazenar as chaves de todas as categorias armazenadas
     
+    private var lastConsulta: Date?
+    
     private init() {
         // Optional: Set cache limits if necessary
         // cache.countLimit = 100 // Max number of categories stored

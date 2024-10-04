@@ -93,7 +93,7 @@ struct HomeView: View{
     var header: some View {
         VStack {
             ZStack {
-                Image("homeImage")
+                Image("imgFundoTop")
                     .resizable()
                     .scaledToFill()
                     .frame(width: screenWidth, height: screenHeight / 5)

@@ -20,6 +20,8 @@ struct EventPageContent: View {
     @Binding var going: Bool
     @Binding var calendarBool: Bool
     
+    @Binding var translatedTexts: [String?]
+    
     var body: some View {
         VStack {
             header
@@ -42,9 +44,6 @@ struct EventPageContent: View {
             HStack {
                 dateComponent
                 Spacer()
-                if loggedCase == .registered {
-                    buttonGoing
-                }
             }
             
             Text(event.name)
@@ -69,19 +68,21 @@ struct EventPageContent: View {
         VStack(alignment: .leading) {
             Text("About")
                 .font(.title2.bold())
-            Text(event.description)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            Text(translatedTexts[0] ?? event.description) // Essa fonte ta meio bosta
+                .font(.system(size: 18))
         }
         .foregroundStyle(.white)
-        .frame(width: UIScreen.main.bounds.width * 0.95, height: UIScreen.main.bounds.height / 8)
         .multilineTextAlignment(.leading)
+        .padding(.horizontal)
+        .padding(.bottom)
     }
 
     var background: some View {
         ZStack {
-            Image(uiImage: UIImage(data: (event.photoData ?? UIImage(named: "defaultImage")!.pngData())!)!)
-                .resizable()
-                .scaledToFill()
+//            Image(uiImage: UIImage(data: (event.photoData ?? UIImage(named: "defaultImage")!.pngData())!)!)
+//                .resizable()
+//                .scaledToFill()
+            Color.oceanBlue
         }
         .frame(height: UIScreen.main.bounds.height)
     }
@@ -252,7 +253,71 @@ struct EventPageContent: View {
         }
         .frame(height: 35)
     }
+}
 
+@available(iOS 18.0, *)
+struct NewEventPageViewIOS18: View {
+
+    @Environment(\.dismiss) var dismiss
+    @Binding var loggedCase: LoginCase
+    let event: EventDetails
+    @State var going: Bool = false
+    @State var calendarBool: Bool = false
+    @State var translationManager: TranslationManager = TranslationManager()
+    @State var changeSheet: Bool = true // Controla a exibição da sheet do evento
+    @State var showTranslationSheet: Bool = false // Controla a exibição da sheet de tradução
+    
+    @State var isNotDismissable = true
+
+    var body: some View {
+        EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool, translatedTexts: $translationManager.translatedTexts)
+            .navigationBarBackButtonHidden(true)
+            .navigationBarItems(leading:
+                                    Button(action: {
+                                        print("Clicou no botão de voltar")
+                                        saiDaView()
+                                    }, label: {
+                                        HStack {
+                                            Image(systemName: "chevron.left")
+                                                .font(.system(size: 18))
+                                            Text("Back")
+                                                .font(.system(size: 18))
+                                        }
+                                        .foregroundStyle(.white)
+                                        .fontWeight(.semibold)
+                                    }))
+            .overlay(alignment: .topTrailing) {
+                VStack {
+                    if loggedCase == .registered {
+                        buttonGoing
+                    }
+                    translationButton
+                }.padding()
+            }
+            .sheet(isPresented: $changeSheet) { // Apresenta a sheet do evento quando changeSheet for true
+                EventPageDetaislViewIOS18(event: event, translationManager: translationManager)
+                    .presentationDetents([.fraction(0.32), .large])
+                    .presentationCornerRadius(20)
+                    .interactiveDismissDisabled(isNotDismissable)
+                    .presentationBackgroundInteraction(.enabled)
+                    .background(EmptyView())
+            }
+            .onAppear {
+                if loggedCase == .registered {
+                    Task {
+                        going = try await FirestoreManager.shared.imGoing(UserManager.shared.hospede!.id!, eventID: event.id!)
+                    }
+                }
+                PostHogSDK.shared.capture("ViuDetalhesEvento")
+                translationManager.translatedTexts[0] = event.description
+            }
+            .translationTask(translationManager.configuration) { session in
+                // Use the session the task provides to translate the text.
+                await translationManager.translateAllAtOnce(using: session, isShowing: $changeSheet)
+            }
+            
+    }
+    
     var buttonGoing: some View {
         Button(action: {
             if !going {
@@ -280,68 +345,8 @@ struct EventPageContent: View {
                 )
         })
     }
-}
-
-@available(iOS 18.0, *)
-struct NewEventPageViewIOS18: View {
-
-    @Environment(\.dismiss) var dismiss
-    @Binding var loggedCase: LoginCase
-    let event: EventDetails
-    @State var going: Bool = false
-    @State var calendarBool: Bool = false
-    @State var translationManager: TranslationManager = TranslationManager()
-    @State var changeSheet: Bool = true // Controla a exibição da sheet do evento
-    @State var showTranslationSheet: Bool = false // Controla a exibição da sheet de tradução
     
-    @State var isNotDismissable = true
-
-    var body: some View {
-        EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool)
-            .navigationBarTitle(event.name, displayMode: .inline)
-            .navigationBarBackButtonHidden(true)
-            .navigationBarItems(leading:
-                                    Button(action: {
-                                        print("Clicou no botão de voltar")
-                                        saiDaView()
-                                    }, label: {
-                                        HStack {
-                                            Image(systemName: "chevron.left")
-                                                .font(.system(size: 18))
-                                            Text("Back")
-                                                .font(.system(size: 18))
-                                        }
-                                        .foregroundStyle(.white)
-                                        .fontWeight(.semibold)
-                                    }))
-            .overlay(alignment: .topTrailing) {
-                translationButton
-                    .padding()
-            }
-            .sheet(isPresented: $changeSheet) { // Apresenta a sheet do evento quando changeSheet for true
-                EventPageDetaislViewIOS18(event: event, translationManager: translationManager)
-                    .presentationDetents([.fraction(0.32), .large])
-                    .presentationCornerRadius(20)
-                    .interactiveDismissDisabled(isNotDismissable)
-                    .presentationBackgroundInteraction(.enabled)
-                    .background(EmptyView())
-            }
-            .onAppear {
-                if loggedCase == .registered {
-                    Task {
-                        going = try await FirestoreManager.shared.imGoing(UserManager.shared.hospede!.id!, eventID: event.id!)
-                    }
-                }
-                PostHogSDK.shared.capture("ViuDetalhesEvento")
-                translationManager.translatedTexts[0] = event.description
-            }
-            .translationTask(translationManager.configuration) { session in
-                // Use the session the task provides to translate the text.
-                await translationManager.translateAllAtOnce(using: session, isShowing: $changeSheet)
-            }
-            
-    }
-
+//    @available(iOS 18, *) -> Forma para parar de repetir código a toa
     var translationButton: some View {
         Button {
             Task {
@@ -375,8 +380,6 @@ struct NewEventPageViewIOS18: View {
     }
 }
 
-
-
 struct NewEventPageView: View {
 
     @Environment(\.dismiss) var dismiss
@@ -386,7 +389,7 @@ struct NewEventPageView: View {
     @State var calendarBool: Bool = false
 
     var body: some View {
-        EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool)
+        EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool, translatedTexts: .constant([nil, nil]))
         .sheet(isPresented: .constant(true)) {
             EventPageDetaislView(event: event)
                 .presentationDetents([.fraction(0.32), .large])
@@ -394,6 +397,13 @@ struct NewEventPageView: View {
                 .interactiveDismissDisabled(true)
                 .presentationBackgroundInteraction(.enabled)
                 .background(EmptyView())
+        }
+        .overlay(alignment: .topTrailing) {
+            VStack {
+                if loggedCase == .registered {
+                    buttonGoing
+                }
+            }.padding()
         }
         .onAppear {
             if loggedCase == .registered {
@@ -404,24 +414,32 @@ struct NewEventPageView: View {
             PostHogSDK.shared.capture("ViuDetalhesEvento")
         }
     }
-}
-
-
-#Preview{
-    if #available(iOS 18.0, *) {
-        NewEventPageViewIOS18(
-            loggedCase: .constant(.anonymous),
-            event: EventDetails(apiResponse: MockData.eventDetails),
-            going: false,
-            calendarBool: false
-        )
+    
+    var buttonGoing: some View {
+        Button(action: {
+            if !going {
+                Task {
+                    let userID = UserManager.shared.hospede!.id
+                    try await FirestoreManager.shared.createGoingEvent(userID!, event.id!)
+                    going = true
+                    PostHogSDK.shared.capture("MarcouPresenca")
+                }
+            } else {
+                Task {
+                    let userID = UserManager.shared.hospede!.id
+                    try await FirestoreManager.shared.deleteGoingEvent(userID!, event.id!)
+                    going = false
+                }
+            }
+        }, label: {
+            Image(systemName: going ? "checkmark.seal.fill" : "checkmark.seal")
+                .foregroundStyle(going ? .green : .black)
+                .font(.title3)
+                .padding(7)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .foregroundStyle(.white)
+                )
+        })
     }
-    // ou
-    /*NewEventPageView(
-     loggedCase: .constant(.anonymous),
-     event: MockData.eventDetails,
-     going: false,
-     calendarBool: false
-     )*/
 }
-

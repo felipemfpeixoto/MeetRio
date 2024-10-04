@@ -29,34 +29,20 @@ struct ContentView: View {
         ZStack {
             TabViewContainer(isAuthenticated: $showingSignInView, loggedCase: $loggedCase, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
             launchSreen
-//            Button {
-//                Task {
-//                    try await botaTudo()
-//                }
-//            } label: {
-//                RoundedRectangle(cornerRadius: 15)
-//                    .foregroundStyle(.blue)
-//                Text("Bota")
-//            }
-//            .frame(height: 55)
-
         }
-        
-        .onAppear{
-            Task{
-                await FirestoreManager.shared.getAllEvents()
+        .onChange(of: loggedCase) {
+            if loggedCase != .none {
+                Task {
+                    await FirestoreManager.shared.getAllEvents()
+                }
             }
         }
-      
         .onAppear {
                 let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
-                print("(ContentView - OnAppear) AuthUser = \(authUser?.uid)")
                 self.showingSignInView = authUser == nil
                 if !showingSignInView {
                     Task {
                         try await UserManager.shared.getUser(userID: authUser?.uid ?? "")
-                        print(authUser?.uid)
-                        print("(ContentView - OnAppear) Peguei o user")
                         
                         let authUser2 = vm.loadAuthUser()
                         if authUser2?.isAnonymous == false{
@@ -100,7 +86,6 @@ struct ContentView: View {
         // Bloco responsável por carregar os eventos após o usuário fazer login
         .onChange(of: showingSignInView) {
             if !showingSignInView {
-                print("Mudou willLoad no onchange da showSignInView")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     willLoad.toggle()
                 }
@@ -125,7 +110,6 @@ struct ContentView: View {
                 }
             }
         }
-//        .opacity(isLoading ? 1 : 0)
         .offset(x: isLoading ? 0 : -UIScreen.main.bounds.width)
         .onAppear {
             withAnimation(Animation.bouncy(duration: 0.75)) {
@@ -133,13 +117,6 @@ struct ContentView: View {
             }
         }
     }
-    
-//    func botaTudo() async throws {
-//        for event in eventsBD {
-//            try FirestoreManager.shared.db.collection("Events").addDocument(from: event)
-//            print("Botou \(event.name)")
-//        }
-//    }
 }
 
 //#Preview {

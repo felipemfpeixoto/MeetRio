@@ -45,11 +45,12 @@ struct NewEventCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 20))
         }
         .onAppear {
+            print(event.name)
             if loggedCase == .registered {
                 Task {
                     guard let userID = UserManager.shared.hospede?.id else { return }
                     do {
-                        let going = try await FirestoreManager.shared.imGoing(userID, eventID: event.id!)
+                        let going = try await FirestoreManager.shared.imGoing(userID, eventID: event.id!) // Ta dando erro ao entrar logado
                         self.going = going
                     } catch {
                         print("Erro ao tentar marcar o evento como 'indo': \(error.localizedDescription)")
@@ -61,43 +62,45 @@ struct NewEventCard: View {
     
     @ViewBuilder
     var eventImage: some View {
-        CachedAsyncImage(url: URL(string: event.photoURL!),
-                         transaction: Transaction(animation: .easeInOut)
-        ) {phase in
+        CachedAsyncImage(url: URL(string: event.photoURL!), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
             switch phase {
-            case .empty:
-                Color.blue
-                    .frame(width: screenWidth/1.4, height: screenWidth/1.8)
             case .success(let image):
                 image
                     .resizable()
                     .scaledToFill()
-                    .frame(width: screenWidth/1.4, height: screenWidth/1.8)
-                    .overlay{
-                        dateComponent
-                            .padding()
-                    }
-                    
-                    .overlay(alignment: .bottom){ background }
-                    .overlay(alignment: .bottomLeading){ tags }
-                
-                    .overlay(alignment: .bottomTrailing){ dateDetails }
-                    
-                    .overlay(alignment: .topTrailing){
-                        if loggedCase == .registered {
-                            buttonGoing
-                                .padding()
-                        }
-                    }
-                
             case .failure(let error):
-                Color.red
-                    .frame(width: screenWidth/1.4, height: screenWidth/1.8)
+                Image("defaultImageCard")
+                    .resizable()
+                    .scaledToFill()
             default:
-                EmptyView()
+                ZStack {
+                    Image("defaultImageCard")
+                        .resizable()
+                        .scaledToFill()
+                    Color.black.opacity(0.5)
+                    ProgressView()
+                        .tint(.white)
+                        .scaleEffect(1.3)
+                        .padding(.bottom)
+                }
             }
+        }
+        .frame(width: screenWidth/1.4, height: screenWidth/1.8)
+        .overlay{
+            dateComponent
+                .padding()
+        }
         
-            
+        .overlay(alignment: .bottom){ background }
+        .overlay(alignment: .bottomLeading){ tags }
+    
+        .overlay(alignment: .bottomTrailing){ dateDetails }
+        
+        .overlay(alignment: .topTrailing){
+            if loggedCase == .registered {
+                buttonGoing
+                    .padding()
+            }
         }
         
         // Falta Default
@@ -272,6 +275,6 @@ struct NewEventCard: View {
     }
 }
 
-#Preview {
-    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), event: EventDetails(apiResponse: MockData.eventDetails))
-}
+//#Preview {
+//    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), event: EventDetails(apiResponse: MockData.eventDetails))
+//}

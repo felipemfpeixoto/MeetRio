@@ -322,13 +322,13 @@ struct TipsView: View {
     }
 }
 
-#Preview{
-    
-    if #available(iOS 18.0, *) {
-        EventPageDetaislViewIOS18(
-            event: EventDetails(apiResponse: MockData.eventDetails), translationManager: TranslationManager()
-        )
-    }
-    // ou
-    //EventPageDetaislView(event: MockData.eventDetails)
-}
+//#Preview{
+//    
+//    if #available(iOS 18.0, *) {
+//        EventPageDetaislViewIOS18(
+//            event: EventDetails(apiResponse: MockData.eventDetails), translationManager: TranslationManager()
+//        )
+//    }
+//    // ou
+//    //EventPageDetaislView(event: MockData.eventDetails)
+//}
