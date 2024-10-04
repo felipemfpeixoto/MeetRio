@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import CoreLocation
 import PostHog
+import CachedAsyncImage
 
 struct EventPageDetaislView: View {
     let screenWidth = UIScreen.main.bounds.width
@@ -43,8 +44,10 @@ struct EventPageDetaislView: View {
                     PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
                         .padding()
                     
-                    OtherPhotos(photos: event.otherPictureData ?? [])
-                        .padding()
+                    if event.otherPictureURLs != nil{
+                        OtherPhotos(photos: event.otherPictureURLs!)
+                            .padding()
+                    }
                     
                     LocationView(event: event)
                         .padding()
@@ -86,36 +89,7 @@ struct EventPageDetaislViewIOS18: View {
         ZStack{
             Color("BackgroundWhite")
                 .ignoresSafeArea()
-            ScrollView {
-                VStack(spacing: 15) {
-                    
-                    HStack{
-                        if let buyURL = event.buyURL {
-                            BuyButtonView(buyURL: buyURL)
-                        }
-                        
-                        // Compartilhar evento
-                        shareEvent()
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 30)
-                    
-                    PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
-                        .padding()
-                    
-                    OtherPhotos(photos: event.otherPictureData ?? [])
-                    
-                    
-                    LocationView(event: event)
-                        .padding()
-                    
-                    TipsView(tips: event.tips)
-                        .padding()
-                }
-                .onAppear {
-                    loadPeopleGoingAndTranslateTips()
-                }
-            }
+            scrollView
         }
     }
     
@@ -127,6 +101,48 @@ struct EventPageDetaislViewIOS18: View {
             // MARK: EU APENAS COMENTEI PQ AS TIPS AGORA SÃO BULLETS
             translationManager.translatedTexts[1] = event.tips.first
         }
+    }
+    
+    @ViewBuilder
+    var scrollView: some View{
+        ScrollView {
+            VStack(spacing: 15) {
+                
+                HStack{
+                    if let buyURL = event.buyURL {
+                        BuyButtonView(buyURL: buyURL)
+                    }
+                    
+                    // Compartilhar evento
+                    shareEvent()
+                }
+                .padding(.horizontal)
+                .padding(.top, 30)
+                
+                content
+                
+            }
+            .onAppear {
+                loadPeopleGoingAndTranslateTips()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var content: some View{
+        PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
+            .padding()
+        
+        if event.otherPictureURLs != nil{
+            OtherPhotos(photos: event.otherPictureURLs!)
+                .padding()
+        }
+        
+        LocationView(event: event)
+            .padding()
+        
+        TipsView(tips: event.tips)
+            .padding()
     }
 }
 
@@ -161,24 +177,49 @@ struct PeopleGoingView: View {
 
 
 struct OtherPhotos: View {
-    let photos: [Data]
+    let photos: [String]
 
     var body: some View {
         let screenWidth = UIScreen.main.bounds.width
-        
+    
         VStack {
             TabView {
                 ForEach(0..<photos.count, id: \.self) { index in
-                    if let uiImage = UIImage(data: photos[index]) {
-                        ZStack {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
+                    ZStack {
+                        CachedAsyncImage(url: URL(string: photos[index]), transaction: Transaction(animation: .easeInOut.speed(1.5))){ phase in
+                            
+                            switch phase{
+                            case .empty:
+                                ZStack{
+                                    Color.gray
+                                        .opacity(0.2)
+                                    ProgressView()
+                                }
                                 .frame(width: screenWidth * 0.9, height: 210)
                                 .cornerRadius(20)
                                 .shadow(radius: 5)
                                 .padding(.horizontal, 10)
-
+                                
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: screenWidth * 0.9, height: 210)
+                                    .cornerRadius(20)
+                                    .shadow(radius: 5)
+                                    .padding(.horizontal, 10)
+                                
+                            case .failure(let error):
+                                EmptyView()
+                                    .onAppear(){
+                                        print(error)
+                                    }
+                            default:
+                                EmptyView()
+                                
+                            }
+                            
+                            
                             VStack {
                                 Spacer()
                                 HStack(spacing: 8) {
@@ -190,9 +231,16 @@ struct OtherPhotos: View {
                                 }
                                 .padding(.bottom, 40)
                             }
+                            
                         }
                     }
+                    
+                    
+                    
                 }
+                
+
+                
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .frame(height: 230)
@@ -253,11 +301,11 @@ struct LocationView: View {
                 .font(Font.custom("Bricolage Grotesque", size: 23).bold())
                 .padding(.bottom, 5)
             
-            Text(event.address.details ?? event.name)
+            Text(event.name)
                 .foregroundStyle(Color("DarkGreen"))
                 .fontWeight(.bold)
             
-            Text("\(event.address.street), \(event.address.number)")
+            Text("\(event.address.street), \(event.address.number) - \(event.address.neighborhood)")
                 .fontWeight(.regular)
                 .padding(.bottom, 10)
             
@@ -277,8 +325,6 @@ struct TipsView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            
-            
             
             Text("Tips")
                 .font(Font.custom("Bricolage Grotesque", size: 23).bold())
@@ -324,11 +370,11 @@ struct TipsView: View {
 
 //#Preview{
 //    
-//    if #available(iOS 18.0, *) {
-//        EventPageDetaislViewIOS18(
-//            event: EventDetails(apiResponse: MockData.eventDetails), translationManager: TranslationManager()
-//        )
-//    }
+////    if #available(iOS 18.0, *) {
+////        EventPageDetaislViewIOS18(
+////            event: EventDetails(apiResponse: MockData.eventDetails), translationManager: TranslationManager()
+////        )
+////    }
 //    // ou
 //    //EventPageDetaislView(event: MockData.eventDetails)
 //}

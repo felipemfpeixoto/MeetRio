@@ -73,7 +73,6 @@ struct EventPageContent: View {
         }
         .foregroundStyle(.white)
         .multilineTextAlignment(.leading)
-        .padding(.horizontal)
         .padding(.bottom)
     }
 
