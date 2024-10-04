@@ -358,13 +358,27 @@ struct TipsView: View {
     
     // Função para retornar o ícone apropriado para cada dica
     private func iconForTip(tip: String) -> String {
-        if tip.contains("noite") || tip.contains("dormir") {
-            return "moon.fill"
-        } else if tip.contains("comida") || tip.contains("Drinks") {
-            return "wineglass.fill"
-        } else {
+        switch tip {
+        case _ where tip.contains("Space"):
+            return "door.french.open"
+        case _ where tip.contains("Paid"):
+            return "brazilianrealsign"
+        case _ where tip.contains("Free"):
+            return "brazilianrealsign"
+        case _ where tip.contains("Music"):
+            return "music.mic.circle"
+        case _ where tip.contains("Foods"):
+            return "fork.knife"
+        case _ where tip.contains("Accessible"):
+            return "accessibility"
+        case _ where tip.contains("Id"):
+            return "person.text.rectangle"
+        case _ where tip.contains("Standing"):
+            return "figure.walk"
+        default:
             return "chair.fill"
         }
+    
     }
 }
 
