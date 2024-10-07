@@ -34,7 +34,7 @@ final class TranslationManager {
                     // Update each item with the translated result.
                     $0.targetText
                 }
-                print("Traduziu: \(translatedTexts[0])")
+                print("Traduziu: \(String(describing: translatedTexts[0]))")
             } catch {
                 // Handle any errors.
                 print("Deu merda aqui: \(error)")

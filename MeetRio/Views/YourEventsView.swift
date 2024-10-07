@@ -61,7 +61,7 @@ struct YourEventsView: View{
             .onChange(of: needsAtt){
                 //MARK: Código meio zoado
                 Task {
-                    yourEvents = try await FirestoreManager.shared.userGoingEvents(UserManager.shared.hospede?.id ?? "")
+                    yourEvents = await FirestoreManager.shared.userGoingEvents(UserManager.shared.hospede?.id ?? "")
                 }
                 needsAtt.toggle()
             }
@@ -130,7 +130,7 @@ struct YourEventsView: View{
         .refreshable {
             Task {
                 isLoading = true
-                yourEvents = try await FirestoreManager.shared.userGoingEvents(UserManager.shared.hospede?.id ?? "")
+                yourEvents = await FirestoreManager.shared.userGoingEvents(UserManager.shared.hospede?.id ?? "")
                 isLoading = false
             }
         }

@@ -92,7 +92,7 @@ struct EventCard: View {
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
                     VStack(spacing: -5) {
-                        Text("\(event.dateDetails)")
+                        Text("\(String(describing: event.dateDetails))")
                             .font(Font.custom("Nunito", size: 20).weight(.semibold))
                             .foregroundStyle(.black)
 //                        Text("\(calendar.component(.day, from: event.dateDetails.startDate))")

@@ -20,7 +20,7 @@ final class UserManager {
             try FirestoreManager.shared.db.collection("Hospedes").document(userID).setData(from: hospede)
             self.hospede = hospede
             self.hospede?.id = userID
-            print("Deu tudo certo: \(self.hospede)")
+            print("Deu tudo certo: \(String(describing: self.hospede))")
         } catch {
             print("Deu merda ao criar o usuário: ", error)
         }

@@ -10,7 +10,7 @@ import SwiftUI
 import MapKit
 import PostHog
 import Translation
-
+import CachedAsyncImage
 
 // Componente para o layout comum entre as duas versões
 struct EventPageContent: View {
@@ -68,20 +68,32 @@ struct EventPageContent: View {
         VStack(alignment: .leading) {
             Text("About")
                 .font(.title2.bold())
-            Text(translatedTexts[0] ?? event.description) // Essa fonte ta meio bosta
-                .font(.system(size: 18))
+            Text(translatedTexts[0] ?? event.description)
+                .font(.system(size: 16))
         }
         .foregroundStyle(.white)
         .multilineTextAlignment(.leading)
-        .padding(.bottom)
+        .padding(.bottom, 42)
     }
 
     var background: some View {
         ZStack {
-//            Image(uiImage: UIImage(data: (event.photoData ?? UIImage(named: "defaultImage")!.pngData())!)!)
-//                .resizable()
-//                .scaledToFill()
-            Color.oceanBlue
+            CachedAsyncImage(url: URL(string: event.photoURL!), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
+                switch phase {
+                case .success(let image):
+                    ZStack{
+                        image
+                            .resizable()
+                            .scaledToFill()
+                        Color.black.opacity(0.35)
+                    }
+                    
+                case .failure(let error):
+                    Color.oceanBlue
+                default:
+                    Color.oceanBlue
+                }
+            }
         }
         .frame(height: UIScreen.main.bounds.height)
     }
@@ -113,14 +125,12 @@ struct EventPageContent: View {
                     country: "Brazil",
                     isoCountryCode: "BR"
                 )
-                
-                myEvent.reciveAndDonateInteraction(eventData: myEvent)
             }
             else{
                 myEvent = CalendarEvent(
                     name: event.name,
-                    startDate: event.mergeData(date: Date(), withHour: "16:00"),
-                    endDate: event.mergeData(date: Date(), withHour: "23:43"),
+                    startDate: Calendar.current.startOfDay(for: EventDetails.returnDayOfWeekDate(day: event.dayWeek!) ?? Date()),
+                    endDate: Calendar.current.startOfDay(for: EventDetails.returnDayOfWeekDate(day: event.dayWeek!) ?? Date()).addingTimeInterval(60 * 60 * 23.99),
                     locationName: event.name,
                     latitude: event.address.location.latitude,
                     longitude: event.address.location.longitude,
@@ -130,11 +140,9 @@ struct EventPageContent: View {
                     country: "Brazil",
                     isoCountryCode: "BR"
                 )
-                
-                myEvent.reciveAndDonateInteraction(eventData: myEvent)
             }
             
-            
+            myEvent.reciveAndDonateInteraction(eventData: myEvent)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
                 calendarBool = false
@@ -233,7 +241,7 @@ struct EventPageContent: View {
                     VStack(spacing: 0.0) {
                         if event.dayWeek != nil {
                             Text(event.dayWeek!.prefix(3))
-                            Text("\(event.returnDayOfWeek(day: event.dayWeek!))")
+                            Text("\(EventDetails.returnDayOfWeek(day: event.dayWeek!))")
                                 .fontWeight(.semibold)
                             
                         }

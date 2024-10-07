@@ -9,7 +9,7 @@ import Foundation
 import FirebaseFirestore
 
 @Observable
-class EventDetails: Identifiable, Codable {
+class EventDetails: Identifiable, Codable, Comparable {
     // Propriedades
     var id: String?
     var name: String
@@ -78,7 +78,7 @@ class EventDetails: Identifiable, Codable {
         return dateFormatter.string(from: dateDetails?.startDateTime ?? Date())
     }
 
-    func returnDayOfWeek(day: String) -> Int {
+    static func returnDayOfWeek(day: String) -> Int {
         let daysOfWeek: [String: Int] = [
             "Sunday": 1,
             "Monday": 2,
@@ -99,12 +99,45 @@ class EventDetails: Identifiable, Codable {
         
         let currentWeekday = calendar.component(.weekday, from: today)
         
+        // Calcula quantos dias faltam até o próximo evento
         let daysUntilNext = (targetWeekday - currentWeekday + 7) % 7
         
-        let nextDate = calendar.date(byAdding: .day, value: daysUntilNext == 0 ? 7 : daysUntilNext, to: today)!
+        // Se daysUntilNext for 0, o evento é hoje, então retorna o dia de hoje
+        let nextDate = calendar.date(byAdding: .day, value: daysUntilNext, to: today)!
         
         return calendar.component(.day, from: nextDate)
     }
+
+    static func returnDayOfWeekDate(day: String) -> Date? {
+        let daysOfWeek: [String: Int] = [
+            "Sunday": 1,
+            "Monday": 2,
+            "Tuesday": 3,
+            "Wednesday": 4,
+            "Thursday": 5,
+            "Friday": 6,
+            "Saturday": 7
+        ]
+        
+        guard let targetWeekday = daysOfWeek[day.capitalized] else {
+            print("Invalid day provided.")
+            return nil
+        }
+        
+        let calendar = Calendar.current
+        let today = Date()
+        
+        let currentWeekday = calendar.component(.weekday, from: today)
+        
+        // Calcula quantos dias faltam até o próximo evento
+        let daysUntilNext = (targetWeekday - currentWeekday + 7) % 7
+        
+        // Se daysUntilNext for 0, o evento é hoje, então retorna a data de hoje
+        let nextDate = calendar.date(byAdding: .day, value: daysUntilNext, to: today)!
+        
+        return nextDate
+    }
+
 
     func formattedHour(from hourString: String) -> String {
         // Tenta dividir a string no formato "HH:mm" para obter a hora
@@ -161,7 +194,29 @@ class EventDetails: Identifiable, Codable {
         let response = try? await URLSession.shared.data(from: url)
         return response?.0
     }
+    
+    //MARK: Protocolo comparable
+    static func < (ant: EventDetails, prox: EventDetails) -> Bool {
+    
+        
+        if ant.dateDetails != nil{
+           let antDate = ant.dateDetails?.startDate ?? ""
+           let proxDate = prox.dateDetails?.startDate ?? ""
+            return antDate < proxDate
+        }
+        
+        let antDate = returnDayOfWeek(day: ant.dayWeek ?? "")
+        let proxDate = returnDayOfWeek(day: prox.dayWeek ?? "")
+        return antDate < proxDate
+        
+    }
+    
+    static func == (lhs: EventDetails, rhs: EventDetails) -> Bool {
+            return lhs.id == rhs.id
+        }
 }
+
+
 
 typealias AllEvents = [EventDetails]
 extension AllEvents {

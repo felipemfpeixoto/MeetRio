@@ -68,7 +68,7 @@ struct LateralCard: View {
                 primaryButton: .destructive(Text("Yes"), action: {
                     // Ação a ser executada quando o usuário confirma a exclusão
                     Task{
-                        try await FirestoreManager.shared.deleteGoingEvent((UserManager.shared.hospede?.id!)!, event.id!)
+                        await FirestoreManager.shared.deleteGoingEvent((UserManager.shared.hospede?.id!)!, event.id!)
                     }
                     
                     // Quero atualizar a view forcadamente
