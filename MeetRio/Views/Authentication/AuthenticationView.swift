@@ -312,9 +312,9 @@ struct AuthenticationView: View {
                 self.userID = try await vm.googleSignIn() // Chama a função de login com Google no ViewModel
                 print("userID: ", userID)
                 let hospede = try? await FirestoreManager.shared.db.collection("Hospedes").document(userID!).getDocument(as: Hospede.self)
-                print(hospede)
+                //print(hospede)
                 
-                if let hospede {
+                if hospede != nil {
                     isShowing = false
                     PostHogSDK.shared.capture("LoginGoogle") // Captura o evento de login com Google
                     postLoginSuccess()
@@ -338,7 +338,7 @@ struct AuthenticationView: View {
                 isLoading = true
                 self.userID = try await vm.signInWithApple() // Chama a função de login com Apple no ViewModel
                 let hospede = try? await FirestoreManager.shared.db.collection("Hospedes").document(userID!).getDocument(as: Hospede.self)
-                if let hospede {
+                if hospede != nil {
                     isShowing = false
                     PostHogSDK.shared.capture("LoginApple") // Captura o evento de login com Apple
                     postLoginSuccess()
@@ -366,7 +366,7 @@ struct AuthenticationView: View {
                 let userDetails: () = try await UserManager.shared.getUser(userID: authUser.uid)
                 
                 // Carrega as informações do usuário autenticado (substitua vm2 por seu ViewModel correto se necessário)
-                guard let authUser2 = try? vm2.loadAuthUser() else {
+                guard let authUser2 = vm2.loadAuthUser() else {
                     loggedCase = .none
                     print("Falha ao carregar informações do usuário do ViewModel.")
                     return

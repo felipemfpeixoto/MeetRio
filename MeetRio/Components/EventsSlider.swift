@@ -62,7 +62,9 @@ struct EventsSlider: View {
     var eventsSliderView: some View {
         ScrollView(.horizontal, showsIndicators: false){
             HStack{
-                ForEach(searchResults) { event in
+                let sortedEvents = searchResults.sorted(by: <)
+                
+                ForEach(sortedEvents) { event in
                     if #available(iOS 18, *) {
                         NavigationLink(destination: NewEventPageViewIOS18(loggedCase: $loggedCase, event: event)) {
                             NewEventCard(selectedFavorite: $selectedFavorite, loggedCase: $loggedCase, clicouGoing: $clicouGoing, event: event)
@@ -108,7 +110,7 @@ struct EventsSlider: View {
         
         do {
             isLoading = true
-            let fetchedEvents = try await FirestoreManager.shared.getLabeledEvents(eventCategory)
+            let fetchedEvents = await FirestoreManager.shared.getLabeledEvents(eventCategory)
             isLoading = false
             self.events = fetchedEvents
         } catch {

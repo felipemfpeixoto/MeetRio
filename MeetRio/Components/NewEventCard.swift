@@ -68,7 +68,7 @@ struct NewEventCard: View {
                 image
                     .resizable()
                     .scaledToFill()
-            case .failure(let error):
+            case .failure(_):
                 Image("defaultImageCard")
                     .resizable()
                     .scaledToFill()
@@ -176,7 +176,7 @@ struct NewEventCard: View {
                     VStack(spacing: 0.0) {
                         if event.dayWeek != nil {
                             Text(event.dayWeek!.prefix(3))
-                            Text("\(event.returnDayOfWeek(day: event.dayWeek!))")
+                            Text("\(EventDetails.returnDayOfWeek(day: event.dayWeek!))")
                                 .fontWeight(.semibold)
                             
                         }
@@ -239,7 +239,7 @@ struct NewEventCard: View {
     func marcarPresenca(userID: String, eventID: String) {
         Task {
             do {
-                try await FirestoreManager.shared.createGoingEvent(userID, eventID)
+                await FirestoreManager.shared.createGoingEvent(userID, eventID)
                 going = true
                 selectedFavorite = event
                 PostHogSDK.shared.capture("MarcouPresenca")
@@ -255,7 +255,7 @@ struct NewEventCard: View {
     func desmarcarPresenca(userID: String, eventID: String) {
         Task {
             do {
-                try await FirestoreManager.shared.deleteGoingEvent(userID, eventID)
+                await FirestoreManager.shared.deleteGoingEvent(userID, eventID)
                 going = false
                 selectedFavorite = nil
             } catch {
