@@ -23,6 +23,8 @@ struct EventPageDetaislView: View {
     
     @State var isLoading = false
     
+    @Binding var isPresented: Bool
+    
     var body: some View {
         ZStack {
             Color("BackgroundWhite")
@@ -36,7 +38,7 @@ struct EventPageDetaislView: View {
                         }
                         
                         // Compartilhar evento
-                        shareEvent()
+                        shareEvent(isPresented: $isPresented)
                     }
                     .padding(.horizontal)
                     .padding(.top, 30)
@@ -85,6 +87,8 @@ struct EventPageDetaislViewIOS18: View {
     @State var isLoading = false
     let translationManager: TranslationManager
     
+    @Binding var changeSheet: Bool
+    
     var body: some View {
         ZStack{
             Color("BackgroundWhite")
@@ -114,7 +118,7 @@ struct EventPageDetaislViewIOS18: View {
                     }
                     
                     // Compartilhar evento
-                    shareEvent()
+                    shareEvent(isPresented: $changeSheet)
                 }
                 .padding(.horizontal)
                 .padding(.top, 30)
@@ -249,11 +253,20 @@ struct OtherPhotos: View {
 }
 
 struct shareEvent: View{
+    
+    @Binding var isPresented: Bool
+    
     var body: some View {
-        Image(systemName: "square.and.arrow.up")
-            .font(.title2)
-            .fontWeight(.bold)
-            .frame(maxWidth: .infinity, alignment: .trailing)
+        Button {
+            isPresented = true
+            
+        } label: {
+            Image(systemName: "square.and.arrow.up")
+                .font(.title2)
+                .fontWeight(.bold)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .foregroundStyle(.black)
+        }
     }
 }
 
