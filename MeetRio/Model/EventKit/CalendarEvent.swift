@@ -6,11 +6,10 @@
 //
 
 import Foundation
-import EventKit
 import Intents
 import Contacts
+import MapKit
 
-// Struct para representar um evento de calendário
 class CalendarEvent {
     let name: String
     let startDate: Date
@@ -21,20 +20,20 @@ class CalendarEvent {
     let street: String
     let city: String
     let state: String
-    //let postalCode: String
+    let postalCode: String
     let country: String
     let isoCountryCode: String
     
     private var reservation: INReservation?
     private var event: INTicketedEvent?
     
-    static var eventCount: [String: Int] = [:]{
-        didSet{
+    static var eventCount: [String: Int] = [:] {
+        didSet {
             saveEventCount()
         }
     }
     
-    init(name: String, startDate: Date, endDate: Date, locationName: String, latitude: Double, longitude: Double, street: String, city: String, state: String, country: String, isoCountryCode: String) {
+    init(name: String, startDate: Date, endDate: Date, locationName: String, latitude: Double, longitude: Double, street: String, city: String, state: String, postalCode: String, country: String, isoCountryCode: String) {
         self.name = name
         self.startDate = startDate
         self.endDate = endDate
@@ -44,74 +43,81 @@ class CalendarEvent {
         self.street = street
         self.city = city
         self.state = state
-        //self.postalCode = postalCode
+        self.postalCode = postalCode
         self.country = country
         self.isoCountryCode = isoCountryCode
         CalendarEvent.loadEventCount()
     }
-
-    func reciveAndDonateInteraction(eventData: CalendarEvent) {
-        reciveInteraction(eventData: eventData)
+    
+    func reciveAndDonateInteraction() {
+        reciveInteraction()
         donateInteraction()
     }
     
     // Função que recebe os dados do evento e faz a doação da interação
-    func reciveInteraction(eventData: CalendarEvent) {
+    func reciveInteraction() {
         reservation = nil
         event = nil
         
-        let eventName = getUniqueEventName(for: eventData.name)
-        print(eventName)
+        let eventName = CalendarEvent.getUniqueEventName(for: self.name)
         
         let calendar = Calendar.current
-        let myEventStart = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: eventData.startDate)
-        let myEventEnd = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: eventData.endDate)
+        let myEventStart = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: self.startDate)
+        let myEventEnd = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: self.endDate)
         
         let duration = INDateComponentsRange(start: myEventStart, end: myEventEnd)
         
-        let myCLLocation = CLLocation(latitude: eventData.latitude, longitude: eventData.longitude)
-        let myAddress = CNMutablePostalAddress()
-        myAddress.street = eventData.street
-        myAddress.city = eventData.city
-        myAddress.state = eventData.state
-        //myAddress.postalCode = eventData.postalCode
-        myAddress.country = eventData.country
-        myAddress.isoCountryCode = eventData.isoCountryCode
+        let coordinate = CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
         
-        let location = CLPlacemark(location: myCLLocation, name: eventData.locationName, postalAddress: myAddress)
+        let postalAddress = CNMutablePostalAddress()
+        postalAddress.street = self.street
+        postalAddress.city = self.city
+        postalAddress.state = self.state
+        postalAddress.postalCode = self.postalCode
+        postalAddress.country = self.country
+        postalAddress.isoCountryCode = self.isoCountryCode
         
-        event = INTicketedEvent(category: .unknown, name: eventName, eventDuration: duration, location: location)
+        let location = MKPlacemark(coordinate: coordinate, postalAddress: postalAddress)
         
-        let reservationReference = INSpeakableString(vocabularyIdentifier: UUID().uuidString, spokenPhrase: eventData.name, pronunciationHint: nil)
+        event = INTicketedEvent(
+            category: .unknown,
+            name: eventName,
+            eventDuration: duration,
+            location: location
+        )
         
-        reservation = INTicketedEventReservation(itemReference: reservationReference, reservationNumber: nil, bookingTime: nil, reservationStatus: .confirmed, reservationHolderName: nil, actions: nil, reservedSeat: nil, event: event!)
+        let reservationReference = INSpeakableString(
+            vocabularyIdentifier: UUID().uuidString,
+            spokenPhrase: self.name,
+            pronunciationHint: nil
+        )
+        
+        reservation = INTicketedEventReservation(
+            itemReference: reservationReference,
+            reservationNumber: "",
+            bookingTime: Date(),
+            reservationStatus: .confirmed,
+            reservationHolderName: "",
+            actions: nil,
+            reservedSeat: nil,
+            event: event!
+        )
     }
-    
-    // Função que retorna um nome de evento único com base no número de vezes que ele foi registrado
-    private func getUniqueEventName(for eventName: String) -> String {
-            
-        if let count = CalendarEvent.eventCount[eventName] {
-            
-                let newCount = count + 1
-                CalendarEvent.eventCount[eventName] = newCount
-                return "\(eventName) (\(newCount))"
-            } else {
-                
-                CalendarEvent.eventCount[eventName] = 0
-                return eventName
-            }
-        }
     
     // Função para doar a interação para o sistema
     private func donateInteraction() {
         guard let reservation = reservation else { return }
         
-        let intent = INGetReservationDetailsIntent(reservationContainerReference: reservation.itemReference, reservationItemReferences: nil)
+        let intent = INGetReservationDetailsIntent(
+            reservationContainerReference: reservation.itemReference,
+            reservationItemReferences: [reservation.itemReference]
+        )
         
         let intentResponse = INGetReservationDetailsIntentResponse(code: .success, userActivity: nil)
         intentResponse.reservations = [reservation]
         
         let interaction = INInteraction(intent: intent, response: intentResponse)
+        interaction.direction = .outgoing
         
         interaction.donate { error in
             if let error = error {
@@ -122,13 +128,25 @@ class CalendarEvent {
         }
     }
     
+    // Função que retorna um nome de evento único com base no número de vezes que ele foi registrado
+    private static func getUniqueEventName(for eventName: String) -> String {
+        if let count = eventCount[eventName] {
+            let newCount = count + 1
+            eventCount[eventName] = newCount
+            return "\(eventName) (\(newCount))"
+        } else {
+            eventCount[eventName] = 0
+            return eventName
+        }
+    }
+    
     // Função para salvar o dicionário eventCount no UserDefaults
-    static private func saveEventCount() {
+    private static func saveEventCount() {
         UserDefaults.standard.set(eventCount, forKey: "eventCount")
     }
-
+    
     // Função para carregar o dicionário eventCount do UserDefaults
-    static private func loadEventCount() {
+    private static func loadEventCount() {
         if let savedEventCount = UserDefaults.standard.dictionary(forKey: "eventCount") as? [String: Int] {
             eventCount = savedEventCount
         }

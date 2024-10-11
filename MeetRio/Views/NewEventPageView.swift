@@ -122,6 +122,7 @@ struct EventPageContent: View {
                     street: event.address.street,
                     city: "Rio de Janeiro",
                     state: "RJ",
+                    postalCode: event.address.cep ?? "",
                     country: "Brazil",
                     isoCountryCode: "BR"
                 )
@@ -137,12 +138,13 @@ struct EventPageContent: View {
                     street: event.address.street,
                     city: "Rio de Janeiro",
                     state: "RJ",
+                    postalCode: event.address.cep ?? "",
                     country: "Brazil",
                     isoCountryCode: "BR"
                 )
             }
             
-            myEvent.reciveAndDonateInteraction(eventData: myEvent)
+            myEvent.reciveAndDonateInteraction()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
                 calendarBool = false
