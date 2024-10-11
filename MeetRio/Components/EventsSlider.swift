@@ -65,15 +65,29 @@ struct EventsSlider: View {
                 let sortedEvents = searchResults.sorted(by: <)
                 
                 ForEach(sortedEvents) { event in
-                    if #available(iOS 18, *) {
-                        NavigationLink(destination: NewEventPageViewIOS18(loggedCase: $loggedCase, event: event)) {
-                            NewEventCard(selectedFavorite: $selectedFavorite, loggedCase: $loggedCase, clicouGoing: $clicouGoing, event: event)
-                        }
-                    } else {
-                        NavigationLink(destination: NewEventPageView(loggedCase: $loggedCase, event: event)) {
-                            NewEventCard(selectedFavorite: $selectedFavorite, loggedCase: $loggedCase, clicouGoing: $clicouGoing, event: event)
+                    
+                    if event.eventCategory != "bemBrazil" || (event.dateDetails?.hasEventPassed == false) {
+                        if #available(iOS 18, *) {
+                            NavigationLink(destination: NewEventPageViewIOS18(loggedCase: $loggedCase, event: event)) {
+                                NewEventCard(
+                                    selectedFavorite: $selectedFavorite,
+                                    loggedCase: $loggedCase,
+                                    clicouGoing: $clicouGoing,
+                                    event: event
+                                )
+                            }
+                        } else {
+                            NavigationLink(destination: NewEventPageView(loggedCase: $loggedCase, event: event)) {
+                                NewEventCard(
+                                    selectedFavorite: $selectedFavorite,
+                                    loggedCase: $loggedCase,
+                                    clicouGoing: $clicouGoing,
+                                    event: event
+                                )
+                            }
                         }
                     }
+                    
                 }
             }
             .padding(.horizontal)

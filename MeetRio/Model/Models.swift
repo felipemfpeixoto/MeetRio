@@ -63,7 +63,13 @@ struct DateDetails: Codable {
             return nil
         }
     }
-
+    
+    var hasEventPassed: Bool {
+        guard let endDateTime = self.endDateTime else {
+            return false // Retorna false se não for possível obter endDateTime
+        }
+        return Date() > endDateTime
+    }
 }
 
 
