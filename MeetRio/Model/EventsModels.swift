@@ -214,6 +214,40 @@ class EventDetails: Identifiable, Codable, Comparable {
     static func == (lhs: EventDetails, rhs: EventDetails) -> Bool {
             return lhs.id == rhs.id
         }
+    
+    
+    // MARK: Share event
+    func shareEvent(completion: @escaping (Bool) -> Void) {
+        let eventTitle = self.name
+        let eventDate = self.dateDetails?.startDate ?? "Data não disponível"
+        
+        
+        // Define o texto de compartilhamento dependendo do idioma
+        var shareText: String
+        shareText = "Check out this event I found on MeetRio: \(eventTitle) happening on \(eventDate). Don't miss it!"
+        
+        let eventURL = URL(string: self._buyURL ?? "")
+        var itemsToShare: [Any] = [shareText]
+        
+        if let eventURL = eventURL {
+            itemsToShare.append(eventURL)
+        }
+        
+        let activityVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
+        
+        activityVC.completionWithItemsHandler = { (activityType, completed, returnedItems, error) in
+            if completed {
+                completion(true)
+            } else {
+                completion(false)
+            }
+        }
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootVC = windowScene.windows.first?.rootViewController {
+            rootVC.present(activityVC, animated: true, completion: nil)
+        }
+    }
 }
 
 

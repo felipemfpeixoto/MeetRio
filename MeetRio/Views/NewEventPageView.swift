@@ -277,6 +277,8 @@ struct NewEventPageViewIOS18: View {
     @State var showTranslationSheet: Bool = false // Controla a exibição da sheet de tradução
     
     @State var isNotDismissable = true
+    
+    @State var changeSheetShare = false
 
     var body: some View {
         EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool, translatedTexts: $translationManager.translatedTexts)
@@ -304,12 +306,30 @@ struct NewEventPageViewIOS18: View {
                 }.padding()
             }
             .sheet(isPresented: $changeSheet) { // Apresenta a sheet do evento quando changeSheet for true
-                EventPageDetaislViewIOS18(event: event, translationManager: translationManager)
+                EventPageDetaislViewIOS18(event: event, translationManager: translationManager, changeSheet: $changeSheetShare)
                     .presentationDetents([.fraction(0.32), .large])
                     .presentationCornerRadius(20)
                     .interactiveDismissDisabled(isNotDismissable)
                     .presentationBackgroundInteraction(.enabled)
                     .background(EmptyView())
+            }
+            .onChange(of: changeSheetShare){
+                if changeSheetShare{
+                    //print("oi")
+                    changeSheet = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        event.shareEvent { success in
+                            if success {
+                                print("Compartilhamento concluído com sucesso!")
+                            } else {
+                                print("Compartilhamento cancelado ou falhou.")
+                            }
+                            changeSheet = true
+                        }
+
+                    }
+   
+                }
             }
             .onAppear {
                 if loggedCase == .registered {
@@ -396,16 +416,39 @@ struct NewEventPageView: View {
     let event: EventDetails
     @State var going: Bool = false
     @State var calendarBool: Bool = false
+    
+    @State var isPresenting = true
+    
+    @State var changeSheetShare = false
+    
 
     var body: some View {
         EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool, translatedTexts: .constant([nil, nil]))
-        .sheet(isPresented: .constant(true)) {
-            EventPageDetaislView(event: event)
+        .sheet(isPresented: $isPresenting) {
+            EventPageDetaislView(event: event, isPresented: $changeSheetShare)
                 .presentationDetents([.fraction(0.32), .large])
                 .presentationCornerRadius(20)
                 .interactiveDismissDisabled(true)
                 .presentationBackgroundInteraction(.enabled)
                 .background(EmptyView())
+        }
+        .onChange(of: changeSheetShare){
+            if changeSheetShare{
+                //print("oi")
+                isPresenting = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    event.shareEvent { success in
+                        if success {
+                            print("Compartilhamento concluído com sucesso!")
+                        } else {
+                            print("Compartilhamento cancelado ou falhou.")
+                        }
+                        isPresenting = true
+                    }
+
+                }
+
+            }
         }
         .overlay(alignment: .topTrailing) {
             VStack {
