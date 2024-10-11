@@ -84,16 +84,19 @@ struct AuthenticationView: View {
                     loadingOverlay
                 } else {
                     contentStack
+                        .padding(.horizontal)
+                        .padding(.bottom)
                     loadingOverlay
                 }
             }
+            .tint(.white)
             .navigationDestination(isPresented: $didNavigate) {
                 Picture_NameSelectionView(isShowingFullScreenCover: $isShowing, arbiuPrimeiraVez: $arbiuPrimeiraVez, loggedCase: $loggedCase, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad, userID: userID ?? "")
             }
         }
         .ignoresSafeArea(.keyboard)
-        .onDisappear {
-            print("Deu dismiss")
+        .onTapGesture {
+            UIApplication.shared.endEditing()
         }
     }
 
@@ -102,29 +105,27 @@ struct AuthenticationView: View {
             Image("cristoBackground")
                 .resizable()
                 .scaledToFill()
-            LinearGradient(gradient: Gradient(colors: [.black, .clear, .black]), startPoint: .top, endPoint: .bottom)
-                .opacity(0.4)
-            Rectangle()
-                .opacity(0.15)
         }
         .ignoresSafeArea()
     }
 
     var contentStack: some View {
-        VStack {
+        VStack(spacing: 24) {
             Spacer()
             titleContainer
             textFieldsContainer
-            signInButton
+                .tint(.blue)
             orContainer
-                .padding(.vertical, 40)
+            anonymouslySigninButton
 //            googleSignInButtonContainer
 //            appleSignInButtonContainer
             Spacer()
-            anonymouslySigninButton
-                .padding(.top, 40)
-            signUpContainer
-                .padding(.bottom)
+            Spacer()
+            Spacer()
+            VStack(spacing: 5) {
+                forgotPasswordContainer // Não ta funcionando ainda
+                signUpContainer
+            }
             Spacer()
         }
         .padding()
@@ -144,10 +145,12 @@ struct AuthenticationView: View {
 
     var titleContainer: some View {
         HStack {
-            Text("Log In to Your Account")
-                .font(Font.custom("Bricolage Grotesque", size: 26))
-                .fontWeight(.bold)
-                .foregroundStyle(.white)
+            VStack(alignment: .leading) {
+                Text("Log In to Your Account")
+                    .font(Font.custom("Bricolage Grotesque", size: 26))
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
+            }
             Spacer()
         }
     }
@@ -159,10 +162,14 @@ struct AuthenticationView: View {
                     .foregroundStyle(.marcaTexto)
                     .font(Font.custom("Bricolage Grotesque", size: 18))
             }
-            TextField("Email", text: $vm.email)
-                .textFieldStyle()
-            SecureField("Password", text: $vm.password)
-                .textFieldStyle()
+            VStack(spacing: 17) {
+                TextField("Email", text: $vm.email)
+                    .textFieldStyle()
+                SecureField("Password", text: $vm.password)
+                    .textFieldStyle()
+                signInButton
+                    .padding(.top)
+            }
         }
     }
 
@@ -184,23 +191,22 @@ struct AuthenticationView: View {
         Button(action: signInAction, label: {
             ZStack {
                 RoundedRectangle(cornerRadius: 20)
-                    .foregroundStyle(.marcaTexto)
+                    .frame(width: .infinity ,height: 44)
+                    .foregroundStyle(.pretin)
                     .shadow(color: .black.opacity(0.25), radius: 5.8, y: 2)
-                Text("Sign In")
-                    .foregroundStyle(.black)
+                Text("Done")
+                    .foregroundStyle(.white)
+                    .font(.system(size: 18))
                     .fontWeight(.semibold)
             }
         })
-        .frame(height: 55)
     }
 
     var anonymouslySigninButton: some View {
         Button(action: signInAnonymous, label: {
-            Text("Login")
-                .foregroundStyle(.marcaTexto)
-                .fontWeight(.semibold)
-            + Text(" Without Identification")
+            Text("Enter without login")
                 .foregroundStyle(.white)
+                .fontWeight(.semibold)
         })
         .frame(height: 15)
     }
@@ -216,17 +222,24 @@ struct AuthenticationView: View {
         })
         .frame(height: 55)
     }
+    
+    var forgotPasswordContainer: some View {
+        Text("Set or Reset your password")
+            .font(.system(size: 15))
+            .fontWeight(.semibold)
+            .foregroundStyle(.white)
+    }
 
     var signUpContainer: some View {
         HStack {
-            Text("Doesn't have an account?")
-                .foregroundStyle(.white)
             NavigationLink(destination: SignUpView(isShowing: $isShowing, arbiuPrimeiraVez: $arbiuPrimeiraVez, loggedCase: $loggedCase, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad)) {
-                Text("Sign Up")
-                    .fontWeight(.bold)
-                    .foregroundStyle(.marcaTexto)
+                    Text("Doesn't have an account?")
+                        .foregroundStyle(.white)
+                    + Text(" Sign Up")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.white)
             }
-        }
+        }.font(.system(size: 15))
     }
 
     // MARK: - Helper Methods
@@ -381,7 +394,9 @@ struct AuthenticationView: View {
 extension View {
     func textFieldStyle() -> some View {
         self
-            .padding()
+            .font(.system(size: 18))
+            .padding(.horizontal)
+            .frame(height: 44)
             .background(.white)
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .shadow(color: .black.opacity(0.25), radius: 5.8, y: 2)
@@ -389,298 +404,15 @@ extension View {
     }
 }
 
-//struct AuthenticationView: View {
-//    
-//    @State private var vm = SignInEmailViewModel()
-//    @Binding var loggedCase: LoginCase
-//    
-//    @Binding var isShowing: Bool
-//    @Binding var arbiuPrimeiraVez: Bool
-//    
-//    @State var isLoading = false
-//    @State var didNavigate = false
-//    @State var userID: String?
-//    @State var showWarning: Bool = false
-//    @State var didLogin: Int?
-//    
-//    var body: some View {
-//        GeometryReader { _ in
-//            ZStack {
-//                backgroundContainer
-//                VStack {
-//                    Spacer()
-//                    titleContainer
-//                    textFieldsContainer
-//                    signInButton
-//                    orContainer
-//                        .padding(.vertical, 40)
-//                    //                    forgotPasswordButton
-//                    googleSignInButtonContainer
-//                    appleSignInButtonContainer
-//                    Spacer()
-//                    anonymouslySigninButton
-//                        .padding(.top, 40)
-//                    signUpContainer
-//                        .padding(.bottom)
-//                    Spacer()
-//                }.padding()
-//                if isLoading {
-//                    Color.black.opacity(0.5)
-//                        .ignoresSafeArea()
-//                    ProgressView()
-//                }
-//            }
-//            .navigationDestination(isPresented: $didNavigate) {
-//                Picture_NameSelectionView(isShowingFullScreenCover: $isShowing, arbiuPrimeiraVez: $arbiuPrimeiraVez, userID: userID ?? "")
-//            }
-//        }
-//        .ignoresSafeArea(.keyboard)
-//        .onDisappear {
-//            print("Deu dismiss")
-//        }
-//    }
-//    
-//    var backgroundContainer: some View {
-//        ZStack {
-//            Image("cristoBackground")
-//                .resizable()
-//                .scaledToFill()
-//            LinearGradient(gradient: Gradient(colors: [.black, .clear, .black]), startPoint: .top, endPoint: .bottom)
-//                .opacity(0.4)
-//            Rectangle()
-//                .opacity(0.15)
-//        }
-//        .ignoresSafeArea()
-//    }
-//    
-//    var titleContainer: some View {
-//        HStack {
-//            Text("Log In to Your Account")
-//                .font(Font.custom("Bricolage Grotesque", size: 26))
-//                .fontWeight(.bold)
-//                .foregroundStyle(.white)
-//            Spacer()
-//        }
-//    }
-//    
-//    var textFieldsContainer: some View {
-//        VStack {
-//            if showWarning {
-//                if didLogin == 0 {
-//                    Text("Please provide an email and password")
-//                        .foregroundStyle(.marcaTexto)
-//                        .font(Font.custom("Bricolage Grotesque", size: 18))
-//                } else if didLogin == 2 {
-//                    Text("Please provide a password")
-//                        .foregroundStyle(.marcaTexto)
-//                        .font(Font.custom("Bricolage Grotesque", size: 18))
-//                } else if didLogin == 3 {
-//                    Text("Please provide an email")
-//                        .foregroundStyle(.marcaTexto)
-//                        .font(Font.custom("Bricolage Grotesque", size: 18))
-//                } else {
-//                    Text("Email or password incorrect")
-//                        .foregroundStyle(.marcaTexto)
-//                        .font(Font.custom("Bricolage Grotesque", size: 18))
-//                }
-//            }
-//            TextField("Email", text: $vm.email)
-//                .padding()
-//                .background(.white)
-//                .clipShape(RoundedRectangle(cornerRadius: 20))
-//                .shadow(color: .black.opacity(0.25), radius: 5.8, y: 2)
-//                .autocapitalization(.none)
-//            
-//            SecureField("Password", text: $vm.password)
-//                .padding()
-//                .background(.white)
-//                .clipShape(RoundedRectangle(cornerRadius: 20))
-//                .shadow(color: .black.opacity(0.25), radius: 5.8, y: 2)
-//        }
-//    }
-//    
-//    var orContainer: some View {
-//        HStack(spacing: 40) {
-//            Rectangle()
-//                .foregroundStyle(.white)
-//                .frame(height: 1)
-//            Text("or")
-//                .font(.system(size: 18).weight(.medium))
-//                .foregroundStyle(.white)
-//            Rectangle()
-//                .foregroundStyle(.white)
-//                .frame(height: 1)
-//        }
-//    }
-//    
-//    var forgotPasswordButton: some View {
-//        HStack {
-//            Text("Forgot your password?")
-//            Button(action: {
-//                // reset password
-//                Task {
-//                    do {
-//                        try await vm.resetPassword()
-//                    } catch {
-//                        print(error)
-//                    }
-//                }
-//            }, label: {
-//                Text("Click here")
-//                    .fontWeight(.semibold)
-//            })
-//        }
-//    }
-//    
-//    var signInButton: some View {
-//        Button(action: {
-//            // sign in
-//            Task {
-//                do {
-//                    isLoading = true
-//                    showWarning = false
-//                    didLogin = nil
-//                    didLogin = try await vm.signIn()
-//                    if didLogin == 1 {
-//                        arbiuPrimeiraVez = false
-//                        isShowing = false
-//                        isLoading = false
-////                        loggedCase = .registered
-//                        PostHogSDK.shared.capture("LoginEmail&Senha")
-//                    }
-//                } catch {
-//                    let emailEmpty = vm.email.isEmpty
-//                    let passwordEmpty = vm.password.isEmpty
-//                    if emailEmpty && passwordEmpty {
-//                        print("email e senha vazios")
-//                        didLogin = 0
-//                    } else if emailEmpty {
-//                        didLogin = 3
-//                    } else if passwordEmpty {
-//                        didLogin = 2
-//                    }
-//                    showWarning = true
-//                    isLoading = false
-//                }
-//            }
-//        }, label: {
-//            ZStack {
-//                RoundedRectangle(cornerRadius: 20)
-//                    .foregroundStyle(.marcaTexto)
-//                    .shadow(color: .black.opacity(0.25), radius: 5.8, y: 2)
-//                Text("Sign In")
-//                    .foregroundStyle(.black)
-//                    .fontWeight(.semibold)
-//            }
-//        })
-//        .frame(height: 55)
-//    }
-//    
-//    var anonymouslySigninButton: some View{
-//        Button(action: {
-//            Task{
-//                do{
-//                    isLoading = true
-//                    try await vm.signInAnonymous()
-//                    isShowing = false
-//                    isLoading = false
-//                    arbiuPrimeiraVez = false
-////                    loggedCase = .anonymous
-//                    PostHogSDK.shared.capture("LoginAnonimo")
-//                }catch{
-//                    print(error)
-//                }
-//            }
-//        }, label: {
-//            ZStack {
-//                Text("Login")
-//                    .foregroundStyle(.marcaTexto)
-//                    .fontWeight(.semibold)
-//                
-//                + Text(" Without Identification")
-//                    .foregroundStyle(.white)
-//                    
-//            }.font(.callout)
-//        })
-//        .frame(height: 15)
-//    }
-//    
-//    var googleSignInButtonContainer: some View {
-//        GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .light, style: .wide, state: .normal)) {
-//            Task {
-//                do {
-//                    print("Entrou")
-//                    isLoading = true
-//                    self.userID = try await vm.googleSignIn()
-//                    print("userID: ", userID)
-//                    let hospede = try? await FirestoreManager.shared.db.collection("Hospedes").document(userID!).getDocument(as: Hospede.self)
-//                    print(hospede)
-//                    
-//                    if let hospede {
-//                        isShowing = false
-//                        PostHogSDK.shared.capture("LoginGoogle")
-//                    } else {
-//                        didNavigate = true
-//                        PostHogSDK.shared.capture("LoginGoogle_primeiraVez")
-//                    }
-//                    isLoading = false
-//                    
-//                    
-//                } catch (let error) {
-//                    print("Deu erro ao fazer log in com google: ", error)
-//                    isLoading = false
-//                    PostHogSDK.shared.capture("LoginGoogle_error")
-//                }
-//            }
-//        }
-//    }
-//    
-//    var appleSignInButtonContainer: some View {
-//        Button(action: {
-//            Task {
-//                do {
-//                    self.isLoading = true
-//                    self.userID = try await vm.signInWithApple()
-//                    let hospede = try? await FirestoreManager.shared.db.collection("Hospedes").document(userID!).getDocument(as: Hospede.self)
-//                    if let hospede {
-//                        isShowing = false
-//                        PostHogSDK.shared.capture("LoginApple")
-//                    } else {
-//                        didNavigate = true
-//                        isLoading = false
-//                        PostHogSDK.shared.capture("LoginApple_primeiraVez")
-//                    }
-////                    loggedCase = .registered
-//                } catch {
-//                    print("Deu erro ao fazer log in com apple: ", error)
-//                    isLoading = false
-//                    PostHogSDK.shared.capture("LoginApple_error")
-//                }
-//            }
-//        }, label: {
-//            SignInWithAppleButtonViewRepresentable(type: .default, style: .white)
-//                .allowsHitTesting(false)
-////                .cornerRadius(100)
-//        })
-//        .frame(height: 55)
-//    }
-//    
-//    var signUpContainer: some View {
-//        HStack {
-//            Text("Doesn't have an account?")
-//                .foregroundStyle(.white)
-//            NavigationLink(destination: SignUpView(isShowing: $isShowing, arbiuPrimeiraVez: $arbiuPrimeiraVez, loggedCase: $loggedCase)) {
-//                Text("Sign Up")
-//                    .fontWeight(.bold)
-//                    .foregroundStyle(.marcaTexto)
-//            }
-//        }
-//    }
-//}
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+#Preview {
+    AuthenticationView(loggedCase: .constant(.none), isShowing: .constant(true), arbiuPrimeiraVez: .constant(true), didStartSignUpFlow: .constant(false), willLoad: .constant(false))
+}
 
 
-//#Preview {
-//    NavigationStack {
-//        AuthenticationView(isShowing: .constant(true), arbiuPrimeiraVez: .constant(true))
-//    }
-//}
+

@@ -67,7 +67,8 @@ struct WelcomeSignInView: View {
                 .padding(.horizontal, 32)
                 .padding(.top, 128)
             }
-        }.tint(.marcaTexto)
+        }
+        .tint(.white)
 //        .onDisappear {
 //            if loggedCase == .none {
 //                print("TA NONE ESSA PORRA")
