@@ -197,8 +197,6 @@ class EventDetails: Identifiable, Codable, Comparable {
     
     //MARK: Protocolo comparable
     static func < (ant: EventDetails, prox: EventDetails) -> Bool {
-    
-        
         if ant.dateDetails != nil{
            let antDate = ant.dateDetails?.startDate ?? ""
            let proxDate = prox.dateDetails?.startDate ?? ""

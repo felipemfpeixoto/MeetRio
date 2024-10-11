@@ -44,65 +44,75 @@ struct SelectCountryView: View {
     }
     
     var body: some View {
-        ZStack {
-            bsckgroundContainer
-            VStack(alignment: .leading) {
-                Spacer()
-                Text("Select your country")
-                    .font(Font.custom("Bricolage Grotesque", size: 26))
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white)
-                CustomSearchBar(searchText: $searchText, filterButton: .constant(false), showFilter: false)
-                ScrollView {
-                    ForEach(filteredCountries, id: \.self.name) { country in
-                        Button(action: {
-                            // seleciona o país
-                            selectedCountry = country
-                            hospede.country = country
-                        }, label: {
-                            HStack {
-                                Text(country.flag)
-                                    .font(.system(size: 25))
-                                Text(country.name)
-                                    .foregroundStyle(.black)
-                                    .fontWeight(.semibold)
-                                Spacer()
-                                Image(systemName: selectedCountry?.name == country.name ? "checkmark.circle.fill" : "circlebadge")
+        GeometryReader { _ in
+            ZStack {
+                bsckgroundContainer
+                VStack(alignment: .leading) {
+                    Spacer()
+                    Text("Select your country")
+                        .font(Font.custom("Bricolage Grotesque", size: 32))
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                    CustomSearchBar(searchText: $searchText, filterButton: .constant(false), showFilter: false)
+                    ScrollView {
+                        ForEach(filteredCountries, id: \.self.name) { country in
+                            Button(action: {
+                                // seleciona o país
+                                selectedCountry = country
+                                hospede.country = country
+                            }, label: {
+                                HStack {
+                                    Text(country.flag)
+                                        .font(.system(size: 25))
+                                    Text(country.name)
+                                        .foregroundStyle(.black)
+                                        .fontWeight(.semibold)
+                                    Spacer()
+                                    Image(systemName: selectedCountry?.name == country.name ? "checkmark.circle.fill" : "circlebadge")
+                                }
+                            }).frame(height: 30)
+                        }.padding()
+                    }
+                    .frame(height: 400)
+                    .background(.white.opacity(0.75))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    Spacer()
+                    Button(action: {
+                        Task {
+                            do {
+                                isLoading = true
+                                try await UserManager.shared.createNewUser(userID: userID, hospede: hospede)
+                                arbiuPrimeiraVez = false
+                                didStartSignUpFlow = false
+                                postLoginSuccess()
+                                PostHogSDK.shared.capture("CriouPerfil")
+                            } catch {
+                                
                             }
-                        }).frame(height: 30)
-                    }.padding()
-                }
-                .frame(height: 400)
-                .background(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                Spacer()
-                Button(action: {
-                    Task {
-                        do {
-                            isLoading = true
-                            try await UserManager.shared.createNewUser(userID: userID, hospede: hospede)
-                            arbiuPrimeiraVez = false
-                            didStartSignUpFlow = false
-                            postLoginSuccess()
-                            PostHogSDK.shared.capture("CriouPerfil")
-                        } catch {
-                            
                         }
-                    }
-                }, label: {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 20)
-                            .foregroundStyle(.marcaTexto)
-                        Text("Finish")
-                            .foregroundStyle(.black)
-                    }
-                }).frame(height: 55)
-            }
-            .padding()
-            if isLoading {
-                loadingOverlay
+                    }, label: {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 20)
+                                .foregroundStyle(selectedCountry != nil ? .black : .white)
+                            Text("Finish")
+                                .foregroundStyle(.white)
+                                .fontWeight(.semibold)
+                        }
+                    }).frame(height: 44)
+                    .opacity(selectedCountry != nil ? 1 : 0.5)
+                    .disabled(!(selectedCountry != nil))
+                }
+                .padding()
+                .tint(.blue)
+                if !isLoading {
+                    loadingOverlay
+                }
             }
         }
+        .onTapGesture {
+            UIApplication.shared.endEditing()
+        }
+        .ignoresSafeArea(.keyboard)
         .navigationBarBackButtonHidden()
         .onAppear {
             self.allCountries = loadJsonFileFromObjective()
@@ -115,7 +125,6 @@ struct SelectCountryView: View {
                 .opacity(0.4)
                 .ignoresSafeArea()
             ProgressView()
-                .tint(.marcaTexto)
         }
     }
     
@@ -123,8 +132,6 @@ struct SelectCountryView: View {
         ZStack {
             Image("seaBackground")
                 .resizable()
-            Color.black.opacity(0.3)
-                
         }
         .ignoresSafeArea()
     }
@@ -196,6 +203,6 @@ extension Bundle {
     }
 }
 
-//#Preview {
-//    SelectCountryView(hospede: .constant(Hospede(name: "", country: CountryDetails(name: "", flag: ""), picture: Data())), isShowingFullScreenCover: .constant(false), arbiuPrimeiraVez: .constant(true), loggedCase: .constant(.registered), userID: "")
-//}
+#Preview {
+    SelectCountryView(hospede: .constant(Hospede(name: "Felipe", country: CountryDetails(name: "Brazil", flag: "🇧🇷"))), isShowingFullScreenCover: .constant(true), arbiuPrimeiraVez: .constant(true), loggedCase: .constant(.none), didStartSignUpFlow: .constant(true), willLoad: .constant(false), userID: "")
+}

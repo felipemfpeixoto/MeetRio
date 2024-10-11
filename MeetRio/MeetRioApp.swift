@@ -48,10 +48,10 @@ struct MeetRioApp: App {
                     break
                 case .inactive:
                     if didStartSignUpFlow {
-                        print("Entrou")
                         Task {
                             do {
                                 try await AuthenticationManager.shared.delete(false)
+                                print("Deletou usuario!")
                             } catch {
                                 print("Se ferrou!", error)
                             }
