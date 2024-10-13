@@ -176,7 +176,7 @@ struct SignUpView: View {
                     do {
                         dismissKeyboard()
                         isLoading = true
-                        let didCreateUser = try await vm.signUp(hospede: Hospede(name: "", country: CountryDetails(name: "", flag: ""), picture: Data()))
+                        let didCreateUser = try await vm.signUp(hospede: Hospede(name: "", country: CountryDetails(name: "", flag: "")))
                         if didCreateUser {
                             didStartSignUpFlow = true
                             PostHogSDK.shared.capture("SignUpEmail&Senha")

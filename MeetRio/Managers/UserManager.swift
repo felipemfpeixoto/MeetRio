@@ -20,9 +20,9 @@ final class UserManager {
             try FirestoreManager.shared.db.collection("Hospedes").document(userID).setData(from: hospede)
             self.hospede = hospede
             self.hospede?.id = userID
-            print("Deu tudo certo: \(String(describing: self.hospede))")
+            print("Perfil de hóspede com id \(userID) criado com sucesso")
         } catch {
-            print("Deu merda ao criar o usuário: ", error)
+            print("Deu merda ao criar o oerfil de hospede: ", error)
         }
     }
     
@@ -31,7 +31,7 @@ final class UserManager {
             let hospede = try await FirestoreManager.shared.db.collection("Hospedes").document(userID).getDocument(as: Hospede.self)
             self.hospede = hospede
         } catch {
-            print("Usuário não encontrado: ", error)
+            print("Perfil de hospede com id \(userID) não encontrado: ", error)
         }
         return
     }

@@ -103,8 +103,6 @@ class FirestoreManager {
     func getLabeledEvents(_ queryName: String) async -> [EventDetails] {
         // Check cache first
         if let cachedEvents = cache.getEvents(forCategory: queryName) {
-            print("Events loaded from cache for category: \(queryName)")
-            print(cachedEvents)
             return cachedEvents
         }
         
@@ -123,7 +121,7 @@ class FirestoreManager {
             cache.setEvents(events, forCategory: queryName)
             return events
         } catch {
-            print("Error getting documents: \(error)")
+            print("Error getting labeled events: \(error)")
         }
         return []
     }
@@ -199,7 +197,7 @@ class FirestoreManager {
             print("Going created")
             // Invalidate cache if necessary
         } catch {
-            print(error.localizedDescription)
+            print("Erro em createGoingEvent: ", error.localizedDescription)
         }
     }
     

@@ -138,7 +138,6 @@ class EventDetails: Identifiable, Codable, Comparable {
         return nextDate
     }
 
-
     func formattedHour(from hourString: String) -> String {
         // Tenta dividir a string no formato "HH:mm" para obter a hora
         let components = hourString.split(separator: ":")

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CachedAsyncImage
 
 struct ProfileView: View {
     
@@ -167,11 +168,36 @@ struct ProfileView: View {
     
     var profilePicture: some View {
         VStack{
-            if let pictureData = UserManager.shared.hospede?.picture,
-               let uiImage = UIImage(data: pictureData) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
+            if let imageURL = UserManager.shared.hospede?.imageURL, imageURL != "" {
+                CachedAsyncImage(url: URL(string: imageURL), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    case .failure(_):
+                        ZStack {
+                            Color.oceanBlue
+                            Image(systemName: "person.fill")
+                                .resizable()
+                                .padding(50)
+                                .foregroundStyle(.white)
+                        }
+                    default:
+                        ZStack {
+                            Color.oceanBlue
+                            Image(systemName: "person.fill")
+                                .resizable()
+                                .padding(50)
+                                .foregroundStyle(.white)
+                            Color.black.opacity(0.5)
+                            ProgressView()
+                                .tint(.white)
+                                .scaleEffect(1.3)
+                                .padding(.bottom)
+                        }
+                    }
+                }
             } else {
                 ZStack {
                     Color.oceanBlue

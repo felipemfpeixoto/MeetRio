@@ -12,7 +12,7 @@ struct Picture_NameSelectionView: View {
     @State private var isImagePickerPresented = false
     @State private var selectedImage: UIImage?
     
-    @State var hospede = Hospede(name: "", country: CountryDetails(name: "", flag: ""), picture: nil)
+    @State var hospede = Hospede(name: "", country: CountryDetails(name: "", flag: ""))
     
     @Binding var isShowingFullScreenCover: Bool
     @Binding var arbiuPrimeiraVez: Bool
@@ -47,11 +47,6 @@ struct Picture_NameSelectionView: View {
         .navigationBarBackButtonHidden()
         .sheet(isPresented: $isImagePickerPresented) {
             ImagePicker(selectedImage: $selectedImage, isImagePickerPresented: $isImagePickerPresented)
-        }
-        .onDisappear {
-            if let selectedImage {
-                hospede.picture = selectedImage.pngData()
-            }
         }
         .onTapGesture {
             UIApplication.shared.endEditing()
@@ -137,7 +132,7 @@ struct Picture_NameSelectionView: View {
         }
     
     var continueButtonContainer: some View {
-        NavigationLink(destination: SelectCountryView(hospede: $hospede, isShowingFullScreenCover: $isShowingFullScreenCover, arbiuPrimeiraVez: $arbiuPrimeiraVez, loggedCase: $loggedCase, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad, userID: userID)) {
+        NavigationLink(destination: SelectCountryView(hospede: $hospede, isShowingFullScreenCover: $isShowingFullScreenCover, arbiuPrimeiraVez: $arbiuPrimeiraVez, loggedCase: $loggedCase, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad, userID: userID, selectedImage: selectedImage)) {
             ZStack {
                 RoundedRectangle(cornerRadius: 20)
                     .foregroundStyle(hospede.name == "" ? .white : .black)

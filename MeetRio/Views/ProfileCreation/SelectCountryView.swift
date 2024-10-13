@@ -11,6 +11,7 @@ import PostHog
 struct SelectCountryView: View {
     
     @State private var vm2 = SettingsViewModel()
+    let cloudStorageManager = UploadViewModeManager()
     
     @Binding var hospede: Hospede
     
@@ -32,6 +33,7 @@ struct SelectCountryView: View {
     @Binding var willLoad: Bool
     
     let userID: String
+    let selectedImage: UIImage?
     
     var filteredCountries: [CountryDetails] {
         var filteredCountries = allCountries
@@ -81,13 +83,16 @@ struct SelectCountryView: View {
                         Task {
                             do {
                                 isLoading = true
+                                if let selectedImage {
+                                    hospede.imageURL = try await cloudStorageManager.saveImage(userID: userID, image: selectedImage)
+                                }
                                 try await UserManager.shared.createNewUser(userID: userID, hospede: hospede)
                                 arbiuPrimeiraVez = false
                                 didStartSignUpFlow = false
                                 postLoginSuccess()
                                 PostHogSDK.shared.capture("CriouPerfil")
                             } catch {
-                                
+                                print("Erro ao criar perfil de Hospede do usuário: \(error)")
                             }
                         }
                     }, label: {
@@ -104,7 +109,7 @@ struct SelectCountryView: View {
                 }
                 .padding()
                 .tint(.blue)
-                if !isLoading {
+                if isLoading {
                     loadingOverlay
                 }
             }
@@ -204,5 +209,5 @@ extension Bundle {
 }
 
 #Preview {
-    SelectCountryView(hospede: .constant(Hospede(name: "Felipe", country: CountryDetails(name: "Brazil", flag: "🇧🇷"))), isShowingFullScreenCover: .constant(true), arbiuPrimeiraVez: .constant(true), loggedCase: .constant(.none), didStartSignUpFlow: .constant(true), willLoad: .constant(false), userID: "")
+    SelectCountryView(hospede: .constant(Hospede(name: "Felipe", country: CountryDetails(name: "Brazil", flag: "🇧🇷"))), isShowingFullScreenCover: .constant(true), arbiuPrimeiraVez: .constant(true), loggedCase: .constant(.none), didStartSignUpFlow: .constant(true), willLoad: .constant(false), userID: "", selectedImage: nil)
 }
