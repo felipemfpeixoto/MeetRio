@@ -89,6 +89,7 @@ struct AuthenticationView: View {
                     loadingOverlay
                 }
             }
+            .navigationBarBackButtonHidden(isLoading ? true : false)
             .tint(.white)
             .navigationDestination(isPresented: $didNavigate) {
                 Picture_NameSelectionView(isShowingFullScreenCover: $isShowing, arbiuPrimeiraVez: $arbiuPrimeiraVez, loggedCase: $loggedCase, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad, userID: userID ?? "")
@@ -125,7 +126,7 @@ struct AuthenticationView: View {
             VStack(spacing: 5) {
                 forgotPasswordContainer // Não ta funcionando ainda
                 signUpContainer
-            }
+            }.padding(.bottom)
             Spacer()
         }
         .padding()
@@ -191,7 +192,7 @@ struct AuthenticationView: View {
         Button(action: signInAction, label: {
             ZStack {
                 RoundedRectangle(cornerRadius: 20)
-                    .frame(width: .infinity ,height: 44)
+                    .frame(height: 44)
                     .foregroundStyle(.pretin)
                     .shadow(color: .black.opacity(0.25), radius: 5.8, y: 2)
                 Text("Done")
@@ -224,10 +225,12 @@ struct AuthenticationView: View {
     }
     
     var forgotPasswordContainer: some View {
-        Text("Set or Reset your password")
-            .font(.system(size: 15))
-            .fontWeight(.semibold)
-            .foregroundStyle(.white)
+        NavigationLink(destination: ResetPasswordView()) {
+            Text("Set or Reset your password")
+                .font(.system(size: 15))
+                .fontWeight(.semibold)
+                .foregroundStyle(.white)
+        }
     }
 
     var signUpContainer: some View {
@@ -259,6 +262,7 @@ struct AuthenticationView: View {
     private func signInAction() {
         Task {
             do {
+                UIApplication.shared.endEditing()
                 isLoading = true
                 showWarning = false
                 didLogin = nil
