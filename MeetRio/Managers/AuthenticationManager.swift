@@ -49,8 +49,10 @@ final class AuthenticationManager {
             await FirestoreManager.shared.removeGoingEvent(user.uid)
             await FirestoreManager.shared.deleteHospede(user.uid)
         }
+        let csManager = UploadViewModeManager()
+        try await csManager.deleteImage(userID: user.uid)
+        
         try await user.delete()
-        // deletar também o perfil customizado do usuário da base de dados
     }
 }
 

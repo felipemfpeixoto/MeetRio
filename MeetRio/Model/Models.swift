@@ -13,13 +13,7 @@ enum EventCategory: String, Codable {
 }
 
 // Objetos
-struct Hospede: Codable {
-    @DocumentID var id: String?
-    var name: String
-    var country: CountryDetails
-    var picture: Data?
-    var hostel: Hostel?
-}
+
 
 struct Hostel: Codable {
     @DocumentID var id: String?

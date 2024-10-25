@@ -45,7 +45,6 @@ struct NewEventCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 20))
         }
         .onAppear {
-            print(event.name)
             if loggedCase == .registered {
                 Task {
                     guard let userID = UserManager.shared.hospede?.id else { return }

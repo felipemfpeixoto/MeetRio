@@ -13,6 +13,7 @@
 		35705FA32CA7296C00A23889 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 35705FA22CA7296B00A23889 /* FirebaseAnalytics */; };
 		35705FA52CA7296C00A23889 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 35705FA42CA7296C00A23889 /* FirebaseAuth */; };
 		35705FA72CA7296C00A23889 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 35705FA62CA7296C00A23889 /* FirebaseFirestore */; };
+		35C53AF12CBB7B2900D760AC /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 35C53AF02CBB7B2900D760AC /* FirebaseStorage */; };
 		63FC70242CADFD7000989F18 /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 63FC70232CADFD7000989F18 /* CachedAsyncImage */; };
 /* End PBXBuildFile section */
 
@@ -80,6 +81,7 @@
 				35705F9B2CA7291300A23889 /* PostHog in Frameworks */,
 				35705FA32CA7296C00A23889 /* FirebaseAnalytics in Frameworks */,
 				63FC70242CADFD7000989F18 /* CachedAsyncImage in Frameworks */,
+				35C53AF12CBB7B2900D760AC /* FirebaseStorage in Frameworks */,
 				35705F9E2CA7292C00A23889 /* GoogleSignIn in Frameworks */,
 				35705FA72CA7296C00A23889 /* FirebaseFirestore in Frameworks */,
 			);
@@ -108,6 +110,7 @@
 				35705EFE2CA7289A00A23889 /* MeetRio */,
 				35705F0F2CA7289C00A23889 /* MeetRioTests */,
 				35705F192CA7289C00A23889 /* MeetRioUITests */,
+				35C53AEF2CBB7B2900D760AC /* Frameworks */,
 				35705EFD2CA7289A00A23889 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -120,6 +123,13 @@
 				35705F162CA7289C00A23889 /* MeetRioUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		35C53AEF2CBB7B2900D760AC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -149,6 +159,7 @@
 				35705FA42CA7296C00A23889 /* FirebaseAuth */,
 				35705FA62CA7296C00A23889 /* FirebaseFirestore */,
 				63FC70232CADFD7000989F18 /* CachedAsyncImage */,
+				35C53AF02CBB7B2900D760AC /* FirebaseStorage */,
 			);
 			productName = MeetRio;
 			productReference = 35705EFC2CA7289A00A23889 /* MeetRio.app */;
@@ -454,7 +465,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.felipePeixoto.MeetRio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -490,7 +501,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.felipePeixoto.MeetRio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -681,6 +692,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 35705FA12CA7296B00A23889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		35C53AF02CBB7B2900D760AC /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 35705FA12CA7296B00A23889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 		63FC70232CADFD7000989F18 /* CachedAsyncImage */ = {
 			isa = XCSwiftPackageProductDependency;
