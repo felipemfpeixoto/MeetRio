@@ -115,16 +115,6 @@ struct YourEventsView: View{
                         }
                     }
                 }
-                
-                
-                // Daqui para baixo é só frufru para ficar mais polido na entrega final
-                GeometryReader { geometry in
-                    Color.clear.preference(key: ViewOffsetKey.self, value: geometry.frame(in: .global).minY)
-                }
-                .frame(height: 1)
-            }.padding(.bottom, 96)
-            .onPreferenceChange(ViewOffsetKey.self) { value in
-                isVisible = value < (UIScreen.main.bounds.height - 1)
             }
         }
         .refreshable {
@@ -143,18 +133,11 @@ struct YourEventsView: View{
             filteredEvents = filteredEvents.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
         
-//        // TODO: Depois tem que mudar esse binding de sheetViewModel
-//        if sheetViewModel.selectedSafetyRating > 0 {
-//            filteredEvents = filteredEvents.filter {
-//                Int($0.safetyRate) == sheetViewModel.selectedSafetyRating
-//            }
-//        }
-        
         return filteredEvents
     }
 }
 
-//#Preview {
-//    YourEventsView()
-//        .environmentObject(SheetViewModel())
-//}
+#Preview {
+    YourEventsView(loggedCase: .constant(.registered))
+        .environmentObject(SheetViewModel())
+}

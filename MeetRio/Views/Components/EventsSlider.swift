@@ -134,6 +134,7 @@ struct EventsSlider: View {
     }
 }
 
-//#Preview {
-//    EventsSlider(title: "Hostel events", eventCategory: EventCategory.bemBrazil.rawValue, isLoading: .constant(false), searchText: .constant(""))
-//}
+#Preview {
+    EventsSlider(title: "Teste", eventCategory: "Nightlife", isLoading: .constant(false), searchText: .constant(""), selectedFavorite: .constant(nil), deuRefresh: .constant(false), loggedCase: .constant(.registered), clicouGoing: .constant(false))
+}
+

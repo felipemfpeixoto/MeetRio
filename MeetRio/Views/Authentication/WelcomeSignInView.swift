@@ -48,7 +48,8 @@ struct WelcomeSignInView: View {
                                     .font(.system(size: 15))
                                     .foregroundStyle(.white)
                             }
-                            NavigationLink(destination: AuthenticationView(loggedCase: $loggedCase, isShowing: $isShowing, arbiuPrimeiraVez: $arbiuPrimeiraVez, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad)) {
+                            NavigationLink(destination: AuthenticationView(loggedCase: $loggedCase, isShowing: $isShowing, arbiuPrimeiraVez: $arbiuPrimeiraVez, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad))
+                            {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 20)
                                         .foregroundStyle(.marcaTexto)
@@ -57,8 +58,10 @@ struct WelcomeSignInView: View {
                                         .fontWeight(.semibold)
                                         .foregroundStyle(.black)
                                 }
-                            }.frame(width: 140, height: 44)
-                                .padding(.top)
+                            }
+                            .accessibilityIdentifier("InitialButton")
+                            .frame(width: 140, height: 44)
+                            .padding(.top)
                         }
                         Spacer()
                     }

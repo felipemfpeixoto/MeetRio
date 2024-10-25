@@ -275,6 +275,6 @@ struct NewEventCard: View {
     }
 }
 
-//#Preview {
-//    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), event: EventDetails(apiResponse: MockData.eventDetails))
-//}
+#Preview {
+    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), event: MockData.eventDetails)
+}

@@ -269,7 +269,7 @@ struct NewEventPageViewIOS18: View {
 
     @Environment(\.dismiss) var dismiss
     @Binding var loggedCase: LoginCase
-    let event: EventDetails
+    var event: EventDetails
     @State var going: Bool = false
     @State var calendarBool: Bool = false
     @State var translationManager: TranslationManager = TranslationManager()
@@ -281,70 +281,75 @@ struct NewEventPageViewIOS18: View {
     @State var changeSheetShare = false
 
     var body: some View {
-        EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool, translatedTexts: $translationManager.translatedTexts)
-            .navigationBarBackButtonHidden(true)
-            .navigationBarItems(leading:
-                                    Button(action: {
-                                        print("Clicou no botão de voltar")
-                                        saiDaView()
-                                    }, label: {
-                                        HStack {
-                                            Image(systemName: "chevron.left")
-                                                .font(.system(size: 18))
-                                            Text("Back")
-                                                .font(.system(size: 18))
-                                        }
-                                        .foregroundStyle(.white)
-                                        .fontWeight(.semibold)
-                                    }))
-            .overlay(alignment: .topTrailing) {
-                VStack {
-                    if loggedCase == .registered {
-                        buttonGoing
+        VStack{
+            content
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button(action: {
+                    print("Clicou no botão de voltar")
+                    dismiss()
+                }) {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18))
+                        Text("Back")
+                            .font(.system(size: 18))
                     }
-                    translationButton
-                }.padding()
+                    .foregroundStyle(.white)
+                    .fontWeight(.semibold)
+                }
             }
-            .sheet(isPresented: $changeSheet) { // Apresenta a sheet do evento quando changeSheet for true
-                EventPageDetaislViewIOS18(event: event, translationManager: translationManager, changeSheet: $changeSheetShare)
-                    .presentationDetents([.fraction(0.32), .large])
-                    .presentationCornerRadius(20)
-                    .interactiveDismissDisabled(isNotDismissable)
-                    .presentationBackgroundInteraction(.enabled)
-                    .background(EmptyView())
-            }
-            .onChange(of: changeSheetShare){
-                if changeSheetShare{
-                    //print("oi")
-                    changeSheet = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        event.shareEvent { success in
-                            if success {
-                                print("Compartilhamento concluído com sucesso!")
-                            } else {
-                                print("Compartilhamento cancelado ou falhou.")
-                            }
-                            changeSheet = true
+        }
+        .toolbarBackgroundVisibility(.hidden)
+    }
+    
+    var content: some View {
+        ZStack{
+            EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool, translatedTexts: $translationManager.translatedTexts)
+                .overlay(alignment: .topTrailing) {
+                    VStack {
+                        if loggedCase == .registered {
+                            buttonGoing
                         }
-
-                    }
-   
+                        translationButton
+                    }.padding()
                 }
-            }
-            .onAppear {
-                if loggedCase == .registered {
-                    Task {
-                        going = try await FirestoreManager.shared.imGoing(UserManager.shared.hospede!.id!, eventID: event.id!)
+                .onChange(of: changeSheetShare){
+                    if changeSheetShare{
+                        //print("oi")
+                        changeSheet = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                            event.shareEvent { success in
+                                if success {
+                                    print("Compartilhamento concluído com sucesso!")
+                                } else {
+                                    print("Compartilhamento cancelado ou falhou.")
+                                }
+                                changeSheet = true
+                            }
+                            
+                        }
+                        
                     }
                 }
-                PostHogSDK.shared.capture("ViuDetalhesEvento")
-                translationManager.translatedTexts[0] = event.description
-            }
-            .translationTask(translationManager.configuration) { session in
-                // Use the session the task provides to translate the text.
-                await translationManager.translateAllAtOnce(using: session, isShowing: $changeSheet)
-            }
+                .onAppear {
+                    if loggedCase == .registered {
+                        Task {
+                            going = try await FirestoreManager.shared.imGoing(UserManager.shared.hospede!.id!, eventID: event.id!)
+                        }
+                    }
+                    PostHogSDK.shared.capture("ViuDetalhesEvento")
+                    translationManager.translatedTexts[0] = event.description
+                }
+                .translationTask(translationManager.configuration) { session in
+                    // Use the session the task provides to translate the text.
+                    await translationManager.translateAllAtOnce(using: session, isShowing: $changeSheet)
+                }
             
+            BottomSheetView(isShowing: $changeSheet, someView: EventPageDetaislViewIOS18(event: event, translationManager: translationManager, changeSheet: $changeSheetShare), overlayedColor: Color.clear)
+        }
     }
     
     var buttonGoing: some View {

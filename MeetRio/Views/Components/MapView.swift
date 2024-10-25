@@ -56,3 +56,7 @@ struct MapView: View {
     //            ])
     //        }
 }
+
+#Preview {
+    MapView(coordinate: CLLocationCoordinate2D(latitude: 40.712784, longitude: -74.005941), appleMapsURL: nil)
+}

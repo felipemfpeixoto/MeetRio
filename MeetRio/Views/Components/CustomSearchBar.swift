@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 struct CustomSearchBar: View {
-    
     @Binding var searchText: String
     @Binding var filterButton: Bool
     
@@ -51,4 +50,13 @@ struct CustomSearchBar: View {
         }
         .shadow(color: .gray, radius: 2, x: 0, y: 2)
     }
+}
+
+
+#Preview("SearchBar Filter") {
+    CustomSearchBar(searchText: .constant(""), filterButton: .constant(false))
+}
+
+#Preview("SearchBar") {
+    CustomSearchBar(searchText: .constant(""), filterButton: .constant(false), showFilter: false)
 }

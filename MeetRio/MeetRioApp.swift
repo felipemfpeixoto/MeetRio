@@ -13,7 +13,7 @@ import Translation
 @main
 struct MeetRioApp: App {
     @Environment(\.scenePhase) var scenePhase
-    
+
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
@@ -41,6 +41,7 @@ struct MeetRioApp: App {
                 ContentView(didStartSignUpFlow: $didStartSignUpFlow)
 //                TesteView()
             }
+            
             .onChange(of: scenePhase) {
                 switch scenePhase {
                     

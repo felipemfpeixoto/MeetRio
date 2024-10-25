@@ -62,12 +62,11 @@ struct TabViewContainer: View {
             .onAppear {
                 UITabBar.appearance().backgroundColor = UIColor.white
             }
-            
-            BottomSheetView(isShowing: $sheetViewModel.isShowing, selectedSafetyRating: $sheetViewModel.selectedSafetyRating)
-                .zIndex(1)
         }
         
     }
 }
 
-// MockData.eventDetails
+#Preview{
+    TabViewContainer(isAuthenticated: .constant(true), loggedCase: .constant(.registered), willLoad: .constant(false), arbiuPrimeiraVez: .constant(true))
+}

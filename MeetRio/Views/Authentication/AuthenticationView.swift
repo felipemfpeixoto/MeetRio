@@ -208,6 +208,7 @@ struct AuthenticationView: View {
                 .foregroundStyle(.white)
                 .fontWeight(.semibold)
         })
+        .accessibilityIdentifier("signInAnonymous")
         .frame(height: 15)
     }
 

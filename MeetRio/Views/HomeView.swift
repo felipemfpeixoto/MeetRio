@@ -74,17 +74,17 @@ struct HomeView: View{
             
             VStack{
                 Spacer()
-                if selectedFavorite != nil {
-                    AddedToFavoriteCard(eventImage: ((selectedFavorite?.photoData) ?? UIImage(named: "defaultImage")?.pngData())!, selectedScreen: $selectedScreen)
-                        .padding()
-                        .task {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                                withAnimation(Animation.easeInOut(duration: 0.5)) {
-                                    selectedFavorite = nil
-                                }
-                            }
-                        }
-                }
+//                if selectedFavorite != nil {
+//                    AddedToFavoriteCard(eventImage: ((selectedFavorite?.photoData) ?? UIImage(named: "defaultImage")?.pngData())!, selectedScreen: $selectedScreen)
+//                        .padding()
+//                        .task {
+//                            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//                                withAnimation(Animation.easeInOut(duration: 0.5)) {
+//                                    selectedFavorite = nil
+//                                }
+//                            }
+//                        }
+//                }
                 
             }
         }
@@ -148,6 +148,7 @@ struct HomeView: View{
                             )
                             .offset(y: -15)
                     }
+                    .accessibilityIdentifier("ProfileView")
                 }
                 .padding(.horizontal)
                 .padding(.top, 50)

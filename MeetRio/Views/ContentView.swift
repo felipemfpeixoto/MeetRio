@@ -28,7 +28,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             TabViewContainer(isAuthenticated: $showingSignInView, loggedCase: $loggedCase, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
-            launchSreen
+            launchScreen
         }
         .onChange(of: loggedCase) {
             if loggedCase != .none {
@@ -37,53 +37,54 @@ struct ContentView: View {
                 }
             }
         }
-        .onAppear {
-                let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
-                self.showingSignInView = authUser == nil
-                if !showingSignInView {
-                    Task {
-                        try await UserManager.shared.getUser(userID: authUser?.uid ?? "")
-                        
-                        let authUser2 = vm.loadAuthUser()
-                        if authUser2?.isAnonymous == false{
-                            loggedCase = .registered
-                        }
-                        else if authUser2?.isAnonymous == true{
-                            loggedCase = .anonymous
-                        }
-                        else{
-                            loggedCase = .none
-                        }
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
-                            withAnimation(Animation.linear(duration: 0.25)) {
-                                isLoading.toggle()
-                            }
-                            if abriuPrimeiraVez {
-                                willLoad.toggle()
-                                DispatchQueue.main.asyncAfter(deadline: .now()+2.5) {
-                                    abriuPrimeiraVez = false
-                                }
-                            }
-                        }
-                        
+        .onAppear(){
+            let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
+            self.showingSignInView = authUser == nil
+            if !showingSignInView {
+                Task {
+                    try await UserManager.shared.getUser(userID: authUser?.uid ?? "")
+                    
+                    let authUser2 = vm.loadAuthUser()
+                    if authUser2?.isAnonymous == false{
+                        loggedCase = .registered
+                        print("Autentiquei como Registrado")
                     }
+                    else if authUser2?.isAnonymous == true{
+                        loggedCase = .anonymous
+                        print("Autentiquei como anônimo")
+                    }
+                    else{
+                        loggedCase = .none
+                        print("Autentiquei como none")
+                    }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+                    if abriuPrimeiraVez {
+                        willLoad.toggle()
+                        DispatchQueue.main.asyncAfter(deadline: .now()+2.5) {
+                            abriuPrimeiraVez = false
+                        }
+                    }
+                }
             }
+
         }
         .fullScreenCover(isPresented: $showingSignInView, content: {
             WelcomeSignInView(isShowing: $showingSignInView, arbiuPrimeiraVez: $abriuPrimeiraVez, loggedCase: $loggedCase, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad)
         })
         .onChange(of: abriuPrimeiraVez){ newValue, oldOne in
+        
             if abriuPrimeiraVez {
-                isLoading = true
-                didAppear = true
+                withAnimation(Animation.bouncy(duration: 0.75)) {
+                    isLoading = true
+                    didAppear = true
+                }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now()+2.5) {
                     abriuPrimeiraVez = false
                 }
             }
         }
-        // Bloco responsável por carregar os eventos após o usuário fazer login
         .onChange(of: showingSignInView) {
             if !showingSignInView {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -93,7 +94,7 @@ struct ContentView: View {
         }
     }
     
-    var launchSreen: some View {
+    var launchScreen: some View {
         ZStack {
             if abriuPrimeiraVez {
                 Color.black
@@ -116,10 +117,18 @@ struct ContentView: View {
                 didAppear.toggle()
             }
         }
+        .onChange(of: loggedCase) { newCase in
+            if newCase != .none {
+                withAnimation(Animation.easeInOut(duration: 0.75)) {
+                    isLoading = false
+                }
+            }
+        }
     }
 }
 
-//#Preview {
-//    ContentView()
-//}
+
+#Preview {
+    ContentView(didStartSignUpFlow: .constant(false))
+}
 
