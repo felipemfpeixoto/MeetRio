@@ -46,7 +46,7 @@ struct YourEventsView: View{
                 if isLoading {
                     ProgressView()
                 } else if let yourEvents, yourEvents.isEmpty {
-                    Text("No events yet")
+                    EventNotFound()
                 } else {
                     ListView
                     // Frufru para ficar mais polido na entrega final
@@ -66,22 +66,20 @@ struct YourEventsView: View{
     
     var header: some View{
         VStack{
-            Image("skyImage")
+            Image("imgFundoTop")
                 .resizable()
+                .scaledToFill()
                 .frame(width: screenWidth, height: screenHeight / 5)
+                .clipped()
                 .overlay{
                     HStack {
 
-                        Text("Your ")
+                        Text("Your Events")
                             .font(.title)
                             .fontWeight(.bold)
                             
-                        +
-                        Text("events")
-                            .font(.title.italic())
-                            .fontWeight(.light)
-  
                         Spacer()
+                        
                     }
                     .foregroundColor(.white)
                     .padding(.leading, 35)

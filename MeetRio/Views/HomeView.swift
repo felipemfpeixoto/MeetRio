@@ -163,9 +163,16 @@ struct HomeView: View{
     
     var container: some View{
         VStack{
-            EventsSlider(title: "Bem Brasil Events", eventCategory: EventCategory.bemBrazil.rawValue, isLoading: $isLoadingBemBrazil, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, loggedCase: $loggedCase, clicouGoing: $clicouGoing)
-            EventsSlider(title: "Nightlife", eventCategory: EventCategory.nightLife.rawValue, isLoading: $isLoadingNightLife, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, loggedCase: $loggedCase, clicouGoing: $clicouGoing)
+            if searchText.isEmpty{
+                EventsSlider(title: "Bem Brasil Events", eventCategory: EventCategory.bemBrazil.rawValue, isLoading: $isLoadingBemBrazil, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, loggedCase: $loggedCase, clicouGoing: $clicouGoing)
+                EventsSlider(title: "Nightlife", eventCategory: EventCategory.nightLife.rawValue, isLoading: $isLoadingNightLife, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, loggedCase: $loggedCase, clicouGoing: $clicouGoing)
+            }
+            else {
+                EventSearch(searchText: $searchText, loggedCase: $loggedCase, selectedFavorite: $selectedFavorite, clicouGoing: $clicouGoing)
+                    .frame(maxWidth: .infinity)
+            }
         }
+        
     }
 }
 
