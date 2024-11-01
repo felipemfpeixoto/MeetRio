@@ -201,7 +201,7 @@ struct NewEventCard: View {
             
             guard let userID = UserManager.shared.hospede?.id, let eventID = event.id else {
                 // Mostre um alerta ou toast informando que o usuário ou o evento não foi carregado corretamente
-                showAlert(title: "Erro", message: "Usuário ou evento não carregado corretamente.")
+                print("Erro: Usuário ou evento não carregado corretamente.")
                 return
             }
             
@@ -209,11 +209,26 @@ struct NewEventCard: View {
             isLoading = true
             
             // Verifica se o usuário está marcando ou desmarcando presença
-//            if !going {
-//                marcarPresenca(userID: userID, eventID: eventID)
-//            } else {
-//                desmarcarPresenca(userID: userID, eventID: eventID)
-//            }
+            if !going {
+                if let index = YourEventsModel.shared.events.firstIndex(of: event) {
+                    YourEventsModel.shared.events.remove(at: index)
+                    going = false
+                    selectedFavorite = nil
+                }
+                desmarcarPresenca(userID: userID, eventID: eventID)
+                
+            } else {
+                
+                
+                print("estou going")
+                YourEventsModel.shared.addEvent(event)
+                going = true
+                selectedFavorite = event
+                marcarPresenca(userID: userID, eventID: eventID)
+            }
+            
+            isLoading = false
+            
         }, label: {
             if isLoading {
                 ProgressView()
@@ -239,15 +254,10 @@ struct NewEventCard: View {
         Task {
             do {
                 await FirestoreManager.shared.createGoingEvent(userID, eventID)
-                going = true
-                selectedFavorite = event
                 PostHogSDK.shared.capture("MarcouPresenca")
             } catch {
                 print("Erro ao marcar presença: \(error)")
-                going = false // Reverte o estado se falhar
-                showAlert(title: "Erro", message: "Não foi possível marcar sua presença.")
             }
-            isLoading.toggle()
         }
     }
 
@@ -255,22 +265,10 @@ struct NewEventCard: View {
         Task {
             do {
                 await FirestoreManager.shared.deleteGoingEvent(userID, eventID)
-                going = false
-                selectedFavorite = nil
             } catch {
                 print("Erro ao desmarcar presença: \(error)")
-                going = true // Reverte o estado se falhar
-                showAlert(title: "Erro", message: "Não foi possível desmarcar sua presença.")
             }
-            isLoading.toggle()
         }
-    }
-
-    // Exemplo de função para exibir um alerta
-    func showAlert(title: String, message: String) {
-        // Aqui você pode implementar a lógica para exibir um alerta ou um toast
-        // Por exemplo, em SwiftUI você pode usar um Alert:
-        print("\(title): \(message)") // Apenas um print como exemplo
     }
 }
 

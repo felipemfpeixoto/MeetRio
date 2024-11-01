@@ -11,6 +11,8 @@ import SwiftUI
 struct YourEventsView: View{
     @EnvironmentObject var sheetViewModel: SheetViewModel
     
+    var yourEvents = YourEventsModel.shared.events
+    
     @Binding var loggedCase: LoginCase
     
     let screenWidth = UIScreen.main.bounds.width
@@ -22,9 +24,7 @@ struct YourEventsView: View{
     @State private var selectedEvent: EventDetails?
     
     @State private var isVisible = false
-    
-    @State var yourEvents: [EventDetails] = []
-    
+ 
     @State var needsAtt: Bool = false
     @State var isLoading: Bool = false
     
@@ -56,15 +56,6 @@ struct YourEventsView: View{
                 }
             }
             .padding(.top, screenHeight/5)
-            
-            
-            .onChange(of: needsAtt){
-                //MARK: Código meio zoado
-                Task {
-                    yourEvents = await FirestoreManager.shared.userGoingEvents(UserManager.shared.hospede?.id ?? "")
-                }
-                needsAtt.toggle()
-            }
         }
         
     }
@@ -115,13 +106,6 @@ struct YourEventsView: View{
                         }
                     }
                 }
-            }
-        }
-        .refreshable {
-            Task {
-                isLoading = true
-                yourEvents = await FirestoreManager.shared.userGoingEvents(UserManager.shared.hospede?.id ?? "")
-                isLoading = false
             }
         }
     }

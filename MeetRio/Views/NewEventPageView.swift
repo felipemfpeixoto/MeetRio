@@ -88,7 +88,7 @@ struct EventPageContent: View {
                         Color.black.opacity(0.35)
                     }
                     
-                case .failure(let error):
+                case .failure(_):
                     Color.oceanBlue
                 default:
                     Color.oceanBlue
@@ -355,17 +355,19 @@ struct NewEventPageViewIOS18: View {
     var buttonGoing: some View {
         Button(action: {
             if !going {
+                YourEventsModel.shared.addEvent(event)
+                going = true
                 Task {
                     let userID = UserManager.shared.hospede!.id
-                    try await FirestoreManager.shared.createGoingEvent(userID!, event.id!)
-                    going = true
+                    await FirestoreManager.shared.createGoingEvent(userID!, event.id!)
                     PostHogSDK.shared.capture("MarcouPresenca")
                 }
             } else {
+                YourEventsModel.shared.removeEvent(event)
+                going = false
                 Task {
                     let userID = UserManager.shared.hospede!.id
-                    try await FirestoreManager.shared.deleteGoingEvent(userID!, event.id!)
-                    going = false
+                    await FirestoreManager.shared.deleteGoingEvent(userID!, event.id!)
                 }
             }
         }, label: {
@@ -475,17 +477,19 @@ struct NewEventPageView: View {
     var buttonGoing: some View {
         Button(action: {
             if !going {
+                YourEventsModel.shared.addEvent(event)
+                going = true
                 Task {
                     let userID = UserManager.shared.hospede!.id
-                    try await FirestoreManager.shared.createGoingEvent(userID!, event.id!)
-                    going = true
+                    await FirestoreManager.shared.createGoingEvent(userID!, event.id!)
                     PostHogSDK.shared.capture("MarcouPresenca")
                 }
             } else {
+                YourEventsModel.shared.removeEvent(event)
+                going = false
                 Task {
                     let userID = UserManager.shared.hospede!.id
-                    try await FirestoreManager.shared.deleteGoingEvent(userID!, event.id!)
-                    going = false
+                    await FirestoreManager.shared.deleteGoingEvent(userID!, event.id!)
                 }
             }
         }, label: {
