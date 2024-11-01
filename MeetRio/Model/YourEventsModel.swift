@@ -9,8 +9,8 @@ import Foundation
 
 @Observable
 class YourEventsModel: Codable {
-    static let shared = YourEventsModel()
-    
+    static let shared = (try? YourEventsModel.load()) ?? YourEventsModel()
+ 
     var events: [EventDetails]
     
     init() {

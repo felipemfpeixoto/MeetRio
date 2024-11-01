@@ -11,7 +11,7 @@ import SwiftUI
 struct YourEventsView: View{
     @EnvironmentObject var sheetViewModel: SheetViewModel
     
-    var yourEvents = YourEventsModel.shared.events
+    @State var yourEvents: [EventDetails]?
     
     @Binding var loggedCase: LoginCase
     
@@ -45,7 +45,7 @@ struct YourEventsView: View{
             VStack{
                 if isLoading {
                     ProgressView()
-                } else if yourEvents.isEmpty{
+                } else if let yourEvents, yourEvents.isEmpty {
                     Text("No events yet")
                 } else {
                     ListView
@@ -56,6 +56,9 @@ struct YourEventsView: View{
                 }
             }
             .padding(.top, screenHeight/5)
+        }
+        .onAppear {
+            yourEvents = YourEventsModel.shared.events
         }
         
     }
@@ -111,13 +114,16 @@ struct YourEventsView: View{
     }
 
     var searchResults: [EventDetails] {
-        var filteredEvents = yourEvents
-        
-        if !searchText.isEmpty {
-            filteredEvents = filteredEvents.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        if let yourEvents {
+            var filteredEvents = yourEvents
+            
+            if !searchText.isEmpty {
+                filteredEvents = filteredEvents.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            }
+            
+            return filteredEvents
         }
-        
-        return filteredEvents
+        return []
     }
 }
 

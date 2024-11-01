@@ -49,8 +49,9 @@ struct MeetRioApp: App {
                 case .background:
                         do {
                             try userHostel.save()
+                            try YourEventsModel.shared.save()
                         } catch {
-                            print("🤬 ERRO AO TENTAR SALVAR O HOSTEL")
+                            print("🤬 ERRO AO TENTAR SALVAR O HOSTEL ou YourEventsModel")
                         }
                     break
                 case .inactive:
