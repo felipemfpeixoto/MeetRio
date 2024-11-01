@@ -27,6 +27,7 @@ struct MockData {
             referencePoint: "Ao lado do parque"
         )
         
+        
         let testDateDetails = DateDetails(
             startDate: "2024-10-14", // Now using String for the date
             endDate: "2024-10-14",
@@ -44,7 +45,7 @@ struct MockData {
             tags: ["Festival de Música"], // Mantido como array de strings
             tips: ["Festa", "Dança"], // Alterado para uma string simples
             safetyRate: 4.5, // Mantido como está
-            eventCategory: "Um evento incrível de música ao vivo com várias atrações!",
+            eventCategory: "Bem Brazil",
             dayWeek: "Domingo", // Usando uma string simples
             otherPictureURLs: [otherPictureURL1, otherPictureURL2], // Array de URLs como esperado
             photoURL: photoURL, // Mantido como está

@@ -37,6 +37,7 @@ struct EventSearch: View {
                                             selectedFavorite: $selectedFavorite,
                                             loggedCase: $loggedCase,
                                             clicouGoing: $clicouGoing,
+                                            size: .large,
                                             event: event
                                         )
                                     }
@@ -47,6 +48,7 @@ struct EventSearch: View {
                                             selectedFavorite: $selectedFavorite,
                                             loggedCase: $loggedCase,
                                             clicouGoing: $clicouGoing,
+                                            size: .large,
                                             event: event
                                         )
                                     }

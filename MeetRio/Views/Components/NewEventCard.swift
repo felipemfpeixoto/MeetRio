@@ -10,6 +10,11 @@ import SwiftUI
 import PostHog
 import CachedAsyncImage
 
+
+enum Sizes {
+    case normal, large
+}
+
 struct NewEventCard: View {
     
     @State var going: Bool = false
@@ -19,6 +24,8 @@ struct NewEventCard: View {
     @Binding var loggedCase: LoginCase
     
     @Binding var clicouGoing: Bool
+    
+    var size: Sizes = .normal
     
     let screenWidth = UIScreen.main.bounds.width
     let screenHeight = UIScreen.main.bounds.height
@@ -84,7 +91,10 @@ struct NewEventCard: View {
                 }
             }
         }
-        .frame(width: screenWidth/1.4, height: screenWidth/1.8)
+        .frame(
+            width: size == .normal ? screenWidth / 1.4 : screenWidth / 1.2,
+            height: size == .normal ? screenWidth / 1.8 : screenWidth / 1.5
+        )
         .overlay{
             dateComponent
                 .padding()
@@ -96,13 +106,42 @@ struct NewEventCard: View {
         .overlay(alignment: .bottomTrailing){ dateDetails }
         
         .overlay(alignment: .topTrailing){
-            if loggedCase == .registered {
-                buttonGoing
-                    .padding()
+            HStack{
+                if size == .large {
+                    EventCategory
+                }
+                if loggedCase == .registered {
+                    buttonGoing
+                        .padding()
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var EventCategory: some View {
+        
+        var eventName: String {
+            if event.eventCategory == "bemBrazil" {
+                return "Bem Brazil"
+            }
+            else if event.eventCategory == "nightLife" {
+                return "NightLife"
+            }
+            else{
+                return event.eventCategory
             }
         }
         
-        // Falta Default
+        Text(eventName)
+            .font(.callout)
+            .fontWeight(.medium)
+            .foregroundColor(.white)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(BlurView(style: .systemUltraThinMaterial))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .offset(x: 10)
     }
     
     @ViewBuilder
@@ -127,10 +166,7 @@ struct NewEventCard: View {
                 .fontWeight(.semibold)
                 .padding(.bottom, 3)
             Text(event.address.neighborhood)
-                
-                
-            
-            
+
         }
         .offset(y: -3)
         .padding([.bottom, .horizontal])
@@ -194,7 +230,7 @@ struct NewEventCard: View {
         }
         .frame(height: 35)
     }
-    
+
     var buttonGoing: some View {
         Button(action: {
             going.toggle()
@@ -272,6 +308,10 @@ struct NewEventCard: View {
     }
 }
 
-#Preview {
+#Preview("Normal") {
     NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), event: MockData.eventDetails)
+}
+
+#Preview("Large") {
+    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), size: .large, event: MockData.eventDetails)
 }
