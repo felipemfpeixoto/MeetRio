@@ -79,9 +79,9 @@ struct BottomSheetView: View {
         .cornerRadius(16, corners: [.topLeft, .topRight])
         .offset(y: max(0, dragOffset.height))
         .simultaneousGesture(
-            DragGesture(minimumDistance: 360)
+            DragGesture(minimumDistance: 160)
                 .onChanged { drag in
-                    if abs(drag.translation.height) > 360 {
+                    if abs(drag.translation.height) > 120 {
                         dragOffset = drag.translation
 
                         if dragOffset.height < -screenHeight * 0.8 {
