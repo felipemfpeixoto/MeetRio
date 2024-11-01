@@ -15,14 +15,6 @@ enum EventCategory: String, Codable {
 // Objetos
 
 
-struct Hostel: Codable {
-    @DocumentID var id: String?
-    var name: String
-    var email: String
-    var password: String
-    var location: LocationDetails
-}
-
 
 struct DateDetails: Codable {
     var startDate: String // Date as a string from Firestore

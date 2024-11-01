@@ -1,5 +1,5 @@
 {
-  "originHash" : "512089327e22a5c1a2c1b71d775f92d3841b831907890303c68808571b25fe35",
+  "originHash" : "24ce6510be9ee33fe169788b47be5951d52e9376435a006347bf11db7795fc8d",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -26,6 +26,15 @@
       "state" : {
         "revision" : "c89ed571ae140f8eb1142735e6e23d7bb8c34cb2",
         "version" : "1.7.5"
+      }
+    },
+    {
+      "identity" : "codableextensions",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/rvenieris/CodableExtensions",
+      "state" : {
+        "revision" : "e671737b81ffe39c17523f0caac73e93cce36927",
+        "version" : "1.0.0"
       }
     },
     {

@@ -9,10 +9,13 @@ import SwiftUI
 import Firebase
 import PostHog
 import Translation
+import CodableExtensions
 
 @main
 struct MeetRioApp: App {
     @Environment(\.scenePhase) var scenePhase
+    
+    @State var userHostel: UserHostel = (try? UserHostel.load()) ?? UserHostel()
 
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
@@ -39,13 +42,16 @@ struct MeetRioApp: App {
         WindowGroup {
             NavigationStack {
                 ContentView(didStartSignUpFlow: $didStartSignUpFlow)
-//                TesteView()
+                    .environment(userHostel)
             }
-            
             .onChange(of: scenePhase) {
                 switch scenePhase {
-                    
                 case .background:
+                        do {
+                            try userHostel.save()
+                        } catch {
+                            print("🤬 ERRO AO TENTAR SALVAR O HOSTEL")
+                        }
                     break
                 case .inactive:
                     if didStartSignUpFlow {
