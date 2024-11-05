@@ -27,12 +27,17 @@ struct ContentView: View {
     
     @Binding var didStartSignUpFlow: Bool
     
+    
+    
     var body: some View {
         ZStack {
             TabViewContainer(isAuthenticated: $showingSignInView, loggedCase: $loggedCase, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
                 .environment(userHostel)
             launchScreen
         }
+        
+        
+        
         .onChange(of: loggedCase) {
             if loggedCase != .none {
                 Task {

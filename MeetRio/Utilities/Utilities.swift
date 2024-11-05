@@ -7,6 +7,16 @@
 import SwiftUI
 import Foundation
 
+
+@Observable
+class ToastVariables{
+    static let shared = ToastVariables()
+    
+    var isOnAdd: Bool = false
+    var isOnRemove: Bool = false
+}
+
+
 final class Utilities {
     
     static let shared = Utilities()

@@ -362,6 +362,8 @@ struct NewEventPageViewIOS18: View {
                     await FirestoreManager.shared.createGoingEvent(userID!, event.id!)
                     PostHogSDK.shared.capture("MarcouPresenca")
                 }
+                // Liga o TOAST
+                ToastVariables.shared.isOnAdd = true
             } else {
                 YourEventsModel.shared.removeEvent(event)
                 going = false
@@ -369,6 +371,8 @@ struct NewEventPageViewIOS18: View {
                     let userID = UserManager.shared.hospede!.id
                     await FirestoreManager.shared.deleteGoingEvent(userID!, event.id!)
                 }
+                // Desliga o TOAST
+                ToastVariables.shared.isOnRemove = true
             }
         }, label: {
             Image(systemName: going ? "checkmark.seal.fill" : "checkmark.seal")
@@ -484,6 +488,9 @@ struct NewEventPageView: View {
                     await FirestoreManager.shared.createGoingEvent(userID!, event.id!)
                     PostHogSDK.shared.capture("MarcouPresenca")
                 }
+                
+                // Liga o TOAST
+                ToastVariables.shared.isOnAdd = true
             } else {
                 YourEventsModel.shared.removeEvent(event)
                 going = false
@@ -491,6 +498,9 @@ struct NewEventPageView: View {
                     let userID = UserManager.shared.hospede!.id
                     await FirestoreManager.shared.deleteGoingEvent(userID!, event.id!)
                 }
+                
+                // Liga o TOAST
+                ToastVariables.shared.isOnRemove = true
             }
         }, label: {
             Image(systemName: going ? "checkmark.seal.fill" : "checkmark.seal")

@@ -252,15 +252,16 @@ struct NewEventCard: View {
                     selectedFavorite = nil
                 }
                 desmarcarPresenca(userID: userID, eventID: eventID)
+                ToastVariables.shared.isOnRemove = true
                 
             } else {
-                
-                
+
                 print("estou going")
                 YourEventsModel.shared.addEvent(event)
                 going = true
                 selectedFavorite = event
                 marcarPresenca(userID: userID, eventID: eventID)
+                ToastVariables.shared.isOnAdd = true
             }
             
             isLoading = false

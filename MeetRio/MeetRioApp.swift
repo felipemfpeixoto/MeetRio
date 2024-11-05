@@ -10,6 +10,7 @@ import Firebase
 import PostHog
 import Translation
 import CodableExtensions
+import AlertToast
 
 @main
 struct MeetRioApp: App {
@@ -37,6 +38,8 @@ struct MeetRioApp: App {
     
     // Variáveis para teste de tradução
     @State var showsTranslation: Bool = false
+    
+    @State var toastVariables = ToastVariables.shared
 
     var body: some Scene {
         WindowGroup {
@@ -44,6 +47,15 @@ struct MeetRioApp: App {
                 ContentView(didStartSignUpFlow: $didStartSignUpFlow)
                     .environment(userHostel)
             }
+            
+            .toast(isPresenting: $toastVariables.isOnAdd){
+                AlertToast(displayMode: .banner(.slide), type: .complete(.green), title: "Event Saved", subTitle: "Your event has been saved in your events list")
+            }
+            
+            .toast(isPresenting: $toastVariables.isOnRemove){
+                AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Event Removed", subTitle: "Your event has been removed from your events list")
+            }
+            
             .onChange(of: scenePhase) {
                 switch scenePhase {
                 case .background:

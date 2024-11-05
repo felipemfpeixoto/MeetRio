@@ -100,6 +100,8 @@ struct LateralCard: View {
                         await FirestoreManager.shared.deleteGoingEvent((UserManager.shared.hospede?.id!)!, event.id!)
                     }
                     
+                    ToastVariables.shared.isOnRemove = true
+                    
                 }),
                 secondaryButton: .cancel(Text("Cancel"))
             )
