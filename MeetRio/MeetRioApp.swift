@@ -48,6 +48,14 @@ struct MeetRioApp: App {
                     .environment(userHostel)
             }
             
+//            .toast(isPresenting: $toastVariables.isTranslated){
+//                AlertToast(displayMode: .banner(.slide), type: .systemImage("translate", .backgroundWhite), title: "Translate Concluded", style: .style(backgroundColor: .darkGreen, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite))
+//            }
+//            
+//            .toast(isPresenting: $toastVariables.isOnTranslate){
+//                AlertToast(displayMode: .banner(.pop), type: .loading, title: "Translate", subTitle: "Translate in progress")
+//            }
+            
             .toast(isPresenting: $toastVariables.isOnAddCalendar, duration: 5){
                 AlertToast(displayMode: .banner(.slide), type: .systemImage("checkmark.circle.fill", .darkGreen), title: "Siri Request", subTitle: "Request sent to Siri to add event to Apple Calendar")
             }

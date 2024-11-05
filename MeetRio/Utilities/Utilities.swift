@@ -12,9 +12,17 @@ import Foundation
 class ToastVariables{
     static let shared = ToastVariables()
     
+    // Add to calendar Button
     var isOnAdd: Bool = false
     var isOnRemove: Bool = false
+    
+    // Call Siri Button
     var isOnAddCalendar: Bool = false
+    
+    // Translate Button
+    var isOnTranslate: Bool = false
+    var isTranslated: Bool = false
+    var isTranslateError: Bool = false
 }
 
 
