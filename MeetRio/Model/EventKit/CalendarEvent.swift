@@ -124,6 +124,7 @@ class CalendarEvent {
                 print("Erro ao doar a interação: \(error.localizedDescription)")
             } else {
                 print("Interação doada com sucesso.")
+                ToastVariables.shared.isOnAddCalendar = true
             }
         }
     }

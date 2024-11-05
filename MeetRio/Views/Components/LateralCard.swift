@@ -13,10 +13,9 @@ struct LateralCard: View {
     
     var event: EventDetails
     
-    @Binding var needAtt: Bool
+    @Binding var showingAlert: Bool
+    @Binding var eventToDelete: EventDetails?
     
-    
-    @State var showingAlert: Bool = false
     
     var body: some View {
         HStack(spacing: 0.0){
@@ -71,6 +70,7 @@ struct LateralCard: View {
             
             VStack{
                 Button(action: {
+                    eventToDelete = event
                     showingAlert.toggle()
                 }) {
                     Image(systemName: "trash")
@@ -89,23 +89,5 @@ struct LateralCard: View {
                 .foregroundColor(.white)
                 .shadow(radius: 5, y: 5)
         }
-        .alert(isPresented: $showingAlert) {
-            Alert(
-                title: Text("Are you sure you want to delete this favorite place?"),
-                primaryButton: .destructive(Text("Yes"), action: {
-                    // Ação a ser executada quando o usuário confirma a exclusão
-                    
-                    YourEventsModel.shared.removeEvent(event)
-                    Task{
-                        await FirestoreManager.shared.deleteGoingEvent((UserManager.shared.hospede?.id!)!, event.id!)
-                    }
-                    
-                    ToastVariables.shared.isOnRemove = true
-                    
-                }),
-                secondaryButton: .cancel(Text("Cancel"))
-            )
-        }
-        
     }
 }

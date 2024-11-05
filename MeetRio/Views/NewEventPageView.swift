@@ -146,9 +146,9 @@ struct EventPageContent: View {
             
             myEvent.reciveAndDonateInteraction()
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-                calendarBool = false
-            }
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+//                calendarBool = false
+//            }
             
         }, label: {
             HStack {

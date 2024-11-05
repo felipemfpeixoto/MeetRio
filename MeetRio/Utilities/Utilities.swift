@@ -14,6 +14,7 @@ class ToastVariables{
     
     var isOnAdd: Bool = false
     var isOnRemove: Bool = false
+    var isOnAddCalendar: Bool = false
 }
 
 

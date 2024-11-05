@@ -48,12 +48,16 @@ struct MeetRioApp: App {
                     .environment(userHostel)
             }
             
+            .toast(isPresenting: $toastVariables.isOnAddCalendar, duration: 5){
+                AlertToast(displayMode: .banner(.slide), type: .systemImage("checkmark.circle.fill", .darkGreen), title: "Siri Request", subTitle: "Request sent to Siri to add event to Apple Calendar")
+            }
+            
             .toast(isPresenting: $toastVariables.isOnAdd){
-                AlertToast(displayMode: .banner(.slide), type: .complete(.green), title: "Event Saved", subTitle: "Your event has been saved in your events list")
+                AlertToast(displayMode: .banner(.slide), type: .systemImage("checkmark.circle.fill", .backgroundWhite), title: "Event Saved", subTitle: "Your event has been saved in your events list", style: .style(backgroundColor: .darkGreen, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite))
             }
             
             .toast(isPresenting: $toastVariables.isOnRemove){
-                AlertToast(displayMode: .banner(.pop), type: .complete(.green), title: "Event Removed", subTitle: "Your event has been removed from your events list")
+                AlertToast(displayMode: .banner(.pop), type: .systemImage("trash.fill", .backgroundWhite), title: "Event Removed", subTitle: "Your event has been removed from your events list", style: .style(backgroundColor: .red, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite))
             }
             
             .onChange(of: scenePhase) {

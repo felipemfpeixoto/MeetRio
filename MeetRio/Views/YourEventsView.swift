@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+
 struct YourEventsView: View{
     @EnvironmentObject var sheetViewModel: SheetViewModel
     
@@ -25,17 +26,15 @@ struct YourEventsView: View{
     
     @State private var isVisible = false
  
-    @State var needsAtt: Bool = false
     @State var isLoading: Bool = false
     
+    @State var showingAlert: Bool = false
+    @State var eventToDelete: EventDetails?
     
     var body: some View {
         ZStack{
             VStack {
                 header
-                    .onAppear{
-                        needsAtt.toggle()
-                    }
                 // TODO: Depois tem que mudar esse binding de sheetViewModel
                 CustomSearchBar(searchText: $searchText, filterButton: $sheetViewModel.isShowing, showFilter: false)
                     .padding(.top, -35)
@@ -61,6 +60,29 @@ struct YourEventsView: View{
             yourEvents = YourEventsModel.shared.events
         }
         
+        .alert(isPresented: $showingAlert) {
+            Alert(
+                title: Text("Are you sure you want to delete this favorite place?"),
+                primaryButton: .destructive(Text("Yes"), action: {
+                    // Ação a ser executada quando o usuário confirma a exclusão
+                    if let event = eventToDelete{
+                        YourEventsModel.shared.removeEvent(event)
+                        Task{
+                            await FirestoreManager.shared.deleteGoingEvent((UserManager.shared.hospede?.id!)!, event.id!)
+                        }
+                        
+                        ToastVariables.shared.isOnRemove = true
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            yourEvents?.removeAll(where: { $0.id == event.id })
+                        }
+                    }
+                    
+                    
+                }),
+                secondaryButton: .cancel(Text("Cancel"))
+            )
+        }
     }
 
     
@@ -95,13 +117,13 @@ struct YourEventsView: View{
                 ForEach(searchResults, id: \.name) { event in
                     if #available(iOS 18, *) {
                         NavigationLink(destination: NewEventPageViewIOS18(loggedCase: $loggedCase, event: event)) {
-                            LateralCard(event: event, needAtt: $needsAtt)
+                            LateralCard(event: event, showingAlert: $showingAlert, eventToDelete: $eventToDelete)
                                 .padding(.horizontal)
                                 .padding(.vertical, 5)
                         }
                     } else {
                         NavigationLink(destination: NewEventPageView(loggedCase: $loggedCase, event: event)) {
-                            LateralCard(event: event, needAtt: $needsAtt)
+                            LateralCard(event: event, showingAlert: $showingAlert, eventToDelete: $eventToDelete)
                                 .padding(.horizontal)
                                 .padding(.vertical, 5)
                         }
