@@ -10,6 +10,7 @@ import SwiftUI
 import CoreLocation
 import PostHog
 import CachedAsyncImage
+import Combine
 
 struct EventPageDetaislView: View {
     let screenWidth = UIScreen.main.bounds.width
@@ -17,6 +18,8 @@ struct EventPageDetaislView: View {
     
     @State var isSheetOpen: Bool = false
     @State var isAlsoGoing: [Hospede] = []
+    
+    @State private var selectedSegment = 0
     
     let event: EventDetails
     let reviewList: [Review] = [Review(rate: 4, date: Date.now, description: "Muito bom, gostei bastante do local."), Review(rate: 2, date: Date.now, description: "Não gostei.")]
@@ -29,45 +32,54 @@ struct EventPageDetaislView: View {
         ZStack {
             Color("BackgroundWhite")
                 .ignoresSafeArea()
-            ScrollView {
-                VStack(spacing: 15) {
-                    
-                    HStack{
-                        if let buyURL = event.buyURL {
-                            BuyButtonView(buyURL: buyURL)
-                        }
-                        
-                        // Compartilhar evento
-                        shareEvent(isPresented: $isPresented)
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 30)
-                    
-                    PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
-                        .padding()
-                    
-                    if event.otherPictureURLs != nil{
-                        OtherPhotos(photos: event.otherPictureURLs!)
-                            .padding()
-                    }
-                    
-                    LocationView(event: event)
-                        .padding()
-                    
-                    TipsView(tips: event.tips)
-                        .padding()
-                }
-                .onAppear {
-                    loadPeopleGoing()
-                }
+            VStack{
+                CustomSegmentedControl(preselectedIndex: $selectedSegment, options: ["Details", "Reviews"])
+                SegmentedControlContent
+                Spacer()
             }
+        }
+        .onAppear {
+            loadPeopleGoing()
+        }
+    }
+    
+    @ViewBuilder
+    var SegmentedControlContent: some View {
+        VStack{
+            if selectedSegment == 0{
+                buyButton
+                photoCarrosel
+                LocationView(event: event)
+                TipsView(tips: event.tips)
+                    
+               
+            } else{
+                //TODO: Falta colocar a review
+                PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
+            }
+        }
+        .padding()
+    }
+    
+    @ViewBuilder
+    var buyButton: some View {
+        if let buyURL = event.buyURL {
+            BuyButtonView(buyURL: buyURL)
+        }
+    }
+    
+    @ViewBuilder
+    var photoCarrosel: some View {
+        if event.otherPictureURLs != nil{
+            OtherPhotos(photos: event.otherPictureURLs!)
+                
         }
     }
     
     func loadPeopleGoing() {
         Task {
             isLoading = true
-            isAlsoGoing = try await FirestoreManager.shared.getGoingEvent(event.id!)
+            isAlsoGoing = await FirestoreManager.shared.getGoingEvent(event.id!)
             isLoading = false
         }
     }
@@ -117,8 +129,6 @@ struct EventPageDetaislViewIOS18: View {
                         BuyButtonView(buyURL: buyURL)
                     }
                     
-                    // Compartilhar evento
-                    shareEvent(isPresented: $changeSheet)
                 }
                 .padding(.horizontal)
                 .padding(.top, 30)
@@ -254,18 +264,26 @@ struct OtherPhotos: View {
 
 struct shareEvent: View{
     
-    @Binding var isPresented: Bool
+    let event: EventDetails
     
     var body: some View {
         Button {
-            isPresented = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                event.shareEvent { success in
+                    if success {
+                        print("Compartilhamento concluído com sucesso!")
+                    } else {
+                        print("Compartilhamento cancelado ou falhou.")
+                    }
+                }
+                
+            }
             
         } label: {
             Image(systemName: "square.and.arrow.up")
                 .font(.title2)
                 .fontWeight(.bold)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .foregroundStyle(.black)
+                .foregroundStyle(.white)
         }
     }
 }
@@ -330,6 +348,9 @@ struct LocationView: View {
 
 
 struct TipsView: View {
+    @State private var timerSubscription: AnyCancellable?
+    @State private var animationIndex: Int = 1
+    
     let tips: [String] // Agora recebe uma lista de dicas
     let columns = [
         GridItem(.flexible()),
@@ -344,27 +365,61 @@ struct TipsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 10)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 15) {
-                    ForEach(0..<tips.count, id: \.self) { index in
-                        HStack(spacing: 10) {
-                            Image(systemName: iconForTip(tip: tips[index]))
-                                .foregroundStyle(Color.green)
-                            Text(tips[index])
-                                .fontWeight(.regular)
+            ScrollViewReader{ value in
+                VStack{
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 15) {
+                            ForEach(0..<tips.count, id: \.self) { index in
+                                HStack(spacing: 10) {
+                                    Image(systemName: iconForTip(tip: tips[index]))
+                                        .foregroundStyle(Color.green)
+                                    Text(tips[index])
+                                        .fontWeight(.regular)
+                                }
+                                .padding()
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color.white)
+                                        .shadow(color: Color("DarkGreen"), radius: 1, y: 2)
+                                )
+                                .padding(.vertical)
+                                .padding(.horizontal, 5)
+                                .offset(y: -15)
+                            }
                         }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.white)
-                                .shadow(radius: 2, y: 2)
-                        )
-                        .padding(.vertical)
-                        .padding(.horizontal, 5)
-                        .offset(y: -15)
                     }
+                    .onAppear(){
+                        
+                        timerSubscription = Timer.publish(every: 2.5, on: .main, in: .default)
+                           .autoconnect()
+                           .sink { _ in
+                               
+                               if animationIndex <= tips.count {
+                                   animationIndex += 1
+                                   
+                               }
+                               else{
+                                   animationIndex = 0
+                               }
+                               withAnimation() {
+                                   value.scrollTo(animationIndex)
+                               }
+                           }
+                        
+                    }
+                    
+                    .onDisappear {
+                        timerSubscription?.cancel()
+                    }
+                    
+                    
+                    
                 }
+                
+                
             }
+            
+            
         }
         .padding(.horizontal, 5)
     }
@@ -403,5 +458,47 @@ struct TipsView: View {
 //        )
 //    }
     // ou
-    EventPageDetaislView(event: MockData.eventDetails, isPresented: .constant(false))
+   EventPageDetaislView(event: MockData.eventDetails, isPresented: .constant(false))
+}
+
+
+struct CustomSegmentedControl: View {
+    let screenHeight = UIScreen.main.bounds.height
+    
+    @Namespace private var animation
+    @Binding var preselectedIndex: Int
+    var options: [String]
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(options.indices, id: \.self) { index in
+                ZStack {
+                    Rectangle()
+                        .fill(Color.clear)
+
+                    VStack {
+                        Text(options[index])
+                            .fontWeight(.light)
+                            .foregroundStyle(preselectedIndex == index ? Color.black : Color.gray)
+                        
+                        
+                        if preselectedIndex == index {
+                            Rectangle()
+                                .frame(height: 2)
+                                .foregroundColor(.black)
+                                .matchedGeometryEffect(id: "underline", in: animation, properties: .frame) // Animação da barra
+                        }
+                    }
+                }
+                .onTapGesture {
+                    withAnimation(.easeInOut) {
+                        preselectedIndex = index
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .frame(height: screenHeight / 10)
+        .cornerRadius(20)
+    }
 }

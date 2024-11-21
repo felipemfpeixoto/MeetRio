@@ -29,8 +29,8 @@ struct MockData {
         
         
         let testDateDetails = DateDetails(
-            startDate: "2024-10-14", // Now using String for the date
-            endDate: "2024-10-14",
+            startDate: "2024-12-14", // Now using String for the date
+            endDate: "2024-12-14",
             startHour: "18:00", // Now using String for the hour
             endHour: "22:00"
         )
@@ -46,7 +46,7 @@ struct MockData {
             tips: ["Festa", "Dança"], // Alterado para uma string simples
             safetyRate: 4.5, // Mantido como está
             eventCategory: "Bem Brazil",
-            dayWeek: "Domingo", // Usando uma string simples
+            dayWeek: "Sunday", // Usando uma string simples
             otherPictureURLs: [otherPictureURL1, otherPictureURL2], // Array de URLs como esperado
             photoURL: photoURL, // Mantido como está
             description: "Música, Festival, Ao Vivo", // Alterado para uma string simples
