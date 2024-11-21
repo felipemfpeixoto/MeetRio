@@ -22,6 +22,7 @@ struct EventPageContent: View {
     
     @Binding var translatedTexts: [String?]
     
+    
     var body: some View {
         VStack {
             header
@@ -60,6 +61,7 @@ struct EventPageContent: View {
             
             calendarButton
                 .padding(.vertical)
+          
         }
         .foregroundStyle(.white)
     }
@@ -185,13 +187,13 @@ struct EventPageContent: View {
     }
 
     var eventComponents: some View {
-        HStack {
+        HStack(spacing: 10){
             ageClassification
                 .background {
                     RoundedRectangle(cornerRadius: 15)
                         .foregroundStyle(.black)
                 }
-                .padding(.trailing)
+                
 
             if event.dateDetails != nil {
                 eventHour
@@ -200,6 +202,9 @@ struct EventPageContent: View {
                             .foregroundStyle(Color("DarkGreen"))
                     }
             }
+            
+            shareEvent(event: event)
+                .offset(y: -3)
             
         }
     }
@@ -306,7 +311,7 @@ struct NewEventPageViewIOS18: View {
     }
     
     var content: some View {
-        ZStack{
+        ScrollView{
             EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool, translatedTexts: $translationManager.translatedTexts)
                 .overlay(alignment: .topTrailing) {
                     VStack {
@@ -315,24 +320,6 @@ struct NewEventPageViewIOS18: View {
                         }
                         translationButton
                     }.padding()
-                }
-                .onChange(of: changeSheetShare){
-                    if changeSheetShare{
-                        //print("oi")
-                        changeSheet = false
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                            event.shareEvent { success in
-                                if success {
-                                    print("Compartilhamento concluído com sucesso!")
-                                } else {
-                                    print("Compartilhamento cancelado ou falhou.")
-                                }
-                                changeSheet = true
-                            }
-                            
-                        }
-                        
-                    }
                 }
                 .onAppear {
                     if loggedCase == .registered {
@@ -348,7 +335,8 @@ struct NewEventPageViewIOS18: View {
                     await translationManager.translateAllAtOnce(using: session, isShowing: $changeSheet)
                 }
             
-            BottomSheetView(isShowing: $changeSheet, someView: EventPageDetaislViewIOS18(event: event, translationManager: translationManager, changeSheet: $changeSheetShare), overlayedColor: Color.clear)
+            EventPageDetaislView(event: event, isPresented: $changeSheetShare)
+                .offset(y: -30)
         }
     }
     
@@ -420,8 +408,10 @@ struct NewEventPageViewIOS18: View {
     }
 }
 
-struct NewEventPageView: View {
 
+
+//TODO: FAZER AS ATUALIZACOES.
+struct NewEventPageView: View {
     @Environment(\.dismiss) var dismiss
     @Binding var loggedCase: LoginCase
     let event: EventDetails
@@ -434,18 +424,33 @@ struct NewEventPageView: View {
     
 
     var body: some View {
-        EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool, translatedTexts: .constant([nil, nil]))
-        .sheet(isPresented: $isPresenting) {
+        ScrollView{
+            EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool, translatedTexts: .constant([nil, nil]))
             EventPageDetaislView(event: event, isPresented: $changeSheetShare)
-                .presentationDetents([.fraction(0.32), .large])
-                .presentationCornerRadius(20)
-                .interactiveDismissDisabled(true)
-                .presentationBackgroundInteraction(.enabled)
-                .background(EmptyView())
+                .offset(y: -30)
+            
         }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button(action: {
+                    print("Clicou no botão de voltar")
+                    dismiss()
+                }) {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18))
+                        Text("Back")
+                            .font(.system(size: 18))
+                    }
+                    .foregroundStyle(.white)
+                    .fontWeight(.semibold)
+                }
+            }
+        }
+        
         .onChange(of: changeSheetShare){
             if changeSheetShare{
-                //print("oi")
                 isPresenting = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                     event.shareEvent { success in
@@ -455,6 +460,7 @@ struct NewEventPageView: View {
                             print("Compartilhamento cancelado ou falhou.")
                         }
                         isPresenting = true
+                        changeSheetShare = false
                     }
 
                 }
@@ -513,4 +519,12 @@ struct NewEventPageView: View {
                 )
         })
     }
+    
+    private func saiDaView() {
+        isPresenting = false
+        dismiss()
+    }
 }
+
+
+//BottomSheetView(isShowing: $isPresenting, someView: EventPageDetaislView(event: event, isPresented: $changeSheetShare), overlayedColor: Color.clear)
