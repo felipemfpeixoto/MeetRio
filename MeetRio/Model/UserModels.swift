@@ -14,5 +14,5 @@ struct Hospede: Codable {
     var name: String
     var country: CountryDetails
     var imageURL: String = ""
-    var hostel: Hostel?
+    var hostel: String?
 }

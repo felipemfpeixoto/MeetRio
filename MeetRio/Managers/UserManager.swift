@@ -14,6 +14,7 @@ final class UserManager {
     private init() {}
     
     var hospede: Hospede?
+    var hostel: Hostel?
     
     func createNewUser(userID: String, hospede: Hospede) async throws {
         do {

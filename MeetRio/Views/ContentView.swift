@@ -45,7 +45,7 @@ struct ContentView: View {
                 }
             }
         }
-        .onAppear(){
+        .onAppear() {
             let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
             self.showingSignInView = authUser == nil
             if !showingSignInView {
