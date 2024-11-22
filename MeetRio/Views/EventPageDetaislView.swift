@@ -31,7 +31,9 @@ struct EventPageDetaislView: View {
     var body: some View {
         ZStack {
             Color("BackgroundWhite")
+                .cornerRadius(16, corners: [.topLeft, .topRight])
                 .ignoresSafeArea()
+            
             VStack{
                 CustomSegmentedControl(preselectedIndex: $selectedSegment, options: ["Details", "Reviews"])
                 SegmentedControlContent
