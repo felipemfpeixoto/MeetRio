@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
+// Classe responsável por guardar todas as infos do usuário e seu hostel
 @Observable
 final class UserManager {
     static let shared = UserManager()
@@ -35,5 +36,18 @@ final class UserManager {
             print("Perfil de hospede com id \(userID) não encontrado: ", error)
         }
         return
+    }
+    
+    func updateHostel() async throws {
+        if hostel != nil {
+            do {
+                self.hostel = try await FirestoreManager.shared.db.collection("Hostels").document(String(self.hostel!.id!)).getDocument(as: Hostel.self)
+                await self.hostel!.getAllEvents()
+            } catch {
+                print("Erro ao atualizar hostel: \(error.localizedDescription)")
+            }
+        } else {
+            print("Hostel Vazio em UserManager")
+        }
     }
 }

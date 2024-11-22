@@ -20,8 +20,6 @@ struct TabViewContainer: View {
     
     @StateObject var sheetViewModel = SheetViewModel()
     
-    @Environment(UserHostel.self) var userHostel
-    
     let fsManager = FirestoreManager.shared
     @Binding var isAuthenticated: Bool
     
@@ -64,7 +62,6 @@ struct TabViewContainer: View {
                         Text("Your Hostel")
                     }
                     .tag(SelectedScreen.hostel)
-                    .environment(userHostel)
             }
             .accentColor(.black)
             
@@ -78,5 +75,4 @@ struct TabViewContainer: View {
 
 #Preview{
     TabViewContainer(isAuthenticated: .constant(true), loggedCase: .constant(.registered), willLoad: .constant(false), arbiuPrimeiraVez: .constant(true))
-        .environment(UserHostel())
 }

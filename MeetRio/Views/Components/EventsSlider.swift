@@ -138,3 +138,6 @@ struct EventsSlider: View {
     EventsSlider(title: "Teste", eventCategory: "Nightlife", isLoading: .constant(false), searchText: .constant(""), selectedFavorite: .constant(nil), deuRefresh: .constant(false), loggedCase: .constant(.registered), clicouGoing: .constant(false))
 }
 
+
+
+

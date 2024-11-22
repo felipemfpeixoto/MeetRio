@@ -24,10 +24,6 @@ class EventDetails: Identifiable, Codable, Comparable {
     var safetyRate: Float?
     var eventCategory: String
     var dayWeek: String?
-    
-    // MARK: Vai sair
-    var otherPictureData: [Data]?
-    var photoData: Data?
 
     init(id: String?, tags: [String], tips: [String], safetyRate: Float?, eventCategory: String, dayWeek: String?, otherPictureURLs: [String]?, photoURL: String?, description: String, name: String, address: AddressDetails, dateDetails: DateDetails?, buyURL: String?) {
        self.id = id
@@ -60,10 +56,6 @@ class EventDetails: Identifiable, Codable, Comparable {
         case _safetyRate = "safetyRate"
         case _eventCategory = "eventCategory"
         case _dayWeek = "dayWeek"
-        
-        // Propriedades que vão sair (não mapeadas no JSON)
-        case _otherPictureData
-        case _photoData
     }
     
     func formattedDayOfWeek() -> String {

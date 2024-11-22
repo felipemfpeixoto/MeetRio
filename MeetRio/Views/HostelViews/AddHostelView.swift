@@ -13,7 +13,7 @@ struct AddHostelView: View {
     
     @State var searchText: String = ""
     
-    @State var hostels: HostelsManager = HostelsManager()
+    @State var hostels: HostelAggregator = HostelAggregator()
     
     @State var selectedHostelID: String?
     
@@ -49,7 +49,7 @@ struct AddHostelView: View {
     
     var hostelsContainer: some View {
         VStack {
-            ForEach(hostels.hostels, id:\.self.id) { hostel in
+            ForEach(hostels.allHostels, id:\.self.id) { hostel in
                 Button {
                     if hostel.id == selectedHostelID {
                         selectedHostelID = nil
@@ -66,7 +66,6 @@ struct AddHostelView: View {
                     }
                 }
                 .frame(height: 44)
-
             }
         }
     }
@@ -74,7 +73,7 @@ struct AddHostelView: View {
     var bottomButtom: some View {
         Button {
             // salva o hostel para o user
-            UserManager.shared.hostel = hostels.hostels.map(\.self).first(where: { $0.id == selectedHostelID })
+            UserManager.shared.hostel = hostels.allHostels.map(\.self).first(where: { $0.id == selectedHostelID })
             dismiss()
         } label: {
             ZStack {
@@ -86,6 +85,7 @@ struct AddHostelView: View {
             }
         }
         .opacity(selectedHostelID != nil ? 1 : 0.5)
+        .disabled(selectedHostelID == nil)
         .frame(height: 55)
     }
 }

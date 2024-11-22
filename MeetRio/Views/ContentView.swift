@@ -9,8 +9,6 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    @Environment(UserHostel.self) var userHostel
-    
     @State private var vm = SettingsViewModel()
     
     @State var loggedCase: LoginCase = .none
@@ -32,7 +30,6 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             TabViewContainer(isAuthenticated: $showingSignInView, loggedCase: $loggedCase, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
-                .environment(userHostel)
             launchScreen
         }
         
