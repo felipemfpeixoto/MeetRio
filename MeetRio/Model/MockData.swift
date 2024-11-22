@@ -50,7 +50,7 @@ struct MockData {
             otherPictureURLs: [otherPictureURL1, otherPictureURL2], // Array de URLs como esperado
             photoURL: photoURL, // Mantido como está
             description: "Música, Festival, Ao Vivo", // Alterado para uma string simples
-            name: "Ar livre, Para todos, Drinks gratuitos, Cool music, maneiro", // Alterado para uma string simples
+            name: "Samba Independente", // Alterado para uma string simples
             address: AddressDetails(street: "Rua da Boa Vista", number: "33", neighborhood: "Barra", location: LocationDetails(latitude: 54.22, longitude: 54.22)), // Exemplo de preenchimento do parâmetro 'from'
             dateDetails: DateDetails(startDate: "13 de outubro", endDate: "13 de outubro", startHour: "20:00", endHour: "23:00"),
             buyURL: "https://comprar.ingresso.com/festival"

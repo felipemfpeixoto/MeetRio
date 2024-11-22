@@ -109,12 +109,13 @@ struct NewEventCard: View {
             HStack{
                 if size == .large {
                     EventCategory
+                        .padding(.horizontal)
                 }
                 if loggedCase == .registered {
                     buttonGoing
-                        .padding()
+                        
                 }
-            }
+            }.padding()
         }
     }
     
@@ -164,6 +165,8 @@ struct NewEventCard: View {
         VStack(alignment: .leading, spacing: -5){
             Text(event.name)
                 .fontWeight(.semibold)
+                .lineLimit(1)
+                //.minimumScaleFactor(0.7)
                 .padding(.bottom, 3)
             Text(event.address.neighborhood)
 
@@ -289,30 +292,30 @@ struct NewEventCard: View {
     
     func marcarPresenca(userID: String, eventID: String) {
         Task {
-            do {
-                await FirestoreManager.shared.createGoingEvent(userID, eventID)
-                PostHogSDK.shared.capture("MarcouPresenca")
-            } catch {
-                print("Erro ao marcar presença: \(error)")
-            }
+            await FirestoreManager.shared.createGoingEvent(userID, eventID)
+            PostHogSDK.shared.capture("MarcouPresenca")
         }
     }
 
     func desmarcarPresenca(userID: String, eventID: String) {
         Task {
-            do {
-                await FirestoreManager.shared.deleteGoingEvent(userID, eventID)
-            } catch {
-                print("Erro ao desmarcar presença: \(error)")
-            }
+            await FirestoreManager.shared.deleteGoingEvent(userID, eventID)
         }
     }
 }
 
-#Preview("Normal") {
+#Preview("Normal Registered") {
     NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), event: MockData.eventDetails)
 }
 
-#Preview("Large") {
+#Preview("Large Registered") {
     NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), size: .large, event: MockData.eventDetails)
+}
+
+#Preview("Normal Anonymous") {
+    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.anonymous), clicouGoing: .constant(false), event: MockData.eventDetails)
+}
+
+#Preview("Large Anonymous") {
+    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.anonymous), clicouGoing: .constant(false), size: .large, event: MockData.eventDetails)
 }

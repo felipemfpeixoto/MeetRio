@@ -37,6 +37,7 @@ struct EventPageContent: View {
         .background {
             background
                 .ignoresSafeArea()
+                .offset(y: -30)
         }
     }
 
