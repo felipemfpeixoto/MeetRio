@@ -26,7 +26,7 @@ final class TranslationManager {
             ToastVariables.shared.isOnTranslate = true
             let requests: [TranslationSession.Request] = translatedTexts.map {
                 // Map each item into a request.
-                TranslationSession.Request(sourceText: $0!)
+                TranslationSession.Request(sourceText: $0 ?? "")
             }
 
             do {

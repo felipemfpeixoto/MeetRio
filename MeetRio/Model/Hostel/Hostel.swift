@@ -29,6 +29,19 @@ struct Hostel: Codable {
         self.events = events
     }
     
+    init(hostelCE: HostelCodableExtensions) {
+        self.id = hostelCE.id
+        self.name = hostelCE.name
+        if let description = hostelCE.description {
+            self.description = description
+        }
+        self.contact = hostelCE.contact
+        self.addressDetails = hostelCE.addressDetails
+        self.services = hostelCE.services
+        self.imageURL = hostelCE.imageURL
+        self.events = hostelCE.events
+    }
+    
     func uploadToFirestore() async {
         do {
             try FirestoreManager.shared.db.collection("Hostels").document("bvKiWCn1HsejIPr3jCy9").setData(from: self)
@@ -60,3 +73,24 @@ struct ContactDetails: Codable {
 }
 
 
+struct HostelCodableExtensions: Codable {
+    var id: String?
+    var name: String
+    var description: String?
+    var contact: ContactDetails
+    var addressDetails: AddressDetails
+    var services: [String]?
+    var imageURL: String?
+    var events: [HostelEvent]
+    
+    init(hostel: Hostel) {
+        self.name = hostel.name
+        self.description = hostel.description
+        self.contact = hostel.contact
+        self.addressDetails = hostel.addressDetails
+        self.services = hostel.services
+        self.imageURL = hostel.imageURL
+        self.events = hostel.events
+    }
+    
+}

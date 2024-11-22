@@ -32,6 +32,9 @@ final class UserManager {
         do {
             let hospede = try await FirestoreManager.shared.db.collection("Hospedes").document(userID).getDocument(as: Hospede.self)
             self.hospede = hospede
+            
+            let hostelCE = try HostelCodableExtensions.load()
+            self.hostel = Hostel(hostelCE: hostelCE)
         } catch {
             print("Perfil de hospede com id \(userID) não encontrado: ", error)
         }

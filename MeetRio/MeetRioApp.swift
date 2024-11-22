@@ -196,8 +196,15 @@ struct MeetRioApp: App {
                 case .background:
                         do {
                             try YourEventsModel.shared.save()
+                            
+                            if let hostel = UserManager.shared.hostel {
+                                let hostelCE = HostelCodableExtensions(hostel: hostel)
+                                try hostelCE.save()
+                            } else {
+                                print("Hostel ta vazio doidao")
+                            }
                         } catch {
-                            print("🤬 ERRO AO TENTAR SALVAR O HOSTEL ou YourEventsModel")
+                            print("🤬 ERRO AO TENTAR SALVAR O HOSTEL ou YourEventsModel: \(error.localizedDescription)")
                         }
                     break
                 case .inactive:
