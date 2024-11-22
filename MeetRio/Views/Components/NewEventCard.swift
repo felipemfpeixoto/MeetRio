@@ -166,7 +166,7 @@ struct NewEventCard: View {
             Text(event.name)
                 .fontWeight(.semibold)
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
+                //.minimumScaleFactor(0.7)
                 .padding(.bottom, 3)
             Text(event.address.neighborhood)
 
