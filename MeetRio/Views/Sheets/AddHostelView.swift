@@ -28,23 +28,35 @@ struct AddHostelView: View {
                 Spacer()
                 bottomButtom
                 Spacer()
-            }.padding()
+            }
+            .padding()
+            .padding(.top, 32)
         }
     }
     
     var headerContainer: some View {
         VStack {
-            HStack {
-                Text("Select your Hostel")
-                    .font(Font.custom("Bricolage Grotesque", size: 24))
-                    .fontWeight(.semibold)
-                Spacer()
+            VStack{
+                HStack{
+                    Text("Select your Hostel")
+                        .font(Font.custom("Bricolage Grotesque", size: 24))
+                        .fontWeight(.semibold)
+                    Spacer()
+                }
+                HStack{
+                    Text("That you are staying in Rio de janeiro")
+                    Spacer()
+                }
+                    
             }
+            .padding(.bottom)
+            
             TextField("Hostel Name...", text: $searchText)
                 .padding()
                 .background(.quaternary)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
         }
+        .padding()
     }
     
     var hostelsContainer: some View {
@@ -69,6 +81,7 @@ struct AddHostelView: View {
 
             }
         }
+        .padding()
     }
     
     var bottomButtom: some View {
@@ -87,6 +100,7 @@ struct AddHostelView: View {
         }
         .opacity(selectedHostelID != nil ? 1 : 0.5)
         .frame(height: 55)
+        .padding()
     }
 }
 
