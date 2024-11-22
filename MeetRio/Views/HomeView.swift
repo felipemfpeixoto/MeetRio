@@ -60,7 +60,7 @@ struct HomeView: View{
                         Spacer()
                     }
                     .padding(.top, 32)
-                    .padding(.bottom, 96)
+                    //.padding(.bottom, 90)
                     .refreshable {
                         deuRefresh.toggle()
                     }
@@ -166,11 +166,17 @@ struct HomeView: View{
             if searchText.isEmpty{
                 EventsSlider(title: "Bem Brasil Events", eventCategory: EventCategory.bemBrazil.rawValue, isLoading: $isLoadingBemBrazil, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, loggedCase: $loggedCase, clicouGoing: $clicouGoing)
                 EventsSlider(title: "Nightlife", eventCategory: EventCategory.nightLife.rawValue, isLoading: $isLoadingNightLife, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, loggedCase: $loggedCase, clicouGoing: $clicouGoing)
+                
+                
             }
             else {
                 EventSearch(searchText: $searchText, loggedCase: $loggedCase, selectedFavorite: $selectedFavorite, clicouGoing: $clicouGoing)
                     .frame(maxWidth: .infinity)
             }
+            Rectangle()
+                .fill(Color.clear)
+                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width * 0.2)
+            
         }
         
     }

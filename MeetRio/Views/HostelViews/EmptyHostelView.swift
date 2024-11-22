@@ -17,6 +17,7 @@ struct EmptyHostelView: View {
                 .resizable()
                 .ignoresSafeArea()
                 .scaledToFill()
+                
             
             VStack(spacing: 120) {
                 contentTexts
@@ -29,6 +30,8 @@ struct EmptyHostelView: View {
             }
             
         }
+        
+        
     }
     
     var contentTexts: some View{

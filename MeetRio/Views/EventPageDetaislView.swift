@@ -454,12 +454,6 @@ struct TipsView: View {
 
 #Preview{
     
-//    if #available(iOS 18.0, *) {
-//        EventPageDetaislViewIOS18(
-//            event: EventDetails(apiResponse: MockData.eventDetails), translationManager: TranslationManager()
-//        )
-//    }
-    // ou
    EventPageDetaislView(event: MockData.eventDetails, isPresented: .constant(false))
 }
 
@@ -480,7 +474,7 @@ struct CustomSegmentedControl: View {
 
                     VStack {
                         Text(options[index])
-                            .fontWeight(.light)
+                            .fontWeight(preselectedIndex == index ? .medium : .light)
                             .foregroundStyle(preselectedIndex == index ? Color.black : Color.gray)
                         
                         

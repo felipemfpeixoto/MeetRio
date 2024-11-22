@@ -49,7 +49,7 @@ struct EventPageContent: View {
             }
             
             Text(event.name)
-                .font(.title.weight(.semibold))
+                .font(Font.custom("Bricolage Grotesque", size: 26).weight(.semibold))
                 .padding(.top)
             
             Text(event.address.street)
@@ -309,6 +309,7 @@ struct NewEventPageViewIOS18: View {
             }
         }
         .toolbarBackgroundVisibility(.hidden)
+        .background(Color("BackgroundWhite").edgesIgnoringSafeArea(.all))
     }
     
     var content: some View {
@@ -431,6 +432,7 @@ struct NewEventPageView: View {
                 .offset(y: -30)
             
         }
+        .background(Color("BackgroundWhite").edgesIgnoringSafeArea(.all))
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {

@@ -47,6 +47,7 @@ struct TabViewContainer: View {
                         Text("Events")
                     }
                     .tag(SelectedScreen.home)
+                    
                 
                 YourEventsView(loggedCase: $loggedCase)
                     .tabItem {
@@ -59,7 +60,7 @@ struct TabViewContainer: View {
                 
                 HostelView()
                     .tabItem {
-                        Image(systemName: "checkmark.seal")
+                        Image(systemName: "bed.double")
                             .environment(\.symbolVariants, .none)
                         Text("Your Hostel")
                     }
