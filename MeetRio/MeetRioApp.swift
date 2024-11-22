@@ -15,8 +15,6 @@ import AlertToast
 @main
 struct MeetRioApp: App {
     @Environment(\.scenePhase) var scenePhase
-    
-    @State var userHostel: UserHostel = (try? UserHostel.load()) ?? UserHostel()
 
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
@@ -45,7 +43,132 @@ struct MeetRioApp: App {
         WindowGroup {
             NavigationStack {
                 ContentView(didStartSignUpFlow: $didStartSignUpFlow)
-                    .environment(userHostel)
+//                    .onAppear {
+//                        let hostel = Hostel(
+//                            name: "Social Hostel",
+//                            description: "Located 1 block from Copacabana Beach and a 3-minute walk from Ipanema Beach, Social Hostel features beautiful classic interiors",
+//                            contact: ContactDetails(
+//                                phone: "+55 21 2513 2048"
+//                            ),
+//                            addressDetails: AddressDetails(
+//                                street: "R. Francisco Otaviano",
+//                                number: "56",
+//                                neighborhood: "Copacabana",
+//                                location: LocationDetails(latitude: -22.986128314561387, longitude: -43.19092783862311)
+//                            ),
+//                            services: [
+//                                "Free Wifi",
+//                                "Air Condidioner",
+//                                "Modern Décor"
+//                            ],
+//                            imageURL: "*** SUBSTITUIR ***",
+//                            events: [
+//                                HostelEvent(
+//                                    id: UUID().uuidString,
+//                                    tags: [],
+//                                    tips: [],
+//                                    safetyRate: 5,
+//                                    eventCategory: "Hostel Events",
+//                                    dayWeek: nil,
+//                                    otherPictureURLs: nil,
+//                                    photoURL: "*** Substituir ***",
+//                                    description: "*** Substituir ***",
+//                                    name: "*** Substituir ***",
+//                                    address: AddressDetails(
+//                                        street: "Avenida dos Artistas",
+//                                        number: "123",
+//                                        neighborhood: "Centro",
+//                                        location: LocationDetails(
+//                                            latitude: -22.9068,
+//                                            longitude: -43.1729,
+//                                            mapURL: "https://maps.apple.com/?q=-22.9068,-43.1729"
+//                                        ),
+//                                        cep: "",
+//                                        details: "Perto do Museu",
+//                                        referencePoint: "Ao lado do parque"
+//                                    ),
+//                                    dateDetails: DateDetails(
+//                                        startDate: "2024-12-14", // Now using String for the date
+//                                        endDate: "2024-12-14",
+//                                        startHour: "18:00", // Now using String for the hour
+//                                        endHour: "22:00"
+//                                    ),
+//                                    buyURL: "*** Substituir ***",
+//                                    hostelID: "bvKiWCn1HsejIPr3jCy9"
+//                                ),
+//                                HostelEvent(
+//                                    id: UUID().uuidString,
+//                                    tags: [],
+//                                    tips: [],
+//                                    safetyRate: 5,
+//                                    eventCategory: "Hostel Events",
+//                                    dayWeek: nil,
+//                                    otherPictureURLs: nil,
+//                                    photoURL: "*** Substituir ***",
+//                                    description: "*** Substituir ***",
+//                                    name: "*** Substituir ***",
+//                                    address: AddressDetails(
+//                                        street: "Avenida dos Artistas",
+//                                        number: "123",
+//                                        neighborhood: "Centro",
+//                                        location: LocationDetails(
+//                                            latitude: -22.9068,
+//                                            longitude: -43.1729,
+//                                            mapURL: "https://maps.apple.com/?q=-22.9068,-43.1729"
+//                                        ),
+//                                        cep: "",
+//                                        details: "Perto do Museu",
+//                                        referencePoint: "Ao lado do parque"
+//                                    ),
+//                                    dateDetails: DateDetails(
+//                                        startDate: "2024-12-14", // Now using String for the date
+//                                        endDate: "2024-12-14",
+//                                        startHour: "18:00", // Now using String for the hour
+//                                        endHour: "22:00"
+//                                    ),
+//                                    buyURL: "*** Substituir ***",
+//                                    hostelID: "bvKiWCn1HsejIPr3jCy9"
+//                                ),
+//                                HostelEvent(
+//                                    id: UUID().uuidString,
+//                                    tags: [],
+//                                    tips: [],
+//                                    safetyRate: 5,
+//                                    eventCategory: "Hostel Events",
+//                                    dayWeek: nil,
+//                                    otherPictureURLs: nil,
+//                                    photoURL: "*** Substituir ***",
+//                                    description: "*** Substituir ***",
+//                                    name: "*** Substituir ***",
+//                                    address: AddressDetails(
+//                                        street: "Avenida dos Artistas",
+//                                        number: "123",
+//                                        neighborhood: "Centro",
+//                                        location: LocationDetails(
+//                                            latitude: -22.9068,
+//                                            longitude: -43.1729,
+//                                            mapURL: "https://maps.apple.com/?q=-22.9068,-43.1729"
+//                                        ),
+//                                        cep: "",
+//                                        details: "Perto do Museu",
+//                                        referencePoint: "Ao lado do parque"
+//                                    ),
+//                                    dateDetails: DateDetails(
+//                                        startDate: "2024-12-14", // Now using String for the date
+//                                        endDate: "2024-12-14",
+//                                        startHour: "18:00", // Now using String for the hour
+//                                        endHour: "22:00"
+//                                    ),
+//                                    buyURL: "*** Substituir ***",
+//                                    hostelID: "bvKiWCn1HsejIPr3jCy9"
+//                                )
+//                            ]
+//                        )
+//                        Task {
+//                            await hostel.uploadToFirestore()
+//                        }
+//                    }
+                
             }
             
 //            .toast(isPresenting: $toastVariables.isTranslated){
@@ -72,10 +195,16 @@ struct MeetRioApp: App {
                 switch scenePhase {
                 case .background:
                         do {
-                            try userHostel.save()
                             try YourEventsModel.shared.save()
+                            
+                            if let hostel = UserManager.shared.hostel {
+                                let hostelCE = HostelCodableExtensions(hostel: hostel)
+                                try hostelCE.save()
+                            } else {
+                                print("Hostel ta vazio doidao")
+                            }
                         } catch {
-                            print("🤬 ERRO AO TENTAR SALVAR O HOSTEL ou YourEventsModel")
+                            print("🤬 ERRO AO TENTAR SALVAR O HOSTEL ou YourEventsModel: \(error.localizedDescription)")
                         }
                     break
                 case .inactive:
