@@ -14,8 +14,6 @@ enum EventCategory: String, Codable {
 
 // Objetos
 
-
-
 struct DateDetails: Codable {
     var startDate: String // Date as a string from Firestore
     var endDate: String
