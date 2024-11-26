@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import PostHog
 
 
 struct YourEventsView: View{
@@ -121,11 +122,17 @@ struct YourEventsView: View{
                                 .padding(.horizontal)
                                 .padding(.vertical, 5)
                         }
+                        .onTapGesture {
+                            PostHogSDK.shared.capture("ClicouEvento(YourEvents)")
+                        }
                     } else {
                         NavigationLink(destination: NewEventPageView(loggedCase: $loggedCase, event: event)) {
                             LateralCard(event: event, showingAlert: $showingAlert, eventToDelete: $eventToDelete)
                                 .padding(.horizontal)
                                 .padding(.vertical, 5)
+                        }
+                        .onTapGesture {
+                            PostHogSDK.shared.capture("ClicouEvento(YourEvents)")
                         }
                     }
                 }

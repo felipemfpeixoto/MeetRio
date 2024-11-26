@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PostHog
 
 struct AddHostelView: View {
     
@@ -113,6 +114,7 @@ struct AddHostelView: View {
                     // Salva o hostel para o user
                     UserManager.shared.hostel = hostels.allHostels.map(\.self).first(where: { $0.id == selectedHostelID })
                     dismiss()
+                    PostHogSDK.shared.capture("EntrouHostel")
                 } else {
                     showError = true
                 }

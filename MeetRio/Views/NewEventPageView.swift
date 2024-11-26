@@ -39,6 +39,17 @@ struct EventPageContent: View {
                 .ignoresSafeArea()
                 .offset(y: -30)
         }
+        // POSTHOG
+        .onAppear{
+            switch event.eventCategory{
+            case "nightLife":
+                PostHogSDK.shared.capture("ClicouEvento(Nightlife)")
+            case "bemBrazil":
+                PostHogSDK.shared.capture("ClicouEvento(BemBrazil)")
+            default:
+                break
+            }
+        }
     }
 
     var header: some View {
@@ -311,6 +322,7 @@ struct NewEventPageViewIOS18: View {
         .toolbarBackgroundVisibility(.hidden)
         .background(Color("BackgroundWhite").edgesIgnoringSafeArea(.all))
     }
+
     
     var content: some View {
         ScrollView{
@@ -329,7 +341,7 @@ struct NewEventPageViewIOS18: View {
                             going = try await FirestoreManager.shared.imGoing(UserManager.shared.hospede!.id!, eventID: event.id!)
                         }
                     }
-                    PostHogSDK.shared.capture("ViuDetalhesEvento")
+                   
                     translationManager.translatedTexts[0] = event.description
                 }
                 .translationTask(translationManager.configuration) { session in
@@ -350,7 +362,7 @@ struct NewEventPageViewIOS18: View {
                 Task {
                     let userID = UserManager.shared.hospede!.id
                     await FirestoreManager.shared.createGoingEvent(userID!, event.id!)
-                    PostHogSDK.shared.capture("MarcouPresenca")
+                    PostHogSDK.shared.capture("MarcouPresenca(PageiOS18)")
                 }
                 // Liga o TOAST
                 ToastVariables.shared.isOnAdd = true
@@ -360,6 +372,7 @@ struct NewEventPageViewIOS18: View {
                 Task {
                     let userID = UserManager.shared.hospede!.id
                     await FirestoreManager.shared.deleteGoingEvent(userID!, event.id!)
+                    PostHogSDK.shared.capture("DesmarcouPresenca(PageiOS18)")
                 }
                 // Desliga o TOAST
                 ToastVariables.shared.isOnRemove = true
@@ -483,7 +496,7 @@ struct NewEventPageView: View {
                     going = try await FirestoreManager.shared.imGoing(UserManager.shared.hospede!.id!, eventID: event.id!)
                 }
             }
-            PostHogSDK.shared.capture("ViuDetalhesEvento")
+            
         }
     }
     
@@ -495,7 +508,7 @@ struct NewEventPageView: View {
                 Task {
                     let userID = UserManager.shared.hospede!.id
                     await FirestoreManager.shared.createGoingEvent(userID!, event.id!)
-                    PostHogSDK.shared.capture("MarcouPresenca")
+                    PostHogSDK.shared.capture("MarcouPresenca(Page)")
                 }
                 
                 // Liga o TOAST
@@ -506,6 +519,7 @@ struct NewEventPageView: View {
                 Task {
                     let userID = UserManager.shared.hospede!.id
                     await FirestoreManager.shared.deleteGoingEvent(userID!, event.id!)
+                    PostHogSDK.shared.capture("DesmarcouPresenca(Page)")
                 }
                 
                 // Liga o TOAST

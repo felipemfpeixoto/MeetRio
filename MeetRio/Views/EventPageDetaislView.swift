@@ -281,6 +281,8 @@ struct shareEvent: View{
                 
             }
             
+            PostHogSDK.shared.capture("ClicouShare")
+            
         } label: {
             Image(systemName: "square.and.arrow.up")
                 .font(.title2)
