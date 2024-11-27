@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import PostHog
 
 struct EventsSlider: View {
     
@@ -77,7 +76,6 @@ struct EventsSlider: View {
                                     event: event
                                 )
                             }
-                            
                         } else {
                             NavigationLink(destination: NewEventPageView(loggedCase: $loggedCase, event: event)) {
                                 NewEventCard(
@@ -87,7 +85,6 @@ struct EventsSlider: View {
                                     event: event
                                 )
                             }
-                           
                         }
                     }
                     

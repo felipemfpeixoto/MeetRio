@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import PostHog
 
 struct AddHostelView: View {
     
@@ -18,11 +17,6 @@ struct AddHostelView: View {
     
     @State var selectedHostelID: String?
     
-    // Password
-    @State private var showPasswordAlert = false
-    @State private var enteredPassword = ""
-    @State private var showError = false
-    
     var body: some View {
         ZStack {
             Color.backgroundWhite
@@ -32,7 +26,7 @@ struct AddHostelView: View {
                 hostelsContainer
                 Spacer()
                 Spacer()
-                bottomButton
+                bottomButtom
                 Spacer()
             }
             .padding()
@@ -89,11 +83,11 @@ struct AddHostelView: View {
         .padding()
     }
     
-    var bottomButton: some View {
+    var bottomButtom: some View {
         Button {
-            if selectedHostelID != nil {
-                showPasswordAlert = true
-            }
+            // salva o hostel para o user
+            UserManager.shared.hostel = hostels.allHostels.map(\.self).first(where: { $0.id == selectedHostelID })
+            dismiss()
         } label: {
             ZStack {
                 RoundedRectangle(cornerRadius: 100)
@@ -107,32 +101,6 @@ struct AddHostelView: View {
         .disabled(selectedHostelID == nil)
         .frame(height: 55)
         .padding()
-        .alert("Enter Password", isPresented: $showPasswordAlert, actions: {
-            SecureField("Password", text: $enteredPassword)
-            Button("Confirm") {
-                if validatePassword(enteredPassword) {
-                    // Salva o hostel para o user
-                    UserManager.shared.hostel = hostels.allHostels.map(\.self).first(where: { $0.id == selectedHostelID })
-                    dismiss()
-                    PostHogSDK.shared.capture("EntrouHostel")
-                } else {
-                    showError = true
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        }, message: {
-            Text("Please enter your hostel password to confirm.")
-        })
-        .alert("Incorrect Password", isPresented: $showError, actions: {
-            Button("OK", role: .cancel) {}
-        }, message: {
-            Text("The password you entered is incorrect. Please try again.")
-        })
-    }
-    
-    
-    func validatePassword(_ password: String) -> Bool {
-        return password == "hipoglos"
     }
 }
 

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import PostHog
 
 struct EmptyHostelView: View {
     
@@ -56,7 +55,6 @@ struct EmptyHostelView: View {
         Button {
             // Mostra a sheet para que ele possa escanear o qrcode do hostel
             isShowingAddHostel.toggle()
-            PostHogSDK.shared.capture("ClicouEnter(Hostel)")
         } label: {
             ZStack {
                 RoundedRectangle(cornerRadius: 20)

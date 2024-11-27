@@ -6,23 +6,16 @@
 //
 
 import SwiftUI
-import PostHog
 
 struct HostelView: View {
     
     var body: some View {
-        VStack{
-            if UserManager.shared.hostel != nil {
-                HostelPopulatedView()
-            } else {
-                EmptyHostelView()
-            }
-        }
-        .onAppear{
-            PostHogSDK.shared.capture("ClicouTabHostel")
+        if UserManager.shared.hostel != nil {
+            HostelPopulatedView()
+        } else {
+            EmptyHostelView()
         }
     }
-        
 }
 
 #Preview("Hostel Vazio") {

@@ -63,7 +63,6 @@ struct TabViewContainer: View {
                         Text("Your Hostel")
                     }
                     .tag(SelectedScreen.hostel)
-                    
             }
             .accentColor(.black)
             

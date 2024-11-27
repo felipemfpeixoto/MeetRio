@@ -293,14 +293,13 @@ struct NewEventCard: View {
     func marcarPresenca(userID: String, eventID: String) {
         Task {
             await FirestoreManager.shared.createGoingEvent(userID, eventID)
-            PostHogSDK.shared.capture("MarcouPresença(Card)")
+            PostHogSDK.shared.capture("MarcouPresenca")
         }
     }
 
     func desmarcarPresenca(userID: String, eventID: String) {
         Task {
             await FirestoreManager.shared.deleteGoingEvent(userID, eventID)
-            PostHogSDK.shared.capture("Desmarcou Presença(Card)")
         }
     }
 }

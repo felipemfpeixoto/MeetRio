@@ -20,7 +20,7 @@ struct MeetRioApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     init() {
-        let POSTHOG_API_KEY = "phc_l7FQ5jmKlfRzSx5p74D3UqzR7INxOIfXxEGfuS5n2uo"
+        let POSTHOG_API_KEY = "phc_zYzjZUSDIjfkKL23VB0zp2wUDTo194k7WHsfCkuDWaK"
         let POSTHOG_HOST = "https://us.i.posthog.com"
         
         let config = PostHogConfig(apiKey: POSTHOG_API_KEY, host: POSTHOG_HOST)
