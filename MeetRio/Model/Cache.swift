@@ -22,6 +22,8 @@ class EventCache {
     }
     
     // Retrieves events for a specific category
+    
+    // MARK: Pq retorna nil se poderia retornar vazio?
     func getEvents(forCategory category: String) -> [EventDetails]? {
         if let cachedArray = cache.object(forKey: category as NSString) as? [EventDetails] {
             return cachedArray
