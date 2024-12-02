@@ -8,8 +8,7 @@
 import Foundation
 
 protocol CRUDGroup{
-    func getAll() -> [CRUDItem]
-    func getLabeled(label: String) -> [CRUDItem]
+    func getAll<T: Decodable>(from collection: String) async throws -> [T]
 }
 
 
