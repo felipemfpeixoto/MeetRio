@@ -6,3 +6,11 @@
 //
 
 import Foundation
+
+protocol CRUDGroup{
+    func getAll() -> [CRUDItem]
+    func getLabeled(label: String) -> [CRUDItem]
+}
+
+
+// AllEvents ou AllHostels

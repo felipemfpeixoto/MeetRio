@@ -7,6 +7,15 @@
 
 import Foundation
 
-protocol AuthProtocol{
+protocol AuthProtocol {
+    func getAuthUser() async throws
+
+    // Login methods
+    func signIn() async throws
+    func signOut() async throws
+    func resetPassword() async throws
     
+    // Account Manager
+    func createAccount() async throws
+    func deleteAccount() async throws
 }
