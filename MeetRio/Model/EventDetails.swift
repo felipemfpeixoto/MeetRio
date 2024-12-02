@@ -241,9 +241,4 @@ class EventDetails: Identifiable, Codable, Comparable {
 
 
 
-typealias AllEvents = [EventDetails]
-extension AllEvents {
-    init() {
-        self = []
-    }
-}
+

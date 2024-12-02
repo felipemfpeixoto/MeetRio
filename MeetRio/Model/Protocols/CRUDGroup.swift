@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol CRUDGroup{
+protocol CRUDGroup {
     func getAll<T: Decodable>(from collection: String) async throws -> [T]
 }
 
