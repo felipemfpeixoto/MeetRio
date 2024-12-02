@@ -7,9 +7,9 @@
 
 import Foundation
 
-protocol CRUDItem: Codable {
+protocol CRUDItem{
     func create() async throws
-    func getItem() async throws -> Self
+    func getItem(id: String, collection: String) async throws -> Self
     func updateItem() async throws
-    func deleteItem() async throws
+    func deleteItem(id: String, collection: String) async throws
 }
