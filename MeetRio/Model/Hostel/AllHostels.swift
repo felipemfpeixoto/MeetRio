@@ -13,15 +13,20 @@ extension AllHostels {
     
     init(crudGroup: CRUDGroup) async throws {
         do {
-            self = try await self.getAllEvents(crudGroup: crudGroup)
+            self = try await AllHostels.getAllEvents(crudGroup: crudGroup)
         } catch {
             throw error
         }
     }
     
-    func getAllEvents(crudGroup: CRUDGroup) async throws -> [Hostel] {
-        let collectionName = String(describing: Hostel.self)
-        return try await crudGroup.getAll(from: collectionName)
+    private static func getAllEvents(crudGroup: CRUDGroup) async throws -> [Hostel] {
+        do {
+            let collectionName = String(describing: Hostel.self)
+            let allHostels: [Hostel] = try await crudGroup.getAll(from: collectionName)
+            return allHostels
+        } catch {
+            throw error
+        }
     }
     
 }
