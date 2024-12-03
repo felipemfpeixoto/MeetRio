@@ -12,7 +12,7 @@ class FirebaseGroup: CRUDGroup {
     
     let db = Firestore.firestore()
     
-    func getAll<T: Decodable>(from collection: String) async throws -> [T] {
+    func getAll<T: Decodable >(from collection: String) async throws -> [T] {
         do {
             let querySnapshot = try await db.collection(collection).getDocuments()
             var results: [T] = []
@@ -33,3 +33,4 @@ class FirebaseGroup: CRUDGroup {
         }
     }
 }
+

@@ -8,8 +8,8 @@
 import Foundation
 
 protocol CRUDItem{
-    func create() async throws
-    func getItem(id: String, collection: String) async throws -> Self
-    func updateItem() async throws
-    func deleteItem(id: String, collection: String) async throws
+    func create<T: BDItemTeste>(_ element: T) async throws
+    func getItem<T: Codable>(id: String) async throws -> T
+    func updateItem<T: BDItemTeste>(_ element: T) async throws
+    func deleteItem<T: BDItemTeste>(_ element: T) async throws
 }
