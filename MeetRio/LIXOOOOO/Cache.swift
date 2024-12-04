@@ -7,7 +7,7 @@
 
 import Foundation
 
-class EventCache {
+class EventCacheLIXO {
     static let shared = EventCache() // Singleton for global access
     
     private let cache = NSCache<NSString, NSArray>()

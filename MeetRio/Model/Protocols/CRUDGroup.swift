@@ -6,10 +6,9 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 protocol CRUDGroup {
-    func getAll<T: Decodable>(from collection: String) async throws -> [T]
+    func getAll() async throws -> self
 }
 
-
-// AllEvents ou AllHostels

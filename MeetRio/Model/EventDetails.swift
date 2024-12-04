@@ -8,10 +8,11 @@
 import Foundation
 import FirebaseFirestore
 
+// TODO: Separar melhor os atributos e métodos para deixar ele mais "bonitinho"
 @Observable
-class EventDetails: Identifiable, Codable, Comparable {
+class EventDetails: Identifiable, Codable, Comparable, CRUDItem {
     // Propriedades
-    var id: String?
+    var id: String
     var name: String
     var address: AddressDetails
     var dateDetails: DateDetails?
@@ -25,7 +26,8 @@ class EventDetails: Identifiable, Codable, Comparable {
     var eventCategory: String
     var dayWeek: String?
 
-    init(id: String?, tags: [String], tips: [String], safetyRate: Float?, eventCategory: String, dayWeek: String?, otherPictureURLs: [String]?, photoURL: String?, description: String, name: String, address: AddressDetails, dateDetails: DateDetails?, buyURL: String?) {
+    // TODO: Ver como fazer o id da melhor forma possível, para conformar com o init sem o id e, caso nenhum id seja passado, criar o id na mão e garantir que o @DocumentID do record no firebase seja o id gerado por UUID() (Isso irá acontecer ao criar um novo evento pelo app)
+    init(id: String = UUID().uuidString, tags: [String], tips: [String], safetyRate: Float?, eventCategory: String, dayWeek: String?, otherPictureURLs: [String]?, photoURL: String?, description: String, name: String, address: AddressDetails, dateDetails: DateDetails?, buyURL: String?) {
        self.id = id
        self.name = name
        self.address = address

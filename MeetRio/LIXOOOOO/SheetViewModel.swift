@@ -7,7 +7,7 @@
 
 import Foundation
 
-class SheetViewModel: ObservableObject {
+class SheetViewModelLIXO: ObservableObject {
     @Published var isShowing: Bool = false
     @Published var selectedSafetyRating: Int = 0
 }

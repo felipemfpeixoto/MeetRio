@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: Transformar "Event" em um protocolo, que o EventDetails e o HostelEvent deverão conformar
 @Observable
-class HostelEvent: EventDetails {
+class HostelEventLIXO: EventDetails {
     var hostelID: String?
     
     // Esse init ta uma merda

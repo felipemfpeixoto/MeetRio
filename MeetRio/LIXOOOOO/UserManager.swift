@@ -10,7 +10,7 @@ import FirebaseFirestore
 
 // Classe responsável por guardar todas as infos do usuário e seu hostel
 @Observable
-final class UserManager {
+final class UserManagerLIXO {
     static let shared = UserManager()
     private init() {}
     

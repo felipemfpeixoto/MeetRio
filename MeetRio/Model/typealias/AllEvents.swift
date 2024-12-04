@@ -15,8 +15,5 @@ extension AllEvents {
         self = []
     }
     
-    func getAllEvents(crudGroup: CRUDGroup) async throws -> [EventDetails] {
-        let collectionName = String(describing: EventDetails.self)
-        return try await crudGroup.getAll(from: collectionName)
-    }
+//    func getLabelel
 }
