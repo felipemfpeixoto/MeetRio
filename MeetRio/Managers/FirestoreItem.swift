@@ -9,16 +9,17 @@ import Firebase
 import FirebaseCore
 import FirebaseFirestore
 
+// MARK: Mudar para o protocolo de BDItem
 protocol BDItemTeste: Codable {
     var id: String { get set }
 }
 
-class FirestoreItem: CRUDItem {
+class FirebaseItem: CRUDItem {
     let db = Firestore.firestore()
 }
 
 // MARK: CRUD
-extension FirestoreItem {
+extension FirebaseItem {
     
     func create<T: BDItemTeste>(_ element: T) async throws {
         let collectionNamge = String(describing: T.self)

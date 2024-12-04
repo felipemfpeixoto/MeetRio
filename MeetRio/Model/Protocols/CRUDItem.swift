@@ -13,3 +13,10 @@ protocol CRUDItem{
     func updateItem<T: BDItemTeste>(_ element: T) async throws
     func deleteItem<T: BDItemTeste>(_ element: T) async throws
 }
+
+extension CRUDItem {
+    func create<T: BDItemTeste>(_ element: T) async throws {
+        
+    }
+}
+
