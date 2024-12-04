@@ -11,7 +11,7 @@ import FirebaseCore
 import FirebaseFirestore
 
 @Observable
-class FirestoreManager {
+class FirestoreManagerLIXO {
     
     static let shared = FirestoreManager()
     private init() {}

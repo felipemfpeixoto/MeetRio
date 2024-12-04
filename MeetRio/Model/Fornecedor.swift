@@ -19,5 +19,21 @@ class Fornecedor{
     
     private init(){}
     
+    // Monostate
+    private(set) static var allHostels = AllHostels()
+    private(set) static var allEvents = AllEvents()
+}
+
+// MARK: Arrays methods
+extension Fornecedor{
+    // metodos genéricos para acessar as arrays
+    
+    func getAllEvents<T: CRUDItem>() -> [T] {
+        allHostels.getAll(authService)
+    }
+    
+    func refresh<T: CRUDGroup>() -> T {
+        
+    }
     
 }

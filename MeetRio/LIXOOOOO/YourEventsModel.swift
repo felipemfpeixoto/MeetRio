@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-class YourEventsModel: Codable {
+class YourEventsModelLIXO: Codable {
     static let shared = (try? YourEventsModel.load()) ?? YourEventsModel()
  
     var events: [EventDetails]

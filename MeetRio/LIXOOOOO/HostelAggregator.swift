@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-class HostelAggregator: Codable {
+class HostelAggregatorLIXO: Codable {
     var allHostels: [Hostel] = []
     
     init() {

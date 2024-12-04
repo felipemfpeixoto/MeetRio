@@ -7,17 +7,21 @@
 
 import Foundation
 
-protocol UserProtocol: Codable {
+protocol UserProtocol: Codable, CRUDItem, AuthProtocol {
     
-    var authProtocol: AuthProtocol { get }
-    var crudItem: CRUDItem { get }
-    
-    var id: String { get set }
     var name: String { get set }
+    var email: String { get set }
     var imageURL: String? { get set }
+    var loggedCase: LoginCase
     
     func createNewUser() async throws
     func getUser() async throws
     func updateUser() async throws
     func deleteUser() async throws
+    static func getAuthenticatedUser() throws -> Bool
+}
+
+extension UserProtocol {
+    
+    
 }

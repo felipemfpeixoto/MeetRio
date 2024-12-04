@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseAuth
 
-struct AuthDataResultModel {
+struct AuthDataResultModelLIXO {
     let uid: String
     let email: String?
     let photoUrl: String?
@@ -23,7 +23,7 @@ struct AuthDataResultModel {
 }
 
 @Observable
-final class AuthenticationManager {
+final class AuthenticationManagerLIXO {
     
     static let shared = AuthenticationManager()
     
@@ -57,7 +57,7 @@ final class AuthenticationManager {
 }
 
 // MARK: SIGN IN EMAIL
-extension AuthenticationManager {
+extension AuthenticationManagerLIXO {
     
     func createUser(email: String, password: String) async throws -> AuthDataResultModel? {
         do {
@@ -82,7 +82,7 @@ extension AuthenticationManager {
 }
 
 // MARK: SIGN IN SSO
-extension AuthenticationManager {
+extension AuthenticationManagerLIXO {
     
     @discardableResult
     func sigInWithGoogle(tokens: GoogleSignInResultModel) async throws -> AuthDataResultModel {
@@ -103,7 +103,7 @@ extension AuthenticationManager {
 }
 
 @Observable
-final class SettingsViewModel {
+final class SettingsViewModelLIXO {
     // Adicionar lógica para criar atributo email no settingsViewModel, sem precisar fazer aquilo tudo para pegar o email do usuário
     
     @MainActor
@@ -132,7 +132,7 @@ final class SettingsViewModel {
 
 // MARK: SIGN IN ANONYMOUS
 
-extension AuthenticationManager{
+extension AuthenticationManagerLIXO{
     
     @discardableResult
     func signInAnonymous() async throws -> AuthDataResultModel {
