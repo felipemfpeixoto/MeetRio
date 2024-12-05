@@ -17,6 +17,8 @@ enum Sizes {
 
 struct NewEventCard: View {
     
+    @Environment(\.sizeCategory) var sizeCategory
+    
     @State var going: Bool = false
     
     @Binding var selectedFavorite: EventDetails?
@@ -35,6 +37,10 @@ struct NewEventCard: View {
     let calendar = Calendar.current
     
     @State var isLoading: Bool = false
+    
+    var isLargeSize: Bool {
+        return sizeCategory.numericValue >= 5
+    }
     
     let weekdays = [
         "Sun",
@@ -101,6 +107,7 @@ struct NewEventCard: View {
         }
         
         .overlay(alignment: .bottom){ background }
+        
         .overlay(alignment: .bottomLeading){ tags }
     
         .overlay(alignment: .bottomTrailing){ dateDetails }
@@ -179,16 +186,18 @@ struct NewEventCard: View {
     
     @ViewBuilder
     var tags: some View {
-        HStack{
-            ForEach(event.tags, id: \.self){ tag in
-                Text("#\(tag)")
-                    .font(.footnote)
+        if !isLargeSize {
+            HStack {
+                ForEach(event.tags, id: \.self) { tag in
+                    Text("#\(tag)")
+                        .font(.footnote)
+                }
             }
+            .padding()
+            .foregroundStyle(.white)
         }
-        .padding()
-        .foregroundStyle(.white)
     }
-
+    
     @ViewBuilder
     var dateDetails: some View {
         if (event.dateDetails != nil){
@@ -319,4 +328,24 @@ struct NewEventCard: View {
 
 #Preview("Large Anonymous") {
     NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.anonymous), clicouGoing: .constant(false), size: .large, event: MockData.eventDetails)
+}
+
+extension ContentSizeCategory {
+    var numericValue: Int {
+        switch self {
+        case .extraSmall: return 0
+        case .small: return 1
+        case .medium: return 2
+        case .large: return 3
+        case .extraLarge: return 4
+        case .extraExtraLarge: return 5
+        case .extraExtraExtraLarge: return 6
+        case .accessibilityMedium: return 7
+        case .accessibilityLarge: return 8
+        case .accessibilityExtraLarge: return 9
+        case .accessibilityExtraExtraLarge: return 10
+        case .accessibilityExtraExtraExtraLarge: return 11
+        @unknown default: return 3
+        }
+    }
 }

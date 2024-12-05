@@ -55,9 +55,12 @@ struct LateralCard: View {
                     .font(.headline)
                     .foregroundColor(.black)
                     .multilineTextAlignment(.leading)
+                        
+                
                 Text(event.address.street)
                     .font(.subheadline)
                     .foregroundColor(.gray)
+                    .multilineTextAlignment(.leading)
                 Spacer()
 
                 
