@@ -9,6 +9,6 @@ import Foundation
 import FirebaseFirestore
 
 protocol CRUDGroup {
-    func getAll() async throws -> self
+//    func getAll() async throws -> self
 }
 

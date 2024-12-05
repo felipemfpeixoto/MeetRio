@@ -11,7 +11,7 @@ enum SelectedScreen {
     case calendar, home, hostel, yourEvents, event
 }
 
-enum LoginCase {
+enum LoginCase: Codable {
     case anonymous, registered, none
 }
 

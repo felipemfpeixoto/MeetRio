@@ -16,66 +16,42 @@ protocol FirebaseCRUDItem: Codable {
     
     var id: String { get set }
     
+    static var collectionReference: CollectionReference { get }
+    
     func create() async throws
-    mutating func getItem(for id: String) async throws
+    static func getItem(for id: String) async throws -> Self
     func updateItem() async throws
     func deleteItem() async throws
 }
 
 extension FirebaseCRUDItem {
     
-    init(id: String) async throws {
-        do {
-            try await getItem(for: id)
-        } catch {
-            throw error
-        }
+    static var collectionReference: CollectionReference {
+        let collectionName = String(describing: Self.self)
+        let collection = db.collection(collectionName)
+        return collection
     }
     
-    private func getCollectionReference() -> CollectionReference {
+    static private func getCollectionReference() -> CollectionReference {
         let collectionName = String(describing: Self.self)
         let collection = db.collection(collectionName)
         return collection
     }
     
     func create() async throws {
-        let collection = self.getCollectionReference()
-        
-        do {
-            try collection.addDocument(from: self)
-        } catch {
-            throw error
-        }
+        try Self.collectionReference.addDocument(from: self)
     }
     
-    mutating func getItem(for id: String) async throws {
-        let collection = self.getCollectionReference()
-        
-        do {
-            self = try await collection.document(id).getDocument() as! Self
-        } catch {
-            throw error
-        }
+    static func getItem(for id: String) async throws -> Self {
+        return try await Self.collectionReference.document(id).getDocument() as! Self
     }
     
     func updateItem() async throws {
-        let collection = self.getCollectionReference()
-        
-        do {
-            try collection.document(self.id).setData(from: self) // TODO: Precisamos pensar em como vamos fazer a lógica de dar o update (Quando fazer o update)
-        } catch {
-            throw error
-        }
+        try Self.collectionReference.document(self.id).setData(from: self) // TODO: Precisamos pensar em como vamos fazer a lógica de dar o update (Quando fazer o update)
     }
     
     func deleteItem() async throws {
-        let collection = self.getCollectionReference()
-        
-        do {
-            try await collection.document(self.id).delete()
-        } catch {
-            throw error
-        }
+        try await Self.collectionReference.document(self.id).delete()
     }
     
 }

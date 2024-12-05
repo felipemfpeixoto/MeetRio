@@ -14,6 +14,7 @@ import AlertToast
 
 @main
 struct MeetRioApp: App {
+    
     @Environment(\.scenePhase) var scenePhase
 
     // register app delegate for Firebase setup
@@ -43,141 +44,7 @@ struct MeetRioApp: App {
         WindowGroup {
             NavigationStack {
                 ContentView(didStartSignUpFlow: $didStartSignUpFlow)
-//                    .onAppear {
-//                        let hostel = Hostel(
-//                            name: "Social Hostel",
-//                            description: "Located 1 block from Copacabana Beach and a 3-minute walk from Ipanema Beach, Social Hostel features beautiful classic interiors",
-//                            contact: ContactDetails(
-//                                phone: "+55 21 2513 2048"
-//                            ),
-//                            addressDetails: AddressDetails(
-//                                street: "R. Francisco Otaviano",
-//                                number: "56",
-//                                neighborhood: "Copacabana",
-//                                location: LocationDetails(latitude: -22.986128314561387, longitude: -43.19092783862311)
-//                            ),
-//                            services: [
-//                                "Free Wifi",
-//                                "Air Condidioner",
-//                                "Modern Décor"
-//                            ],
-//                            imageURL: "*** SUBSTITUIR ***",
-//                            events: [
-//                                HostelEvent(
-//                                    id: UUID().uuidString,
-//                                    tags: [],
-//                                    tips: [],
-//                                    safetyRate: 5,
-//                                    eventCategory: "Hostel Events",
-//                                    dayWeek: nil,
-//                                    otherPictureURLs: nil,
-//                                    photoURL: "*** Substituir ***",
-//                                    description: "*** Substituir ***",
-//                                    name: "*** Substituir ***",
-//                                    address: AddressDetails(
-//                                        street: "Avenida dos Artistas",
-//                                        number: "123",
-//                                        neighborhood: "Centro",
-//                                        location: LocationDetails(
-//                                            latitude: -22.9068,
-//                                            longitude: -43.1729,
-//                                            mapURL: "https://maps.apple.com/?q=-22.9068,-43.1729"
-//                                        ),
-//                                        cep: "",
-//                                        details: "Perto do Museu",
-//                                        referencePoint: "Ao lado do parque"
-//                                    ),
-//                                    dateDetails: DateDetails(
-//                                        startDate: "2024-12-14", // Now using String for the date
-//                                        endDate: "2024-12-14",
-//                                        startHour: "18:00", // Now using String for the hour
-//                                        endHour: "22:00"
-//                                    ),
-//                                    buyURL: "*** Substituir ***",
-//                                    hostelID: "bvKiWCn1HsejIPr3jCy9"
-//                                ),
-//                                HostelEvent(
-//                                    id: UUID().uuidString,
-//                                    tags: [],
-//                                    tips: [],
-//                                    safetyRate: 5,
-//                                    eventCategory: "Hostel Events",
-//                                    dayWeek: nil,
-//                                    otherPictureURLs: nil,
-//                                    photoURL: "*** Substituir ***",
-//                                    description: "*** Substituir ***",
-//                                    name: "*** Substituir ***",
-//                                    address: AddressDetails(
-//                                        street: "Avenida dos Artistas",
-//                                        number: "123",
-//                                        neighborhood: "Centro",
-//                                        location: LocationDetails(
-//                                            latitude: -22.9068,
-//                                            longitude: -43.1729,
-//                                            mapURL: "https://maps.apple.com/?q=-22.9068,-43.1729"
-//                                        ),
-//                                        cep: "",
-//                                        details: "Perto do Museu",
-//                                        referencePoint: "Ao lado do parque"
-//                                    ),
-//                                    dateDetails: DateDetails(
-//                                        startDate: "2024-12-14", // Now using String for the date
-//                                        endDate: "2024-12-14",
-//                                        startHour: "18:00", // Now using String for the hour
-//                                        endHour: "22:00"
-//                                    ),
-//                                    buyURL: "*** Substituir ***",
-//                                    hostelID: "bvKiWCn1HsejIPr3jCy9"
-//                                ),
-//                                HostelEvent(
-//                                    id: UUID().uuidString,
-//                                    tags: [],
-//                                    tips: [],
-//                                    safetyRate: 5,
-//                                    eventCategory: "Hostel Events",
-//                                    dayWeek: nil,
-//                                    otherPictureURLs: nil,
-//                                    photoURL: "*** Substituir ***",
-//                                    description: "*** Substituir ***",
-//                                    name: "*** Substituir ***",
-//                                    address: AddressDetails(
-//                                        street: "Avenida dos Artistas",
-//                                        number: "123",
-//                                        neighborhood: "Centro",
-//                                        location: LocationDetails(
-//                                            latitude: -22.9068,
-//                                            longitude: -43.1729,
-//                                            mapURL: "https://maps.apple.com/?q=-22.9068,-43.1729"
-//                                        ),
-//                                        cep: "",
-//                                        details: "Perto do Museu",
-//                                        referencePoint: "Ao lado do parque"
-//                                    ),
-//                                    dateDetails: DateDetails(
-//                                        startDate: "2024-12-14", // Now using String for the date
-//                                        endDate: "2024-12-14",
-//                                        startHour: "18:00", // Now using String for the hour
-//                                        endHour: "22:00"
-//                                    ),
-//                                    buyURL: "*** Substituir ***",
-//                                    hostelID: "bvKiWCn1HsejIPr3jCy9"
-//                                )
-//                            ]
-//                        )
-//                        Task {
-//                            await hostel.uploadToFirestore()
-//                        }
-//                    }
-                
             }
-            
-//            .toast(isPresenting: $toastVariables.isTranslated){
-//                AlertToast(displayMode: .banner(.slide), type: .systemImage("translate", .backgroundWhite), title: "Translate Concluded", style: .style(backgroundColor: .darkGreen, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite))
-//            }
-//            
-//            .toast(isPresenting: $toastVariables.isOnTranslate){
-//                AlertToast(displayMode: .banner(.pop), type: .loading, title: "Translate", subTitle: "Translate in progress")
-//            }
             
             .toast(isPresenting: $toastVariables.isOnAddCalendar, duration: 5){
                 AlertToast(displayMode: .banner(.slide), type: .systemImage("checkmark.circle.fill", .darkGreen), title: "Siri Request", subTitle: "Request sent to Siri to add event to Apple Calendar")

@@ -25,16 +25,11 @@ struct ContentView: View {
     
     @Binding var didStartSignUpFlow: Bool
     
-    
-    
     var body: some View {
         ZStack {
             TabViewContainer(isAuthenticated: $showingSignInView, loggedCase: $loggedCase, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
             launchScreen
         }
-        
-        
-        
         .onChange(of: loggedCase) {
             if loggedCase != .none {
                 Task {
@@ -43,7 +38,7 @@ struct ContentView: View {
             }
         }
         .onAppear() {
-            let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
+            let authUser = try? Fornecedor.loadAuthUser()
             self.showingSignInView = authUser == nil
             if !showingSignInView {
                 Task {

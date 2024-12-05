@@ -7,17 +7,14 @@
 
 import Foundation
 
-class Fornecedor{
+@Observable
+class Fornecedor {
     
-    // Services variables
-    let authService: AuthProtocol       // = FirebaseAuth()
-    let itemService: CRUDItem           // = FirestoreItem()
-    let groupService: CRUDGroup         // = FirestoreGroup()
+    let shared: Fornecedor = Fornecedor()
     
-    // ...
-    var userVariable: UserProtocol      // = ...
+    private(set) var userVariable: UserProtocol?
     
-    private init(){}
+    private init() {}
     
     // Monostate
     private(set) static var allHostels = AllHostels()
@@ -26,14 +23,9 @@ class Fornecedor{
 
 // MARK: Arrays methods
 extension Fornecedor{
-    // metodos genéricos para acessar as arrays
     
-    func getAllEvents<T: CRUDItem>() -> [T] {
-        allHostels.getAll(authService)
-    }
-    
-    func refresh<T: CRUDGroup>() -> T {
-        
+    func loadAuthUser() async throws {
+        userVariable = try await Hospede()
     }
     
 }
