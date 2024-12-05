@@ -19,12 +19,3 @@ extension AllHostels {
 
 
 // AllEvents ou AllHostels
-extension Array: CRUDGroup where Element: CRUDItem {
-    
-    func getAll() async throws -> [Element] {
-        let collectionName = String(describing: Element.self)
-        
-        return []
-    }
-    
-}
