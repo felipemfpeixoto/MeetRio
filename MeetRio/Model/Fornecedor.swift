@@ -17,7 +17,7 @@ class Fornecedor {
     private init() {}
     
     // Monostate
-    private(set) static var allHostels = AllHostels()
+//    private(set) static var allHostels = AllHostels()
     private(set) static var allEvents = AllEvents()
 }
 

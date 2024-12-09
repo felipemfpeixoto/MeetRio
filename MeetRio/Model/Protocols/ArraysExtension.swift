@@ -10,21 +10,17 @@ import Foundation
 extension Array: CRUDGroup where Element: CRUDItem {
     
     // MARK: Public Methods
-    func getAll() async throws -> Self{
+    func getAllElements() async throws -> Self{
         var myReturn = getAll_Cache()
-        if myReturn.isEmpty{
-            do{
-                try myReturn = await getAll_DB()
-            } catch {
-                throw(error)
-            }
+        if myReturn.isEmpty {
+            try myReturn = await getAll_DB()
         }
         return myReturn
     }
     
-    func getLabeled(label: String) -> Self{
-        return getLabeled_Cache(label: label)
-    }
+//    func getLabeled(label: String) -> Self {
+//        return getLabeled_Cache(label: label)
+//    }
     
 
     // MARK: DB Storage Methods
@@ -40,11 +36,11 @@ extension Array: CRUDGroup where Element: CRUDItem {
     }
     
     // TODO: Melhorar depois de colocar o event
-    private func getLabeled_Cache(label: String) -> Self{
-        return self.filter { element in
-            element.label == label
-        }
-    }
+//    private func getLabeled_Cache(label: String) -> Self{
+//        return self.filter { element in
+//            element. == label
+//        }
+//    }
     
     // MARK: Local Storage Methods
     // ...
