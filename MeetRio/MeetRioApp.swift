@@ -191,6 +191,20 @@ struct MeetRioApp: App {
                 AlertToast(displayMode: .banner(.pop), type: .systemImage("trash.fill", .backgroundWhite), title: "Event Removed", subTitle: "Your event has been removed from your events list", style: .style(backgroundColor: .red, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite))
             }
             
+            .toast(isPresenting: $toastVariables.isImageChangedError) {
+                AlertToast(displayMode: .banner(.pop), type: .systemImage("exclamationmark.triangle.fill", .backgroundWhite), title: "Image Upload Failed", subTitle: "There was a problem uploading the image. Please try again.", style: .style(backgroundColor: .yellow, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite)
+                )
+            }
+            
+            .toast(isPresenting: $toastVariables.isImageChanged){
+                AlertToast(displayMode: .banner(.pop), type: .systemImage("checkmark.circle.fill", .darkGreen), title: "Image Updated", subTitle: "The image was successfully changed.", style: .style(backgroundColor: .darkGreen, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite))
+            }
+            
+            .toast(isPresenting: $toastVariables.isImageRequest){
+                AlertToast(displayMode: .banner(.pop), type: .systemImage("checkmark.circle.fill", .darkGreen), title: "Image Request", subTitle: "Request sent to change your profile image.")
+            }
+            
+            
             .onChange(of: scenePhase) {
                 switch scenePhase {
                 case .background:

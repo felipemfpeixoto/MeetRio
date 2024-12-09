@@ -23,6 +23,11 @@ class ToastVariables{
     var isOnTranslate: Bool = false
     var isTranslated: Bool = false
     var isTranslateError: Bool = false
+    
+    // Image changed
+    var isImageChanged: Bool = false
+    var isImageChangedError: Bool = false
+    var isImageRequest: Bool = false
 }
 
 

@@ -10,6 +10,8 @@ import CachedAsyncImage
 
 struct ProfileView: View {
     
+    let uploadViewModeManager = UploadViewModeManager()
+    
     @State private var vm = SettingsViewModel()
     @Binding var loggedCase: LoginCase
     
@@ -21,12 +23,17 @@ struct ProfileView: View {
     
     @Environment(\.dismiss) var dismiss
     
+    // ImagePicker Implementation
+    @State var isImagePickerShowing: Bool = false
+    @State var selectedImage: UIImage? = nil
+    
     var body: some View {
         ZStack {
             background
             content
             bottomImage
         }
+        
         .alert("Are you sure you want to delete your account?", isPresented: $isPresented) {
             Button(role: .destructive, action: {
                 Task {
@@ -45,6 +52,29 @@ struct ProfileView: View {
                 Text("Delete")
             })
         }
+        
+        // Show ImagePicker on a Sheet
+        .sheet(isPresented: $isImagePickerShowing) {
+            ImagePicker(selectedImage: $selectedImage, isImagePickerPresented: $isImagePickerShowing)
+        }
+        
+        // Send image to bd
+        .onChange(of: isImagePickerShowing) {
+            if loggedCase == .registered{
+                if let image = selectedImage {
+                    ToastVariables.shared.isImageRequest = true
+                    Task {
+                        do {
+                            try await uploadViewModeManager.saveImage(userID: (UserManager.shared.hospede?.id)!, image: image)
+                        } catch {
+                            print("Erro ao salvar a imagem: \(error)")
+                            ToastVariables.shared.isImageChangedError = true
+                        }
+                    }
+                }
+            }
+        }
+        
     }
     
     var background: some View{
@@ -151,7 +181,12 @@ struct ProfileView: View {
     
     var profilePicture: some View {
         VStack{
-            if let imageURL = UserManager.shared.hospede?.imageURL, imageURL != "" {
+            if let selectedImage{
+                Image(uiImage: selectedImage)
+                   .resizable()
+                   .scaledToFill()
+            }
+            else if let imageURL = UserManager.shared.hospede?.imageURL, imageURL != "" {
                 CachedAsyncImage(url: URL(string: imageURL), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
                     switch phase {
                     case .success(let image):
@@ -194,22 +229,24 @@ struct ProfileView: View {
         .frame(width: 180, height: 180)
         .clipShape(Circle())
         .overlay {
-            Button(action: {
-                
-            }, label: {
-                HStack{
-                    Image(systemName: "camera")
-                    Text("Add")
-                }
-                .fontWeight(.medium)
-                .foregroundStyle(.black)
-                .padding(8)
-                .background{
-                    Color.white
-                        .clipShape(RoundedCorner(radius: 12))
-                }
-            })
-            .offset(y: 95)
+            if loggedCase == .registered{
+                Button(action: {
+                    isImagePickerShowing.toggle()
+                }, label: {
+                    HStack{
+                        Image(systemName: "camera")
+                        Text("Add")
+                    }
+                    .fontWeight(.medium)
+                    .foregroundStyle(.black)
+                    .padding(8)
+                    .background{
+                        Color.white
+                            .clipShape(RoundedCorner(radius: 12))
+                    }
+                })
+                .offset(y: 95)
+            }
         }
     }
     
