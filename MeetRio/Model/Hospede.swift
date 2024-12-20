@@ -18,18 +18,17 @@ class Hospede: UserProtocol {
     var name: String
     var email: String
     var imageURL: String?
-    var loggedCase: LoginCase
+    static var loggedCase: LoginCase = .none
     
     // MARK: Propriedades específicas do Hospede
-    var country: CountryDetails
+    var country: CountryDetails? // MARK: Usar o country details para verificar se o user ja acabou de criar o perfil
     var hostel: String?
     
-    init(id: String, name: String, email: String, imageURL: String? = nil, loggedCase: LoginCase, country: CountryDetails, hostel: String? = nil) {
+    init(id: String, name: String, email: String, imageURL: String? = nil, country: CountryDetails, hostel: String? = nil) {
         self.id = id
         self.name = name
         self.email = email
         self.imageURL = imageURL
-        self.loggedCase = loggedCase
         self.country = country
         self.hostel = hostel
     }
@@ -39,8 +38,9 @@ class Hospede: UserProtocol {
         self.name = user.displayName ?? ""
         self.email = user.email!
         self.imageURL = user.photoURL?.absoluteString
-        self.loggedCase = user.isAnonymous ? .anonymous : .registered
-        
-        self.country = CountryDetails(name: "Brazil", flag: "🇧🇷")
+    }
+    
+    func create() async throws {
+        try Self.collectionReference.document(id).setData(from: self)
     }
 }

@@ -43,7 +43,7 @@ extension FirebaseCRUDItem {
     }
     
     static func getItem(for id: String) async throws -> Self {
-        return try await Self.collectionReference.document(id).getDocument() as! Self
+        return try await Self.collectionReference.document(id).getDocument(as: Self.self)
     }
     
     func updateItem() async throws {

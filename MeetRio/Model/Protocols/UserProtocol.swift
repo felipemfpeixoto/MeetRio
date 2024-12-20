@@ -24,9 +24,14 @@ extension UserProtocol {
         self = try await Self.getUserHospede()
     }
     
-    init(email: String, password: String) async throws {
-        let signInUser = try await Self.signIn(email: email, password: password)
-        self = Hospede(user: signInUser) as! Self // TODO: Atualmente estamos instânciando diretamente como Hospede, mas futuramente o user poderá ser um Hostel ou Admin
+    init(email: String, password: String, isNewUser: Bool = false) async throws {
+        if !isNewUser {
+            let signInUser = try await Self.signIn(email: email, password: password)
+            self = Hospede(user: signInUser) as! Self // TODO: Atualmente estamos instânciando diretamente como Hospede, mas futuramente o user poderá ser um Hostel ou Admin
+        } else {
+            let newUser = try await Self.createAccount(email: email, password: password)
+            self = Hospede(user: newUser) as! Self // TODO: Atualmente estamos instânciando diretamente como Hospede, mas futuramente o user poderá ser um Hostel ou Admin
+        }
     }
     
 }
@@ -34,8 +39,8 @@ extension UserProtocol {
 extension UserProtocol {
     
     static func getUserHospede() async throws -> Self {
-        let id = try self.getAuthenticatedUserID()
-        return try await self.getItem(for: id)
+        let user = try self.getAuthenticatedUser()
+        return try await self.getItem(for: user.uid)
     }
     
     mutating func deleteUser() async throws {
