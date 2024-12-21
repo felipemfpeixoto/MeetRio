@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
+
 // TODO: Separar melhor os atributos e métodos para deixar ele mais "bonitinho"
 @Observable
 class EventDetails: Identifiable, Codable, Comparable, CRUDItem {
@@ -15,7 +16,7 @@ class EventDetails: Identifiable, Codable, Comparable, CRUDItem {
     // Propriedades
     var id: String
     var name: String
-    var address: AddressDetails
+    var address: AddressDetails?
     var dateDetails: DateDetails?
     var description: String
     var photoURL: String?
@@ -24,11 +25,11 @@ class EventDetails: Identifiable, Codable, Comparable, CRUDItem {
     var tags: [String]
     var tips: [String]
     var safetyRate: Float?
-    var eventCategory: String
+    var eventCategory: EventCategory
     var dayWeek: String?
 
     // TODO: Ver como fazer o id da melhor forma possível, para conformar com o init sem o id e, caso nenhum id seja passado, criar o id na mão e garantir que o @DocumentID do record no firebase seja o id gerado por UUID() (Isso irá acontecer ao criar um novo evento pelo app)
-    init(id: String = UUID().uuidString, tags: [String], tips: [String], safetyRate: Float?, eventCategory: String, dayWeek: String?, otherPictureURLs: [String]?, photoURL: String?, description: String, name: String, address: AddressDetails, dateDetails: DateDetails?, buyURL: String?) {
+    init(id: String = UUID().uuidString, tags: [String] = [], tips: [String] = [], safetyRate: Float? = nil, eventCategory: EventCategory, dayWeek: String? = nil, otherPictureURLs: [String]? = nil, photoURL: String? = nil, description: String, name: String, address: AddressDetails? = nil, dateDetails: DateDetails? = nil, buyURL: String? = nil) {
        self.id = id
        self.name = name
        self.address = address

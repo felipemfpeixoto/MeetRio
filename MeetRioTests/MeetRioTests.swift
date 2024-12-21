@@ -67,5 +67,51 @@ struct MeetRioTests {
             try await Hospede.signOut()
         }
     }
+    
+    @Test func eventsTests() async throws {
+        var id: String = ""
+        
+        // MARK: Teste de criação de um evento
+        await #expect(throws: Never.self) {
+            let newEvent = EventDetails(
+                eventCategory: EventCategory(eventType: .nightlife),
+                description: "Evento de teste",
+                name: "Teste Event"
+            )
+            
+            id = newEvent.id
+            
+            try await newEvent.create()
+        }
+        
+        // MARK: Teste de get de um evento (init)
+        await #expect(throws: Never.self) {
+            let gottedEvent = try await EventDetails(id: id)
+            
+            #expect(gottedEvent.name == "Teste Event")
+        }
+        
+        // MARK: Teste de update de um evento
+        await #expect(throws: Never.self) {
+            let gottedEvent = try await EventDetails(id: id)
+            gottedEvent.name = "Teste Event Updated"
+            try await gottedEvent.updateItem()
+            
+            let gottedUpdatedEvent = try await EventDetails(id: id)
+            #expect(gottedUpdatedEvent.name == "Teste Event Updated")
+        }
+        
+        // MARK: Teste de exclusão de um evento
+        await #expect(throws: Never.self) {
+            let gottedEvent = try await EventDetails(id: id)
+            try await gottedEvent.deleteItem()
+        }
+        
+        // MARK: Tentando fazer o get do evento excluído anteriormente, esperando um erro
+        await #expect(throws: Error.self) {
+            let gottedEvent = try await EventDetails(id: id)
+            try await gottedEvent.deleteItem()
+        }
+    }
 
 }

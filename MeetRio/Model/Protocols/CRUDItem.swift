@@ -26,6 +26,10 @@ protocol FirebaseCRUDItem: Codable {
 
 extension FirebaseCRUDItem {
     
+    init(id: String) async throws {
+        self = try await Self.collectionReference.document(id).getDocument(as: Self.self)
+    }
+    
     static var collectionReference: CollectionReference {
         let collectionName = String(describing: Self.self)
         let collection = db.collection(collectionName)
@@ -39,7 +43,7 @@ extension FirebaseCRUDItem {
     }
     
     func create() async throws {
-        try Self.collectionReference.addDocument(from: self)
+        try Self.collectionReference.document(self.id).setData(from: self)
     }
     
     static func getItem(for id: String) async throws -> Self {

@@ -40,8 +40,4 @@ class Hospede: UserProtocol {
         self.email = user.email ?? ""
         self.imageURL = user.photoURL?.absoluteString
     }
-    
-    func create() async throws {
-        try Self.collectionReference.document(id).setData(from: self)
-    }
 }

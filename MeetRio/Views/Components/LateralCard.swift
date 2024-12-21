@@ -55,7 +55,7 @@ struct LateralCard: View {
                     .font(.headline)
                     .foregroundColor(.black)
                     .multilineTextAlignment(.leading)
-                Text(event.address.street)
+                Text(event.address?.street ?? "Endereço não disponível")
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 Spacer()

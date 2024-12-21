@@ -8,10 +8,6 @@
 import Foundation
 import FirebaseFirestore
 
-enum EventCategory: String, Codable {
-    case bemBrazil, nightLife
-}
-
 // Objetos
 
 struct DateDetails: Codable {

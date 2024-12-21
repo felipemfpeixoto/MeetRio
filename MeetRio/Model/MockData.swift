@@ -10,7 +10,7 @@ import Foundation
 
 
 struct MockData {
-    static let eventDetails: EventDetails = {
+    static let Event: EventDetails = {
         let testLocation = LocationDetails(
             latitude: -22.9068,
             longitude: -43.1729,
@@ -45,7 +45,7 @@ struct MockData {
             tags: ["Festival de Música"], // Mantido como array de strings
             tips: ["Festa", "Dança"], // Alterado para uma string simples
             safetyRate: 4.5, // Mantido como está
-            eventCategory: "Bem Brazil",
+            eventCategory: EventCategory(eventType: .nightlife),
             dayWeek: "Sunday", // Usando uma string simples
             otherPictureURLs: [otherPictureURL1, otherPictureURL2], // Array de URLs como esperado
             photoURL: photoURL, // Mantido como está
