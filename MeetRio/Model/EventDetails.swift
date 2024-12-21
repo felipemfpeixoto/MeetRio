@@ -11,6 +11,7 @@ import FirebaseFirestore
 // TODO: Separar melhor os atributos e métodos para deixar ele mais "bonitinho"
 @Observable
 class EventDetails: Identifiable, Codable, Comparable, CRUDItem {
+    
     // Propriedades
     var id: String
     var name: String

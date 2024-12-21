@@ -13,6 +13,7 @@ import FirebaseAuth
 @Observable
 class Hospede: UserProtocol {
     
+    
     // MARK: Propriedades derivadas dos protocolos
     var id: String
     var name: String
@@ -36,7 +37,7 @@ class Hospede: UserProtocol {
     init(user: User) {
         self.id = user.uid
         self.name = user.displayName ?? ""
-        self.email = user.email!
+        self.email = user.email ?? ""
         self.imageURL = user.photoURL?.absoluteString
     }
     

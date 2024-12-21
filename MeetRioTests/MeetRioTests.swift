@@ -10,21 +10,24 @@ import Testing
 
 struct MeetRioTests {
 
-    @Test func example() async throws {
+    @Test func authenticationTests() async throws {
         
         // Cria um user fixo no banco explicito que é para testes
         // Documenta aqui os dados esperados
         // pega o hospede a partir do User do banco
         // compara os dados do hospede esperado com os dados que vieram do banco
         
+        // MARK: Começando com um sign out para garantir que não terá usuários logados no início dos testes
         await #expect(throws: Never.self) {
             try await Hospede.signOut()
         }
         
+        // MARK: Teste de getAuthenticatedUser sem nenhum usuário autenticado
         await #expect(throws: AuthError.noUserAuthenticated) {
             var authenticatedHospede = try await Hospede()
         }
         
+        // MARK: Teste de criação de nova conta
         await #expect(throws: Never.self) {
             var newUser = try await Hospede(email: "teste@gmail.com", password: "123456", isNewUser: true)
             
@@ -33,24 +36,36 @@ struct MeetRioTests {
             try await newUser.create()
         }
         
+        // MARK: Teste de get do user que está autenticado
         await #expect(throws: Never.self) {
             var authenticatedHospede = try await Hospede()
+            
+            #expect(authenticatedHospede.email == "teste@gmail.com" && authenticatedHospede.name == "teste")
+            
             try await Hospede.signOut()
         }
         
-//        await #expect(throws: Never.self) {
-//            var expectedHospede = Hospede(
-//                id: "YGJPEBRIDCQRvCaU6cjUVVq6WBy2",
-//                name: "teste",
-//                email: "teste@gmail.com",
-//                imageURL: "https://firebasestorage.googleapis.com:443/v0/b/meetrio.appspot.com/o/profilePics%2FYGJPEBRIDCQRvCaU6cjUVVq6WBy2%2Fprofile.jpg?alt=media&token=71e809af-140a-44b8-8d96-88ccfb170c18",
-//                country: CountryDetails(name: "", flag: ""),
-//                hostel: nil
-//            )
-//            let retrievedHospede = try await Hospede(email: "teste@gmail.com", password: "123456")
-//
-//            #expect(expectedHospede.id == retrievedHospede.id && expectedHospede.email == retrievedHospede.email)
-//        }
+        // MARK: Teste de login
+        await #expect(throws: Never.self) {
+            let authenticatedHospede = try await Hospede(email: "teste@gmail.com", password: "123456")
+            
+            #expect(authenticatedHospede.email == "teste@gmail.com" && authenticatedHospede.name == "teste")
+            try await Hospede.signOut()
+        }
+        
+        // MARK: Teste de exclusão de conta
+        await #expect(throws: Never.self) {
+            var authenticatedHospede = try await Hospede(email: "teste@gmail.com", password: "123456")
+            
+            try await authenticatedHospede.deleteUser()
+        }
+        
+        // MARK: Teste de login anonimo
+        await #expect(throws: Never.self) {
+            let authenticatedHospede = try await Hospede(isAnonymous: true)
+            #expect(Hospede.loggedCase == .anonymous)
+            try await Hospede.signOut()
+        }
     }
 
 }

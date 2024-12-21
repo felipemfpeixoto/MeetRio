@@ -24,7 +24,7 @@ protocol FirebaseAuthProtocol {
     
     // Account Manager
     static func createAccount(email: String, password: String) async throws -> User
-    mutating func deleteAccount(_ willDeleteAll: Bool) async throws
+    mutating func deleteAccount() async throws
 }
 
 // MARK: GetAuthenticated Methods
@@ -44,7 +44,7 @@ extension FirebaseAuthProtocol {
     
     static func signIn(email: String, password: String) async throws -> User {
         let authDataResult = try await Auth.auth().signIn(withEmail: email, password: password)
-//        Self.loggedCase = .registered
+        Self.loggedCase = .registered
         return authDataResult.user
     }
     
@@ -74,7 +74,7 @@ extension FirebaseAuthProtocol {
     }
     
     // TODO: Integrar esse método aos outros métodos de deletar (Precisamos deletar também o perfil de hóspede/hostel desse user, se user é hospede, deletar seus ImGoing, e deletar suas fotos do CloudStorage)
-    mutating func deleteAccount(_ willDeleteAll: Bool = true) async throws {
+    mutating func deleteAccount() async throws { // TODO: Mudar a visibilidade da função
         let user = try Self.getAuthenticatedUser()
         try await user.delete()
         Self.loggedCase = .none
