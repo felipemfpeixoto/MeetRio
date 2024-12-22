@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseAuth
 
 protocol UserProtocol: Codable, CRUDItem, AuthProtocol {
     
@@ -16,6 +17,8 @@ protocol UserProtocol: Codable, CRUDItem, AuthProtocol {
     
     static func getUserHospede() async throws -> Self
     mutating func deleteUser() async throws
+    
+    init(user: User)
 }
 
 extension UserProtocol {
@@ -23,6 +26,8 @@ extension UserProtocol {
     init(isAnonymous: Bool = false) async throws {
         if !isAnonymous {
             self = try await Self.getUserHospede()
+            
+            //            self = Self.init(user: newUser)
         } else {
             let anonymousUser = try await Self.signInAnonymous()
             self = Hospede(user: anonymousUser) as! Self // TODO: Atualmente estamos instânciando diretamente como Hospede, mas futuramente o user poderá ser um Hostel ou Admin
@@ -34,15 +39,13 @@ extension UserProtocol {
             let signInUser = try await Self.signIn(email: email, password: password)
             let id = signInUser.uid
             self = try await Self.getItem(for: id)
-            
-            // MARK: Está errado. Precisamos pegar o id do signInUser, buscar na tabela Hospede por ele e instânciar de acordo com os dados encontrados
-            //self = Hospede(user: signInUser) as! Self // TODO: Atualmente estamos instânciando diretamente como Hospede, mas futuramente o user poderá ser um Hostel ou Admin
         } else {
             let newUser = try await Self.createAccount(email: email, password: password)
-            self = Hospede(user: newUser) as! Self // TODO: Atualmente estamos instânciando diretamente como Hospede, mas futuramente o user poderá ser um Hostel ou Admin
+
+            self = Self.init(user: newUser)
+            //self = Hospede(user: newUser) as! Self // TODO: Atualmente estamos instânciando diretamente como Hospede, mas futuramente o user poderá ser um Hostel ou Admin
         }
     }
-    
 }
 
 extension UserProtocol {

@@ -113,5 +113,59 @@ struct MeetRioTests {
             try await gottedEvent.deleteItem()
         }
     }
+    
+    // MARK: Bateria de testes de hostel (Como User)
+    @Test func hostelTestsUser() async throws {
+        
+        // MARK: Começando com um sign out para garantir que não terá usuários logados no início dos testes
+        await #expect(throws: Never.self) {
+            try await Hostel.signOut()
+        }
+        
+        // MARK: Teste de getAuthenticatedUser sem nenhum usuário autenticado
+        await #expect(throws: AuthError.noUserAuthenticated) {
+            var authenticatedHostel = try await Hostel()
+        }
+        
+        // MARK: Teste de criação de nova conta
+        await #expect(throws: Never.self) {
+            var newUser = try await Hostel(email: "testehostel@gmail.com", password: "123456", isNewUser: true)
+            
+            
+            try await newUser.create()
+        }
+        
+        // MARK: Teste de get do user que está autenticado
+        await #expect(throws: Never.self) {
+            var authenticatedHostel = try await Hostel()
+            
+            print("************* AuthenticatedHostel: ", authenticatedHostel.email)
+            
+            #expect(authenticatedHostel.email == "testehostel@gmail.com")
+            
+            try await Hostel.signOut()
+        }
+        
+        // MARK: Teste de login
+        await #expect(throws: Never.self) {
+            let authenticatedHostel = try await Hostel(email: "testehostel@gmail.com", password: "123456")
+            
+            #expect(authenticatedHostel.email == "testehostel@gmail.com")
+            try await Hostel.signOut()
+        }
+        
+        // MARK: Teste de exclusão de conta
+        await #expect(throws: Never.self) {
+            var authenticatedHostel = try await Hostel(email: "testeHostel@gmail.com", password: "123456")
 
+            try await authenticatedHostel.deleteUser()
+        }
+    }
+    
+    // MARK: Bateria de testes de hostel (Como CRUDItem)
+    @Test func hostelTestsCRUDItem() async throws {
+        
+        
+        
+    }
 }

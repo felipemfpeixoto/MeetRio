@@ -34,7 +34,7 @@ class Hospede: UserProtocol {
         self.hostel = hostel
     }
     
-    init(user: User) {
+    required init(user: User) {
         self.id = user.uid
         self.name = user.displayName ?? ""
         self.email = user.email ?? ""
