@@ -30,4 +30,15 @@ class Hostel: Codable, UserProtocol {
         self.email = user.email ?? ""
         self.imageURL = user.photoURL?.absoluteString
     }
+    
+    init(id: String = UUID().uuidString, email: String, name: String, description: String? = nil, phone: String? = nil, addressDetails: AddressDetails? = nil, services: [String]? = nil, imageURL: String? = nil) {
+        self.id = id
+        self.email = email
+        self.name = name
+        self.description = description
+        self.phone = phone
+        self.addressDetails = addressDetails
+        self.services = services
+        self.imageURL = imageURL
+    }
 }

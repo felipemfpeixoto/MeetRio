@@ -32,7 +32,6 @@ extension FirebaseCRUDItem {
     
     static var collectionReference: CollectionReference {
         let collectionName = String(describing: Self.self)
-        print("Collection Reference:", collectionName)
         let collection = db.collection(collectionName)
         return collection
     }

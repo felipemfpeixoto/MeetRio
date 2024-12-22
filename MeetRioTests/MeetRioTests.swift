@@ -164,8 +164,46 @@ struct MeetRioTests {
     
     // MARK: Bateria de testes de hostel (Como CRUDItem)
     @Test func hostelTestsCRUDItem() async throws {
+        var id: String = ""
         
+        // MARK: Teste de criação de um hostel
+        await #expect(throws: Never.self) {
+            let newHostel = Hostel(
+                email: "testehostel@meetrio.com",
+                name: "Teste Hostel"
+            )
+            
+            id = newHostel.id
+            
+            try await newHostel.create()
+        }
         
+        // MARK: Teste de get de um hostel (init)
+        await #expect(throws: Never.self) {
+            let gottedHostel = try await Hostel(id: id)
+            
+            #expect(gottedHostel.name == "Teste Hostel")
+        }
         
+        // MARK: Teste de update de um evento
+        await #expect(throws: Never.self) {
+            let gottedHostel = try await Hostel(id: id)
+            gottedHostel.name = "Teste Hostel Updated"
+            try await gottedHostel.updateItem()
+            
+            let gottedUpdatedHostel = try await Hostel(id: id)
+            #expect(gottedUpdatedHostel.name == "Teste Hostel Updated")
+        }
+        
+        // MARK: Teste de exclusão de um evento
+        await #expect(throws: Never.self) {
+            let gottedHostel = try await Hostel(id: id)
+            try await gottedHostel.deleteItem()
+        }
+        
+        // MARK: Tentando fazer o get do evento excluído anteriormente, esperando um erro
+        await #expect(throws: Error.self) {
+            let gottedHostel = try await Hostel(id: id)
+        }
     }
 }
