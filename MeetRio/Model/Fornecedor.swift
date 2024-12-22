@@ -10,7 +10,7 @@ import Foundation
 @Observable
 class Fornecedor {
     
-    let shared: Fornecedor = Fornecedor()
+    static let shared = Fornecedor()
     
     private(set) var userVariable: UserProtocol?
     
@@ -21,11 +21,15 @@ class Fornecedor {
     private(set) static var allEvents = AllEvents()
 }
 
-// MARK: Arrays methods
 extension Fornecedor{
     
     func loadAuthUser() async throws {
         userVariable = try await Hospede()
+    }
+    
+    func deleteAuthUser() async throws { // TODO: Não sei se isso ta sendo feito da melhor forma, pois ao chamar o deleteUser, o mesmo deveria "se setar" como nil, certo?
+        try await userVariable?.deleteUser()
+        userVariable = nil
     }
     
 }

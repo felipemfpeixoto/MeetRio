@@ -43,28 +43,29 @@ struct MeetRioApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-//                ContentView(didStartSignUpFlow: $didStartSignUpFlow)
-                Text("Ta tudo comentado")
+                ContentView(didStartSignUpFlow: $didStartSignUpFlow)
             }
 //            
-//            .toast(isPresenting: $toastVariables.isOnAddCalendar, duration: 5){
-//                AlertToast(displayMode: .banner(.slide), type: .systemImage("checkmark.circle.fill", .darkGreen), title: "Siri Request", subTitle: "Request sent to Siri to add event to Apple Calendar")
-//            }
-//            
-//            .toast(isPresenting: $toastVariables.isOnAdd){
-//                AlertToast(displayMode: .banner(.slide), type: .systemImage("checkmark.circle.fill", .backgroundWhite), title: "Event Saved", subTitle: "Your event has been saved in your events list", style: .style(backgroundColor: .darkGreen, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite))
-//            }
-//            
-//            .toast(isPresenting: $toastVariables.isOnRemove){
-//                AlertToast(displayMode: .banner(.pop), type: .systemImage("trash.fill", .backgroundWhite), title: "Event Removed", subTitle: "Your event has been removed from your events list", style: .style(backgroundColor: .red, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite))
-//            }
+            .toast(isPresenting: $toastVariables.isOnAddCalendar, duration: 5){
+                AlertToast(displayMode: .banner(.slide), type: .systemImage("checkmark.circle.fill", .darkGreen), title: "Siri Request", subTitle: "Request sent to Siri to add event to Apple Calendar")
+            }
             
-//            .onChange(of: scenePhase) {
-//                switch scenePhase {
-//                case .background:
+            .toast(isPresenting: $toastVariables.isOnAdd){
+                AlertToast(displayMode: .banner(.slide), type: .systemImage("checkmark.circle.fill", .backgroundWhite), title: "Event Saved", subTitle: "Your event has been saved in your events list", style: .style(backgroundColor: .darkGreen, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite))
+            }
+            
+            .toast(isPresenting: $toastVariables.isOnRemove){
+                AlertToast(displayMode: .banner(.pop), type: .systemImage("trash.fill", .backgroundWhite), title: "Event Removed", subTitle: "Your event has been removed from your events list", style: .style(backgroundColor: .red, titleColor: .backgroundWhite, subTitleColor: .backgroundWhite))
+            }
+            
+            .onChange(of: scenePhase) {
+                switch scenePhase {
+                case .background:
+                    // MARK: Salva o YourEvents
 //                        do {
 //                            try YourEventsModel.shared.save()
 //                            
+//                        // MARK: Salva o hostel do usuário
 //                            if let hostel = UserManager.shared.hostel {
 //                                let hostelCE = HostelCodableExtensions(hostel: hostel)
 //                                try hostelCE.save()
@@ -74,24 +75,22 @@ struct MeetRioApp: App {
 //                        } catch {
 //                            print("🤬 ERRO AO TENTAR SALVAR O HOSTEL ou YourEventsModel: \(error.localizedDescription)")
 //                        }
-//                    break
-//                case .inactive:
-//                    if didStartSignUpFlow {
-//                        Task {
-//                            do {
-//                                try await AuthenticationManager.shared.delete(false)
-//                                print("Deletou usuario!")
-//                            } catch {
-//                                print("Se ferrou!", error)
-//                            }
-//                        }
-//                    }
-//                case .active:
-//                    break
-//                @unknown default:
-//                    break
-//                }
-//            }
+                    break
+                case .inactive:
+                    // MARK: Checa se o usuário começou e não terminou o flow de signup, caso não tenha terminado, apaga o perfil do authentication do usuário
+                    if didStartSignUpFlow {
+                        Task {
+                            if Fornecedor.shared.userVariable != nil {
+                                try await Fornecedor.shared.deleteAuthUser()
+                            }
+                        }
+                    }
+                case .active:
+                    break
+                @unknown default:
+                    break
+                }
+            }
         }
     }
 }

@@ -26,8 +26,6 @@ extension UserProtocol {
     init(isAnonymous: Bool = false) async throws {
         if !isAnonymous {
             self = try await Self.getUserHospede()
-            
-            //            self = Self.init(user: newUser)
         } else {
             let anonymousUser = try await Self.signInAnonymous()
             self = Hospede(user: anonymousUser) as! Self // TODO: Atualmente estamos instânciando diretamente como Hospede, mas futuramente o user poderá ser um Hostel ou Admin
@@ -42,8 +40,7 @@ extension UserProtocol {
         } else {
             let newUser = try await Self.createAccount(email: email, password: password)
 
-            self = Self.init(user: newUser)
-            //self = Hospede(user: newUser) as! Self // TODO: Atualmente estamos instânciando diretamente como Hospede, mas futuramente o user poderá ser um Hostel ou Admin
+            self = Self.init(user: newUser) // MARK: Self.init pois não estamos instânciando apenas Hospedes, mas também Hostels
         }
     }
 }
