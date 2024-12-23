@@ -12,7 +12,9 @@ class Fornecedor {
     
     static let shared = Fornecedor()
     
-    private(set) var userVariable: UserProtocol?
+    // private(set) var userVariable: UserProtocol? // MARK: Ver qual a melhor forma de atualizar pequenos atributos, como nome, CountryDetails, etc
+    
+    var userVariable: UserProtocol?
     
     private init() {}
     
@@ -21,6 +23,7 @@ class Fornecedor {
     private(set) static var allEvents = AllEvents()
 }
 
+// MARK: Extension de autenticação
 extension Fornecedor{
     
     func loadAuthUser() async throws {
@@ -43,6 +46,10 @@ extension Fornecedor{
     
     func login(email: String, password: String) async throws {
         userVariable = try await Hospede(email: email, password: password)
+    }
+    
+    func createUser(email: String, password: String) async throws {
+        userVariable = try await Hospede(email: email, password: password, isNewUser: true)
     }
     
 }

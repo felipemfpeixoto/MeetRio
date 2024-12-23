@@ -79,7 +79,7 @@ struct AuthenticationView: View {
             Spacer()
             VStack(spacing: 5) {
 //                forgotPasswordContainer // Não ta funcionando ainda
-//                signUpContainer
+            signUpContainer
             }.padding(.bottom)
             Spacer()
         }
@@ -198,17 +198,17 @@ struct AuthenticationView: View {
 //        }
 //    }
 
-//    var signUpContainer: some View {
-//        HStack {
-//            NavigationLink(destination: SignUpView(isShowing: $isShowing, arbiuPrimeiraVez: $arbiuPrimeiraVez, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad)) {
-//                    Text("Doesn't have an account?")
-//                        .foregroundStyle(.white)
-//                    + Text(" Sign Up")
-//                        .fontWeight(.bold)
-//                        .foregroundStyle(.white)
-//            }
-//        }.font(.system(size: 15))
-//    }
+    var signUpContainer: some View {
+        HStack {
+            NavigationLink(destination: SignUpView(isShowing: $isShowing, arbiuPrimeiraVez: $arbiuPrimeiraVez, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad)) {
+                    Text("Doesn't have an account?")
+                        .foregroundStyle(.white)
+                    + Text(" Sign Up")
+                        .fontWeight(.bold)
+                        .foregroundStyle(.white)
+            }
+        }.font(.system(size: 15))
+    }
 
     // MARK: - Helper Methods
     private func warningText() -> String {

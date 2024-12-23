@@ -27,7 +27,12 @@ struct ContentView: View {
         ZStack {
 //            TabViewContainer(isAuthenticated: $showingSignInView, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
             VStack {
-                Text("Logou: \(Hospede.loggedCase)")
+                if Hospede.loggedCase == .anonymous {
+                    Text("Logou: \(Hospede.loggedCase)")
+                } else if Hospede.loggedCase == .registered {
+                    Text("Logou: \(Hospede.loggedCase)")
+                    Text("Name: \(Fornecedor.shared.userVariable!.name)")
+                }
                 Button {
                     Task {
                         do {

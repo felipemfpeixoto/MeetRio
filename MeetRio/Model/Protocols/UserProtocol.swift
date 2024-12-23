@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseStorage
 import FirebaseAuth
 
 protocol UserProtocol: Codable, CRUDItem, AuthProtocol {
@@ -61,6 +62,28 @@ extension UserProtocol {
         try await self.deleteItem()
         try await self.deleteAccount()
         try await Self.signOut()
+    }
+    
+    mutating func saveImage(image: UIImage) async throws {
+        
+        let storage = Storage.storage()
+        
+        let photoName = UUID().uuidString
+        let storageRef = storage.reference().child("profilePics/\(self.id)/profile.jpg") // A imagem será armazenada na pasta \(userID)/profile.jpg
+        
+        guard let resizedImage = image.jpegData(compressionQuality: 0.2) else { // Comprimindo a imagem para armazená-la no Cloud Storage
+            print("Falhou ao ajustar o tamanho da imagem")
+            return
+        }
+        
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg" // Setting metadata allows you to see console image in the web browser
+        
+        let _ = try await storageRef.putDataAsync(resizedImage, metadata: metadata)
+        
+        let imageURL = try await storageRef.downloadURL()
+        self.imageURL = imageURL.absoluteString
+            
     }
     
 }
