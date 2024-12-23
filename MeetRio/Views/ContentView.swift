@@ -9,13 +9,9 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    // MARK: Removido pois não estava fazendo nada de novo, apenas repetindo código do antigo AuthenticationManager
-//    @State private var vm = SettingsViewModel()
-    
-    // MARK: Removido pois agora o loggedCase é um atributo estático do usuário
-//    @State var loggedCase: LoginCase = .none
-    
+    // TODO: Mudar a lógica, para que não seja mais necessário atualizar a variável na mão, mas sim fazer com que ela seja um "listener" do Fornecedor.shared.userVariable, para que essa variávela seja atualizada quando o userVariable for nil
     @State var showingSignInView: Bool = false
+    
     @State var isLoading = true
     @State var didAppear = true
     
@@ -30,7 +26,27 @@ struct ContentView: View {
     var body: some View {
         ZStack {
 //            TabViewContainer(isAuthenticated: $showingSignInView, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
-            Text("Logou: \(Hospede.loggedCase)")
+            VStack {
+                Text("Logou: \(Hospede.loggedCase)")
+                Button {
+                    Task {
+                        do {
+                            try await Fornecedor.shared.userSignOut()
+                            showingSignInView.toggle()
+                        } catch {
+                            print("Erro ao dar o logout do anonimo: \(error)")
+                        }
+                    }
+                } label: {
+                    Text("Sign Out")
+                        .foregroundStyle(Color.white)
+                }
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .foregroundStyle(Color.blue)
+                }
+            }
             launchScreen
         }
         // MARK: Não entendi por que esse onChange existe
@@ -46,26 +62,6 @@ struct ContentView: View {
                 try await Fornecedor.shared.loadAuthUser()
                 self.showingSignInView = Fornecedor.shared.userVariable == nil
                 if !showingSignInView {
-                    // MARK: Task responsável por checar qual o método de autenticação do authUser
-                    // Não é mais necessário pois o loggedCase agora é um atributo do UserProtocol, e é atualizado logo após fazer o load / autenticar o user
-                    //                Task {
-                    //                    try await UserManager.shared.getUser(userID: authUser?.uid ?? "")
-                    //
-                    //                    let authUser2 = vm.loadAuthUser()
-                    //                    if authUser2?.isAnonymous == false{
-                    //                        loggedCase = .registered
-                    //                        print("Autentiquei como Registrado")
-                    //                    }
-                    //                    else if authUser2?.isAnonymous == true{
-                    //                        loggedCase = .anonymous
-                    //                        print("Autentiquei como anônimo")
-                    //                    }
-                    //                    else{
-                    //                        loggedCase = .none
-                    //                        print("Autentiquei como none")
-                    //                    }
-                    //                }
-                    // TODO: Verificar o que isso ta fazendo, pois não entendi
                     DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
                         if abriuPrimeiraVez {
                             willLoad.toggle()
@@ -84,7 +80,6 @@ struct ContentView: View {
             WelcomeSignInView(isShowing: $showingSignInView, arbiuPrimeiraVez: $abriuPrimeiraVez, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad)
         })
         .onChange(of: abriuPrimeiraVez){ newValue, oldOne in
-        
             if abriuPrimeiraVez {
                 withAnimation(Animation.bouncy(duration: 0.75)) {
                     isLoading = true

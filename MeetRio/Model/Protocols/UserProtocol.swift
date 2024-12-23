@@ -49,6 +49,11 @@ extension UserProtocol {
     
     static func getUserHospede() async throws -> Self {
         let user = try self.getAuthenticatedUser()
+        if user.isAnonymous {
+            Self.loggedCase = .anonymous
+            return Self.init(user: user)
+        }
+        Self.loggedCase = .registered
         return try await self.getItem(for: user.uid)
     }
     

@@ -36,4 +36,9 @@ extension Fornecedor{
         userVariable = try await Hospede(isAnonymous: true)
     }
     
+    func userSignOut() async throws {
+        try await Hospede.signOut()
+        userVariable = nil
+    }
+    
 }
