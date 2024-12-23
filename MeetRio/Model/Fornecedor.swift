@@ -41,4 +41,8 @@ extension Fornecedor{
         userVariable = nil
     }
     
+    func login(email: String, password: String) async throws {
+        userVariable = try await Hospede(email: email, password: password)
+    }
+    
 }

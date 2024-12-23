@@ -19,7 +19,6 @@ struct AuthenticationView: View {
     
     @State var isLoading = false
     @State var didNavigate = false
-    @State var userID: String?
     @State var showWarning: Bool = false
     @State var didLogin: Int?
     
@@ -75,8 +74,6 @@ struct AuthenticationView: View {
                 .tint(.blue)
             orContainer
             anonymouslySigninButton
-//            googleSignInButtonContainer
-//            appleSignInButtonContainer
             Spacer()
             Spacer()
             Spacer()
@@ -146,7 +143,11 @@ struct AuthenticationView: View {
     }
 
     var signInButton: some View {
-        Button(action: signInAction, label: {
+        Button {
+            Task {
+                try await signInAction()
+            }
+        } label: {
             ZStack {
                 RoundedRectangle(cornerRadius: 20)
                     .frame(height: 44)
@@ -157,7 +158,8 @@ struct AuthenticationView: View {
                     .font(.system(size: 18))
                     .fontWeight(.semibold)
             }
-        })
+        }
+
     }
 
     var anonymouslySigninButton: some View {
@@ -223,36 +225,20 @@ struct AuthenticationView: View {
     }
     
     // MARK: Formatar essa função para estar de acordo com a nova modelagem
-    private func signInAction() {
-//        Task {
-//            do {
-//                UIApplication.shared.endEditing()
-//                isLoading = true
-//                showWarning = false
-//                didLogin = nil
-//                didLogin = try await vm.signIn() // Chama a função de login existente no ViewModel
-//                if didLogin == 1 {
-//                    arbiuPrimeiraVez = false
-//                    isShowing = false
-//                    isLoading = false
-//                    PostHogSDK.shared.capture("LoginEmail&Senha") // Captura o evento de login com email e senha
-//                    postLoginSuccess()
-//                }
-//            } catch {
-//                let emailEmpty = vm.email.isEmpty
-//                let passwordEmpty = vm.password.isEmpty
-//                if emailEmpty && passwordEmpty {
-//                    print("email e senha vazios")
-//                    didLogin = 0
-//                } else if emailEmpty {
-//                    didLogin = 3
-//                } else if passwordEmpty {
-//                    didLogin = 2
-//                }
-//                showWarning = true
-//                isLoading = false
-//            }
-//        }
+    private func signInAction() async throws {
+        do {
+            UIApplication.shared.endEditing()
+            isLoading = true
+            showWarning = false
+            didLogin = nil
+            try await Fornecedor.shared.login(email: email, password: password)
+            arbiuPrimeiraVez = false
+            isLoading = false
+            isShowing = false
+        } catch { // TODO: (3) Implementar uma análise de erro para substituir o switch do didLogin
+            showWarning = true
+            isLoading = false
+        }
     }
 }
 
