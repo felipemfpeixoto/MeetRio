@@ -9,9 +9,11 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    @State private var vm = SettingsViewModel()
+    // MARK: Removido pois não estava fazendo nada de novo, apenas repetindo código do antigo AuthenticationManager
+//    @State private var vm = SettingsViewModel()
     
-    @State var loggedCase: LoginCase = .none
+    // MARK: Removido pois agora o loggedCase é um atributo estático do usuário
+//    @State var loggedCase: LoginCase = .none
     
     @State var showingSignInView: Bool = false
     @State var isLoading = true
@@ -27,50 +29,59 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            TabViewContainer(isAuthenticated: $showingSignInView, loggedCase: $loggedCase, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
+//            TabViewContainer(isAuthenticated: $showingSignInView, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
+            Text("Logou: \(Hospede.loggedCase)")
             launchScreen
         }
-        .onChange(of: loggedCase) {
-            if loggedCase != .none {
-                Task {
-                    await FirestoreManager.shared.getAllEvents()
-                }
-            }
-        }
-        .onAppear() {
-            let authUser = try? Fornecedor.loadAuthUser()
-            self.showingSignInView = authUser == nil
-            if !showingSignInView {
-                Task {
-                    try await UserManager.shared.getUser(userID: authUser?.uid ?? "")
-                    
-                    let authUser2 = vm.loadAuthUser()
-                    if authUser2?.isAnonymous == false{
-                        loggedCase = .registered
-                        print("Autentiquei como Registrado")
-                    }
-                    else if authUser2?.isAnonymous == true{
-                        loggedCase = .anonymous
-                        print("Autentiquei como anônimo")
-                    }
-                    else{
-                        loggedCase = .none
-                        print("Autentiquei como none")
-                    }
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
-                    if abriuPrimeiraVez {
-                        willLoad.toggle()
-                        DispatchQueue.main.asyncAfter(deadline: .now()+2.5) {
-                            abriuPrimeiraVez = false
+        // MARK: Não entendi por que esse onChange existe
+//        .onChange(of: loggedCase) {
+//            if loggedCase != .none {
+//                Task {
+//                    await FirestoreManager.shared.getAllEvents()
+//                }
+//            }
+//        }
+        .task {
+            do {
+                try await Fornecedor.shared.loadAuthUser()
+                self.showingSignInView = Fornecedor.shared.userVariable == nil
+                if !showingSignInView {
+                    // MARK: Task responsável por checar qual o método de autenticação do authUser
+                    // Não é mais necessário pois o loggedCase agora é um atributo do UserProtocol, e é atualizado logo após fazer o load / autenticar o user
+                    //                Task {
+                    //                    try await UserManager.shared.getUser(userID: authUser?.uid ?? "")
+                    //
+                    //                    let authUser2 = vm.loadAuthUser()
+                    //                    if authUser2?.isAnonymous == false{
+                    //                        loggedCase = .registered
+                    //                        print("Autentiquei como Registrado")
+                    //                    }
+                    //                    else if authUser2?.isAnonymous == true{
+                    //                        loggedCase = .anonymous
+                    //                        print("Autentiquei como anônimo")
+                    //                    }
+                    //                    else{
+                    //                        loggedCase = .none
+                    //                        print("Autentiquei como none")
+                    //                    }
+                    //                }
+                    // TODO: Verificar o que isso ta fazendo, pois não entendi
+                    DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+                        if abriuPrimeiraVez {
+                            willLoad.toggle()
+                            DispatchQueue.main.asyncAfter(deadline: .now()+2.5) {
+                                abriuPrimeiraVez = false
+                            }
                         }
                     }
                 }
+            } catch {
+                print(error)
+                showingSignInView.toggle()
             }
-
         }
         .fullScreenCover(isPresented: $showingSignInView, content: {
-            WelcomeSignInView(isShowing: $showingSignInView, arbiuPrimeiraVez: $abriuPrimeiraVez, loggedCase: $loggedCase, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad)
+            WelcomeSignInView(isShowing: $showingSignInView, arbiuPrimeiraVez: $abriuPrimeiraVez, didStartSignUpFlow: $didStartSignUpFlow, willLoad: $willLoad)
         })
         .onChange(of: abriuPrimeiraVez){ newValue, oldOne in
         
@@ -117,13 +128,14 @@ struct ContentView: View {
                 didAppear.toggle()
             }
         }
-        .onChange(of: loggedCase) { newCase in
-            if newCase != .none {
-                withAnimation(Animation.easeInOut(duration: 0.75)) {
-                    isLoading = false
-                }
-            }
-        }
+        // MARK: Não entendi por que esse onChange existe
+//        .onChange(of: loggedCase) { newCase in
+//            if newCase != .none {
+//                withAnimation(Animation.easeInOut(duration: 0.75)) {
+//                    isLoading = false
+//                }
+//            }
+//        }
     }
 }
 

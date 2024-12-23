@@ -32,4 +32,8 @@ extension Fornecedor{
         userVariable = nil
     }
     
+    func anonymousLogin() async throws {
+        userVariable = try await Hospede(isAnonymous: true)
+    }
+    
 }

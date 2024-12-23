@@ -61,28 +61,13 @@ struct MeetRioApp: App {
             .onChange(of: scenePhase) {
                 switch scenePhase {
                 case .background:
-                    // MARK: Salva o YourEvents
-//                        do {
-//                            try YourEventsModel.shared.save()
-//                            
-//                        // MARK: Salva o hostel do usuário
-//                            if let hostel = UserManager.shared.hostel {
-//                                let hostelCE = HostelCodableExtensions(hostel: hostel)
-//                                try hostelCE.save()
-//                            } else {
-//                                print("Hostel ta vazio doidao")
-//                            }
-//                        } catch {
-//                            print("🤬 ERRO AO TENTAR SALVAR O HOSTEL ou YourEventsModel: \(error.localizedDescription)")
-//                        }
                     break
                 case .inactive:
                     // MARK: Checa se o usuário começou e não terminou o flow de signup, caso não tenha terminado, apaga o perfil do authentication do usuário
                     if didStartSignUpFlow {
                         Task {
-                            if Fornecedor.shared.userVariable != nil {
-                                try await Fornecedor.shared.deleteAuthUser()
-                            }
+                            guard let userVariable = Fornecedor.shared.userVariable else { return }
+                            try await Fornecedor.shared.deleteAuthUser()
                         }
                     }
                 case .active:
