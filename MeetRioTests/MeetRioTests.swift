@@ -206,4 +206,12 @@ struct MeetRioTests {
             let gottedHostel = try await Hostel(id: id)
         }
     }
+    
+    @Test func eventTestCRUDGroup() async throws {
+        
+        await #expect(throws: Never.self) {
+            
+        }
+        
+    }
 }

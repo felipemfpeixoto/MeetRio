@@ -36,12 +36,6 @@ extension FirebaseCRUDItem {
         return collection
     }
     
-    static private func getCollectionReference() -> CollectionReference {
-        let collectionName = String(describing: Self.self)
-        let collection = db.collection(collectionName)
-        return collection
-    }
-    
     func create() async throws {
         try Self.collectionReference.document(self.id).setData(from: self)
     }

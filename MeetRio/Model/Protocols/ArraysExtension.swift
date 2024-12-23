@@ -6,8 +6,15 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 extension Array: CRUDGroup where Element: CRUDItem {
+    
+    static var collectionReference: CollectionReference {
+        let collectionName = String(describing: Element.self)
+        let collection = db.collection(collectionName)
+        return collection
+    }
     
     // MARK: Public Methods
     func getAllElements() async throws -> Self{
@@ -25,9 +32,16 @@ extension Array: CRUDGroup where Element: CRUDItem {
 
     // MARK: DB Storage Methods
     private func getAll_DB() async throws -> [Element] {
-        let collectionName = String(describing: Element.self)
+        let querySnapshot = try await Self.collectionReference.getDocuments()
+        var documents: [Element] = []
         
-        return []
+        for document in querySnapshot.documents {
+            if let elementDoc = try? document.data(as: Element.self) {
+                documents.append(elementDoc)
+            }
+        }
+        
+        return documents
     }
     
     // MARK: Cached Storage Methods
