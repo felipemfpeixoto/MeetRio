@@ -29,7 +29,7 @@ struct TabViewContainer: View {
         ZStack{
             TabView(selection: $selectedScreen) {
                 
-                HomeView(selectedScreen: $selectedScreen, isAuthenticated: $isAuthenticated, deuRefresh: $willLoad, loggedCase: $loggedCase, arbiuPrimeiraVez: $arbiuPrimeiraVez)
+                HomeView(selectedScreen: $selectedScreen, isAuthenticated: $isAuthenticated, deuRefresh: $willLoad, arbiuPrimeiraVez: $arbiuPrimeiraVez)
                     .tabItem {
                         Image(systemName: "wineglass")
                             .environment(\.symbolVariants, .none)
@@ -38,16 +38,17 @@ struct TabViewContainer: View {
                     .tag(SelectedScreen.home)
                     
                 
-                YourEventsView(loggedCase: $loggedCase)
+//                YourEventsView(loggedCase: $loggedCase)
+                Text("YourEventsView")
                     .tabItem {
                         Image(systemName: "checkmark.seal")
                             .environment(\.symbolVariants, .none)
                         Text("Your Events")
                     }
                     .tag(SelectedScreen.yourEvents)
-                    .environmentObject(sheetViewModel)
                 
-                HostelView()
+//                HostelView()
+                Text("HostelView")
                     .tabItem {
                         Image(systemName: "bed.double")
                             .environment(\.symbolVariants, .none)

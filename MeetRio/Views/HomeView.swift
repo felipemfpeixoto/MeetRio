@@ -71,13 +71,8 @@ struct HomeView: View{
                         HStack {
                             Text("Hey ")
                                 .font(Font.custom("Bricolage Grotesque", size: 26)) +
-                            if let user = Fornecedor.shared.userVariable {
-                                Text("\(user.name),")
-                                    .font(Font.custom("Bricolage Grotesque", size: 26))
-                            } else {
-                                Text("Anonymous")
-                                    .font(Font.custom("Bricolage Grotesque", size: 26))
-                            }
+                            Text(Hospede.loggedCase == .registered ? Fornecedor.shared.userVariable!.name : "Anonymous")
+                                .font(Font.custom("Bricolage Grotesque", size: 26))
                             Spacer()
                         }
                         
@@ -132,8 +127,8 @@ struct HomeView: View{
     var container: some View{
         VStack{
             if searchText.isEmpty{
-                EventsSlider(title: "Bem Brasil Events", eventCategory: EventType.hostel.rawValue, isLoading: $isLoadingBemBrazil, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
-                EventsSlider(title: "Nightlife", eventCategory: EventType.nightlife.rawValue, isLoading: $isLoadingNightLife, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
+//                EventsSlider(title: "Bem Brasil Events", eventCategory: EventType.hostel.rawValue, isLoading: $isLoadingBemBrazil, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
+//                EventsSlider(title: "Nightlife", eventCategory: EventType.nightlife.rawValue, isLoading: $isLoadingNightLife, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
                 
                 
             }

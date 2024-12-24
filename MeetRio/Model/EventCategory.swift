@@ -17,6 +17,6 @@ struct EventCategory: Codable {
     }
 }
 
-enum EventType: Codable, String {
+enum EventType: String, Codable {
     case hostel, nightlife
 }
