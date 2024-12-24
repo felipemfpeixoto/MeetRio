@@ -16,13 +16,13 @@ extension Array: CRUDGroup where Element: CRUDItem {
         return collection
     }
     
-    // MARK: Public Methods
-    func getAllElements() async throws -> Self{
+    // TODO: Não ta funcionando com a cache ainda
+    mutating func getAllElements() async throws {
         var myReturn = getAll_Cache()
         if myReturn.isEmpty {
             try myReturn = await getAll_DB()
         }
-        return myReturn
+        self = myReturn
     }
     
 //    func getLabeled(label: String) -> Self {
@@ -45,7 +45,7 @@ extension Array: CRUDGroup where Element: CRUDItem {
     }
     
     // MARK: Cached Storage Methods
-    private func getAll_Cache() -> Self{
+    private func getAll_Cache() -> Self {
         return self
     }
     

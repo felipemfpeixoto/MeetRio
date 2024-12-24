@@ -25,44 +25,17 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-//            TabViewContainer(isAuthenticated: $showingSignInView, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
-            VStack {
-                if Hospede.loggedCase == .anonymous {
-                    Text("Logou: \(Hospede.loggedCase)")
-                } else if Hospede.loggedCase == .registered {
-                    Text("Logou: \(Hospede.loggedCase)")
-                    Text("Name: \(Fornecedor.shared.userVariable!.name)")
-                }
-                Button {
-                    Task {
-                        do {
-                            try await Fornecedor.shared.userSignOut()
-                            showingSignInView.toggle()
-                        } catch {
-                            print("Erro ao dar o logout do anonimo: \(error)")
-                        }
-                    }
-                } label: {
-                    Text("Sign Out")
-                        .foregroundStyle(Color.white)
-                }
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .foregroundStyle(Color.blue)
-                }
-            }
+            TabViewContainer(isAuthenticated: $showingSignInView, willLoad: $willLoad, arbiuPrimeiraVez: $abriuPrimeiraVez)
             launchScreen
         }
-        // MARK: Não entendi por que esse onChange existe
-//        .onChange(of: loggedCase) {
-//            if loggedCase != .none {
-//                Task {
-//                    await FirestoreManager.shared.getAllEvents()
-//                }
-//            }
-//        }
-        .task {
+        .onChange(of: showingSignInView) { // MARK: onChange responsável por fazer o get de todos os eventos após o login ter sido feito
+            if !showingSignInView {
+                Task {
+                    try await Fornecedor.allEvents.getAllElements()
+                }
+            }
+        }
+        .task { // MARK: Checa se o usuário está logado e, caso contrário, mostra a tela de login
             do {
                 try await Fornecedor.shared.loadAuthUser()
                 self.showingSignInView = Fornecedor.shared.userVariable == nil
@@ -77,7 +50,6 @@ struct ContentView: View {
                     }
                 }
             } catch {
-                print(error)
                 showingSignInView.toggle()
             }
         }

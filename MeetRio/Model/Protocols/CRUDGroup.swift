@@ -8,6 +8,8 @@
 import Foundation
 import FirebaseFirestore
 
-protocol CRUDGroup: FirebaseCRUDGroup {}
 
+protocol CRUDGroup {
+//    func getAll() async throws -> self
+}
 

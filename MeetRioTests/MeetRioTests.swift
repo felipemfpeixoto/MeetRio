@@ -110,7 +110,6 @@ struct MeetRioTests {
         // MARK: Tentando fazer o get do evento excluído anteriormente, esperando um erro
         await #expect(throws: Error.self) {
             let gottedEvent = try await EventDetails(id: id)
-            try await gottedEvent.deleteItem()
         }
     }
     
@@ -210,7 +209,9 @@ struct MeetRioTests {
     @Test func eventTestCRUDGroup() async throws {
         
         await #expect(throws: Never.self) {
-            
+            var allEvents = AllEvents()
+            try await allEvents.getAllElements()
+            #expect(allEvents.count == 4)
         }
         
     }

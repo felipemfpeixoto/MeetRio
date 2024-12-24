@@ -20,7 +20,10 @@ class Fornecedor {
     
     // Monostate
 //    private(set) static var allHostels = AllHostels()
-    private(set) static var allEvents = AllEvents()
+    
+    
+//    private(set) static var allEvents = AllEvents()
+    static var allEvents = AllEvents() // MARK: Ver qual a melhor forma de atualizar pequenos atributos, como nome, CountryDetails, etc
 }
 
 // MARK: Extension de autenticação
