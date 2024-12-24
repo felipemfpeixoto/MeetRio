@@ -14,11 +14,6 @@ enum SelectedScreen {
 
 
 struct TabViewContainer: View {
-    @State private var vm = SettingsViewModel()
-    
-    @StateObject var sheetViewModel = SheetViewModel()
-    
-    let fsManager = FirestoreManager.shared
     @Binding var isAuthenticated: Bool
     
     @State var openFirst = true
@@ -72,5 +67,5 @@ struct TabViewContainer: View {
 }
 
 #Preview{
-    TabViewContainer(isAuthenticated: .constant(true), loggedCase: .constant(.registered), willLoad: .constant(false), arbiuPrimeiraVez: .constant(true))
+    TabViewContainer(isAuthenticated: .constant(true), willLoad: .constant(false), arbiuPrimeiraVez: .constant(true))
 }

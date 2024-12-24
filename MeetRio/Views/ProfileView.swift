@@ -10,11 +10,6 @@ import CachedAsyncImage
 
 struct ProfileView: View {
     
-    let uploadViewModeManager = UploadViewModeManager()
-    
-    @State private var vm = SettingsViewModel()
-    @Binding var loggedCase: LoginCase
-    
     @Binding var isAuthenticated: Bool
     
     @Binding var arbiuPrimeiraVez: Bool
@@ -38,7 +33,8 @@ struct ProfileView: View {
             Button(role: .destructive, action: {
                 Task {
                     do {
-                        try await vm.delete()
+                        // FIXME: Ao apertar esse botão, o dismiss não é feito na hora e, portando, devemos adicionar uma tela de carregamento, ou outra solução
+                        try await Fornecedor.shared.deleteAuthUser()
                         isAuthenticated = false
                         arbiuPrimeiraVez = true
                         DispatchQueue.main.async {
@@ -60,12 +56,12 @@ struct ProfileView: View {
         
         // Send image to bd
         .onChange(of: isImagePickerShowing) {
-            if loggedCase == .registered{
+            if Hospede.loggedCase == .registered {
                 if let image = selectedImage {
                     ToastVariables.shared.isImageRequest = true
                     Task {
                         do {
-                            try await uploadViewModeManager.saveImage(userID: (UserManager.shared.hospede?.id)!, image: image)
+                            try await Fornecedor.shared.userVariable!.saveImage(image: image)
                         } catch {
                             print("Erro ao salvar a imagem: \(error)")
                             ToastVariables.shared.isImageChangedError = true
@@ -74,7 +70,6 @@ struct ProfileView: View {
                 }
             }
         }
-        
     }
     
     var background: some View{
@@ -110,20 +105,22 @@ struct ProfileView: View {
     var nButtons: some View{
         List {
             Section {
-                Text(UserManager.shared.hospede?.name ?? "Nome não informado")
+                Text(Fornecedor.shared.userVariable?.name ?? "Nome não informado")
             }
             Section {
                 HStack {
-                    Text(UserManager.shared.hospede?.country.flag ?? "🇧🇷")
-                    Text(UserManager.shared.hospede?.country.name ?? "Brazil")
+                    if let user = Fornecedor.shared.userVariable as? Hospede {
+                        Text(user.country?.flag ?? "🇧🇷")
+                        Text(user.country?.name ?? "Brazil")
+                    }
                 }
             }
-            if loggedCase == .registered {
+            if Hospede.loggedCase == .registered {
                 Section{
                     Button("Reset Password") {
                         Task {
                             do {
-                                try await vm.resetPassword()
+                                try await Fornecedor.shared.userVariable?.resetPassword(email: Fornecedor.shared.userVariable?.email ?? "")
                             } catch {
                                 print("🤬 Erro ao tentar resetar senha: ", error)
                             }
@@ -132,10 +129,10 @@ struct ProfileView: View {
                     
                     Button("Log Out") {
                         Task {
+                            // FIXME: Ao apertar esse botão, o dismiss não é feito na hora e, portando, devemos adicionar uma tela de carregamento, ou outra solução
                             do {
-                                try await vm.signOut()
+                                try await Fornecedor.shared.userSignOut()
                                 isAuthenticated = false
-                                loggedCase = .none
                                 DispatchQueue.main.async {
                                     dismiss()
                                 }
@@ -159,15 +156,15 @@ struct ProfileView: View {
                     Button("Sign in") {
                         //TODO: Abre a sheet e deleta a conta atual
                         Task{
-                            do{
-                                try await vm.delete()
+                            do {
+                                try await Fornecedor.shared.deleteAuthUser()
                                 isAuthenticated = false
                                 DispatchQueue.main.async {
                                     arbiuPrimeiraVez = true
                                     dismiss()
                                 }
                             } catch{
-                                print(error)
+                                print("Erro ao deletar o usuário: ", error)
                             }
                         }
                     }
@@ -186,7 +183,7 @@ struct ProfileView: View {
                    .resizable()
                    .scaledToFill()
             }
-            else if let imageURL = UserManager.shared.hospede?.imageURL, imageURL != "" {
+            else if let imageURL = Fornecedor.shared.userVariable?.imageURL, imageURL != "" {
                 CachedAsyncImage(url: URL(string: imageURL), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
                     switch phase {
                     case .success(let image):
@@ -229,7 +226,7 @@ struct ProfileView: View {
         .frame(width: 180, height: 180)
         .clipShape(Circle())
         .overlay {
-            if loggedCase == .registered{
+            if Hospede.loggedCase == .registered {
                 Button(action: {
                     isImagePickerShowing.toggle()
                 }, label: {
@@ -263,7 +260,7 @@ struct ProfileView: View {
 
 #Preview {
     NavigationStack {
-        ProfileView(loggedCase: .constant(.registered), isAuthenticated: .constant(true), arbiuPrimeiraVez: .constant(false))
+        ProfileView(isAuthenticated: .constant(true), arbiuPrimeiraVez: .constant(false))
     }
 }
 

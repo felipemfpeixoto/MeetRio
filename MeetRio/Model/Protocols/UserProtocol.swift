@@ -83,7 +83,8 @@ extension UserProtocol {
         
         let imageURL = try await storageRef.downloadURL()
         self.imageURL = imageURL.absoluteString
-            
+        
+        try await self.updateItem()
     }
     
 }
