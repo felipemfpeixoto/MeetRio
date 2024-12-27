@@ -127,13 +127,10 @@ struct HomeView: View{
     var container: some View{
         VStack{
             if searchText.isEmpty{
-//                EventsSlider(title: "Bem Brasil Events", eventCategory: EventType.hostel.rawValue, isLoading: $isLoadingBemBrazil, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
-//                EventsSlider(title: "Nightlife", eventCategory: EventType.nightlife.rawValue, isLoading: $isLoadingNightLife, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
-                
-                
+                EventsSlider(title: "Bem Brasil Events", eventCategory: EventType.hostel.rawValue, isLoading: $isLoadingBemBrazil, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
+                EventsSlider(title: "Nightlife", eventCategory: EventType.nightlife.rawValue, isLoading: $isLoadingNightLife, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
             }
             else {
-                // TODO: (0) Continuar a partir daqui
 //                EventSearch(searchText: $searchText, selectedFavorite: $selectedFavorite, clicouGoing: $clicouGoing)
 //                    .frame(maxWidth: .infinity)
             }

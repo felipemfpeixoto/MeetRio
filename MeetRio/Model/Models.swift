@@ -75,12 +75,6 @@ struct FavoriteEvent: Codable {
     var eventID: String
 }
 
-struct GoingEvent: Codable {
-    @DocumentID var id: String?
-    var eventID: String
-    var userID: String
-}
-
 struct RecomendedEvent: Codable {
     var hostelID: String
     var eventID: String
