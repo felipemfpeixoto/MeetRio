@@ -131,8 +131,8 @@ struct HomeView: View{
                 EventsSlider(title: "Nightlife", eventCategory: EventType.nightlife.rawValue, isLoading: $isLoadingNightLife, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
             }
             else {
-//                EventSearch(searchText: $searchText, selectedFavorite: $selectedFavorite, clicouGoing: $clicouGoing)
-//                    .frame(maxWidth: .infinity)
+                EventSearch(searchText: $searchText, selectedFavorite: $selectedFavorite, clicouGoing: $clicouGoing)
+                    .frame(maxWidth: .infinity)
             }
             Rectangle()
                 .fill(Color.clear)

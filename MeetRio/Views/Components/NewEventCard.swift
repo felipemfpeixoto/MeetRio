@@ -57,11 +57,11 @@ struct NewEventCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 20))
         }
         .onAppear {
-            if loggedCase == .registered {
+            if Hospede.loggedCase == .registered {
                 Task {
-                    guard let userID = UserManager.shared.hospede?.id else { return }
+                    let userID = Fornecedor.shared.userVariable!.id
                     do {
-                        let going = try await FirestoreManager.shared.imGoing(userID, eventID: event.id!) // Ta dando erro ao entrar logado
+                        let going = try await GoingEvent.getGoingEvent(eventID: event.id, userID: userID)
                         self.going = going
                     } catch {
                         print("Erro ao tentar marcar o evento como 'indo': \(error.localizedDescription)")
@@ -117,9 +117,8 @@ struct NewEventCard: View {
                     EventCategory
                         .padding(.horizontal)
                 }
-                if loggedCase == .registered {
+                if Hospede.loggedCase == .registered {
                     buttonGoing
-                        
                 }
             }.padding()
         }
@@ -129,14 +128,14 @@ struct NewEventCard: View {
     var EventCategory: some View {
         
         var eventName: String {
-            if event.eventCategory == "bemBrazil" {
+            if event.eventCategory.eventType.rawValue == "bemBrazil" {
                 return "Bem Brazil"
             }
-            else if event.eventCategory == "nightLife" {
+            else if event.eventCategory.eventType.rawValue == "nightLife" {
                 return "NightLife"
             }
             else{
-                return event.eventCategory
+                return event.eventCategory.eventType.rawValue
             }
         }
         
@@ -174,7 +173,7 @@ struct NewEventCard: View {
                 .lineLimit(1)
                 //.minimumScaleFactor(0.7)
                 .padding(.bottom, 3)
-            Text(event.address.neighborhood)
+            Text(event.address?.neighborhood ?? "")
 
         }
         .offset(y: -3)
@@ -245,8 +244,8 @@ struct NewEventCard: View {
     var buttonGoing: some View {
         Button(action: {
             going.toggle()
-            
-            guard let userID = UserManager.shared.hospede?.id, let eventID = event.id else {
+            let eventID = event.id
+            guard let userID = Fornecedor.shared.userVariable?.id else {
                 // Mostre um alerta ou toast informando que o usuário ou o evento não foi carregado corretamente
                 print("Erro: Usuário ou evento não carregado corretamente.")
                 return
@@ -256,23 +255,25 @@ struct NewEventCard: View {
             isLoading = true
             
             // Verifica se o usuário está marcando ou desmarcando presença
+            
+            // TODO: (1) Testar
             if !going {
-                if let index = YourEventsModel.shared.events.firstIndex(of: event) {
-                    YourEventsModel.shared.events.remove(at: index)
-                    going = false
-                    selectedFavorite = nil
-                }
-                desmarcarPresenca(userID: userID, eventID: eventID)
-                ToastVariables.shared.isOnRemove = true
-                
-            } else {
-
-                print("estou going")
-                YourEventsModel.shared.addEvent(event)
                 going = true
-                selectedFavorite = event
-                marcarPresenca(userID: userID, eventID: eventID)
+                Task {
+                    let _ = try await GoingEvent(eventID: userID, userID: event.id, isNewGoingEvent: true)
+                    PostHogSDK.shared.capture("MarcouPresenca(PageiOS18)")
+                }
+                // Liga o TOAST
                 ToastVariables.shared.isOnAdd = true
+            } else {
+                going = false
+                Task {
+                    let goingEvent = try await GoingEvent(eventID: event.id, userID: userID)
+                    
+                    try await goingEvent.deleteItem()
+                    
+                    PostHogSDK.shared.capture("DesmarcouPresenca(PageiOS18)")
+                }
             }
             
             isLoading = false
@@ -295,38 +296,24 @@ struct NewEventCard: View {
                     )
             }
         })
-        //.disabled(UserManager.shared.hospede?.id == nil || event.id == nil || isLoading)
-    }
-    
-    func marcarPresenca(userID: String, eventID: String) {
-        Task {
-            await FirestoreManager.shared.createGoingEvent(userID, eventID)
-            PostHogSDK.shared.capture("MarcouPresença(Card)")
-        }
-    }
-
-    func desmarcarPresenca(userID: String, eventID: String) {
-        Task {
-            await FirestoreManager.shared.deleteGoingEvent(userID, eventID)
-            PostHogSDK.shared.capture("Desmarcou Presença(Card)")
-        }
+        .disabled(Fornecedor.shared.userVariable == nil || isLoading)
     }
 }
 
 #Preview("Normal Registered") {
-    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), event: MockData.eventDetails)
+    NewEventCard(selectedFavorite: .constant(nil), clicouGoing: .constant(false), event: MockData.Event)
 }
 
 #Preview("Large Registered") {
-    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.registered), clicouGoing: .constant(false), size: .large, event: MockData.eventDetails)
+    NewEventCard(selectedFavorite: .constant(nil), clicouGoing: .constant(false), size: .large, event: MockData.Event)
 }
 
 #Preview("Normal Anonymous") {
-    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.anonymous), clicouGoing: .constant(false), event: MockData.eventDetails)
+    NewEventCard(selectedFavorite: .constant(nil), clicouGoing: .constant(false), event: MockData.Event)
 }
 
 #Preview("Large Anonymous") {
-    NewEventCard(selectedFavorite: .constant(nil), loggedCase: .constant(.anonymous), clicouGoing: .constant(false), size: .large, event: MockData.eventDetails)
+    NewEventCard(selectedFavorite: .constant(nil), clicouGoing: .constant(false), size: .large, event: MockData.Event)
 }
 
 extension ContentSizeCategory {

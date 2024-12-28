@@ -416,122 +416,116 @@ struct NewEventPageViewIOS18: View {
 
 
 
-//TODO: FAZER AS ATUALIZACOES.
-//struct NewEventPageView: View {
-//    @Environment(\.dismiss) var dismiss
-//    let event: EventDetails
-//    @State var going: Bool = false
-//    @State var calendarBool: Bool = false
-//    
-//    @State var isPresenting = true
-//    
-//    @State var changeSheetShare = false
-//    
-//
-//    var body: some View {
-//        ScrollView{
-//            EventPageContent(event: event, loggedCase: $loggedCase, going: $going, calendarBool: $calendarBool, translatedTexts: .constant([nil, nil]))
-//            EventPageDetaislView(event: event, isPresented: $changeSheetShare)
-//                .offset(y: -30)
-//            
-//        }
-//        .background(Color("BackgroundWhite").edgesIgnoringSafeArea(.all))
-//        .navigationBarBackButtonHidden(true)
-//        .toolbar {
-//            ToolbarItem(placement: .topBarLeading) {
-//                Button(action: {
-//                    print("Clicou no botão de voltar")
-//                    dismiss()
-//                }) {
-//                    HStack {
-//                        Image(systemName: "chevron.left")
-//                            .font(.system(size: 18))
-//                        Text("Back")
-//                            .font(.system(size: 18))
-//                    }
-//                    .foregroundStyle(.white)
-//                    .fontWeight(.semibold)
-//                }
-//            }
-//        }
-//        
-//        .onChange(of: changeSheetShare){
-//            if changeSheetShare{
-//                isPresenting = false
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-//                    event.shareEvent { success in
-//                        if success {
-//                            print("Compartilhamento concluído com sucesso!")
-//                        } else {
-//                            print("Compartilhamento cancelado ou falhou.")
-//                        }
-//                        isPresenting = true
-//                        changeSheetShare = false
-//                    }
-//
-//                }
-//
-//            }
-//        }
-//        .overlay(alignment: .topTrailing) {
-//            VStack {
-//                if loggedCase == .registered {
-//                    buttonGoing
-//                }
-//            }.padding()
-//        }
-//        .onAppear {
-//            if loggedCase == .registered {
-//                Task {
-//                    going = try await FirestoreManager.shared.imGoing(UserManager.shared.hospede!.id!, eventID: event.id!)
-//                }
-//            }
-//            
-//        }
-//    }
-//    
-//    var buttonGoing: some View {
-//        Button(action: {
-//            if !going {
-//                YourEventsModel.shared.addEvent(event)
-//                going = true
-//                Task {
-//                    let userID = UserManager.shared.hospede!.id
-//                    await FirestoreManager.shared.createGoingEvent(userID!, event.id!)
-//                    PostHogSDK.shared.capture("MarcouPresenca(Page)")
-//                }
-//                
-//                // Liga o TOAST
-//                ToastVariables.shared.isOnAdd = true
-//            } else {
-//                YourEventsModel.shared.removeEvent(event)
-//                going = false
-//                Task {
-//                    let userID = UserManager.shared.hospede!.id
-//                    await FirestoreManager.shared.deleteGoingEvent(userID!, event.id!)
-//                    PostHogSDK.shared.capture("DesmarcouPresenca(Page)")
-//                }
-//                
-//                // Liga o TOAST
-//                ToastVariables.shared.isOnRemove = true
-//            }
-//        }, label: {
-//            Image(systemName: going ? "checkmark.seal.fill" : "checkmark.seal")
-//                .foregroundStyle(going ? .green : .black)
-//                .font(.title3)
-//                .padding(7)
-//                .background(
-//                    RoundedRectangle(cornerRadius: 10)
-//                        .foregroundStyle(.white)
-//                )
-//        })
-//    }
-//    
-//    private func saiDaView() {
-//        isPresenting = false
-//        dismiss()
-//    }
-//}
+//TODO: (1) FAZER AS ATUALIZACOES. Não está funcionando direito para versões anteriores ao IOS 18
+struct NewEventPageView: View {
+    @Environment(\.dismiss) var dismiss
+    let event: EventDetails
+    @State var going: Bool = false
+    @State var calendarBool: Bool = false
+    
+    @State var isPresenting = true
+    
+    @State var changeSheetShare = false
+    
 
+    var body: some View {
+        ScrollView{
+            EventPageContent(event: event, going: $going, calendarBool: $calendarBool, translatedTexts: .constant([nil, nil]))
+            EventPageDetaislView(event: event, isPresented: $changeSheetShare)
+                .offset(y: -30)
+            
+        }
+        .background(Color("BackgroundWhite").edgesIgnoringSafeArea(.all))
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button(action: {
+                    print("Clicou no botão de voltar")
+                    dismiss()
+                }) {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 18))
+                        Text("Back")
+                            .font(.system(size: 18))
+                    }
+                    .foregroundStyle(.white)
+                    .fontWeight(.semibold)
+                }
+            }
+        }
+        
+        .onChange(of: changeSheetShare){
+            if changeSheetShare{
+                isPresenting = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    event.shareEvent { success in
+                        if success {
+                            print("Compartilhamento concluído com sucesso!")
+                        } else {
+                            print("Compartilhamento cancelado ou falhou.")
+                        }
+                        isPresenting = true
+                        changeSheetShare = false
+                    }
 
-//BottomSheetView(isShowing: $isPresenting, someView: EventPageDetaislView(event: event, isPresented: $changeSheetShare), overlayedColor: Color.clear)
+                }
+
+            }
+        }
+        .overlay(alignment: .topTrailing) {
+            VStack {
+                if Hospede.loggedCase == .registered {
+                    buttonGoing
+                }
+            }.padding()
+        }
+        .onAppear {
+            if Hospede.loggedCase == .registered {
+                Task {
+                    going = try await GoingEvent.getGoingEvent(eventID: event.id, userID: Fornecedor.shared.userVariable!.id)
+                }
+            }
+        }
+    }
+    
+    var buttonGoing: some View {
+        Button(action: {
+            let userID = Fornecedor.shared.userVariable!.id
+            if !going {
+                going = true
+                Task {
+                    let _ = try await GoingEvent(eventID: userID, userID: event.id, isNewGoingEvent: true)
+                    PostHogSDK.shared.capture("MarcouPresenca(PageiOS18)")
+                }
+                // Liga o TOAST
+                ToastVariables.shared.isOnAdd = true
+            } else {
+                going = false
+                Task {
+                    let goingEvent = try await GoingEvent(eventID: event.id, userID: userID)
+                    
+                    try await goingEvent.deleteItem()
+                    
+                    PostHogSDK.shared.capture("DesmarcouPresenca(PageiOS18)")
+                }
+                // Desliga o TOAST
+                ToastVariables.shared.isOnRemove = true
+            }
+        }, label: {
+            Image(systemName: going ? "checkmark.seal.fill" : "checkmark.seal")
+                .foregroundStyle(going ? .green : .black)
+                .font(.title3)
+                .padding(7)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .foregroundStyle(.white)
+                )
+        })
+    }
+    
+    private func saiDaView() {
+        isPresenting = false
+        dismiss()
+    }
+}

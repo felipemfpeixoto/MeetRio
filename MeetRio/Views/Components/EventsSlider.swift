@@ -76,17 +76,16 @@ struct EventsSlider: View {
                                 )
                             }
                             
+                        } else {
+                            NavigationLink(destination: NewEventPageView(event: event)) {
+                                NewEventCard(
+                                    selectedFavorite: $selectedFavorite,
+                                    clicouGoing: $clicouGoing,
+                                    event: event
+                                )
+                            }
+                           
                         }
-//                        else {
-//                            NavigationLink(destination: NewEventPageView(event: event)) {
-//                                NewEventCard(
-//                                    selectedFavorite: $selectedFavorite,
-//                                    clicouGoing: $clicouGoing,
-//                                    event: event
-//                                )
-//                            }
-//                           
-//                        }
                     }
                     
                 }
