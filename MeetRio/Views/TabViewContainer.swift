@@ -38,8 +38,7 @@ struct TabViewContainer: View {
                     .tag(SelectedScreen.home)
                     
                 
-//                YourEventsView(loggedCase: $loggedCase)
-                Text("YourEventsView")
+                YourEventsView()
                     .tabItem {
                         Image(systemName: "checkmark.seal")
                             .environment(\.symbolVariants, .none)

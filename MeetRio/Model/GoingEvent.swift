@@ -78,4 +78,28 @@ class GoingEvent: Codable, CRUDItem {
         let querySnapshot = try await db.collection("going").whereField("eventID", isEqualTo: eventID).whereField("userID", isEqualTo: userID).getDocuments()
         return !querySnapshot.isEmpty
     }
+    
+    
+    
+    // TODO: (0) Não foi testada
+    static func getAllUserGoingEvents(userID: String) async throws -> [EventDetails] {
+        let querySnapshot = try await db.collection("going").whereField("userID", isEqualTo: userID).getDocuments()
+        
+        var allEventIDs: [String] = []
+        
+        for document in querySnapshot.documents {
+            if let goingEvent = try? document.data(as: GoingEvent.self) {
+                allEventIDs.append(goingEvent.eventID)
+            }
+        }
+        
+        var allEvents: [EventDetails] = []
+        
+        for eventID in allEventIDs {
+            let event = try await EventDetails(id: eventID)
+            allEvents.append(event)
+        }
+        
+        return allEvents
+    }
 }
