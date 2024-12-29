@@ -46,8 +46,7 @@ struct TabViewContainer: View {
                     }
                     .tag(SelectedScreen.yourEvents)
                 
-//                HostelView()
-                Text("HostelView")
+                HostelView()
                     .tabItem {
                         Image(systemName: "bed.double")
                             .environment(\.symbolVariants, .none)
