@@ -11,7 +11,7 @@
 import Foundation
 import SwiftUI
 
-struct HomeView: View{
+struct HomeView: View {
     
     let screenWidth = UIScreen.main.bounds.width
     let screenHeight = UIScreen.main.bounds.height
@@ -40,7 +40,7 @@ struct HomeView: View{
                         header
                             .padding(.bottom, 30)
                         
-                    ScrollView{
+                    ScrollView {
                         // AQUI TEM Q MUDAR
                         container
                         Spacer()
@@ -71,7 +71,7 @@ struct HomeView: View{
                         HStack {
                             Text("Hey ")
                                 .font(Font.custom("Bricolage Grotesque", size: 26)) +
-                            Text(Hospede.loggedCase == .registered ? Fornecedor.shared.userVariable!.name : "Anonymous")
+                            Text(Hospede.loggedCase == .registered ? Fornecedor.shared.userVariable?.name ?? "User" : "Anonymous")
                                 .font(Font.custom("Bricolage Grotesque", size: 26))
                             Spacer()
                         }
@@ -126,7 +126,7 @@ struct HomeView: View{
     
     var container: some View{
         VStack{
-            if searchText.isEmpty{
+            if searchText.isEmpty {
                 EventsSlider(title: "Bem Brasil Events", eventCategory: EventType.hostel.rawValue, isLoading: $isLoadingBemBrazil, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
                 EventsSlider(title: "Nightlife", eventCategory: EventType.nightlife.rawValue, isLoading: $isLoadingNightLife, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
             }

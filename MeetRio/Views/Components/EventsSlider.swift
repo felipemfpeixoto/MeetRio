@@ -66,7 +66,7 @@ struct EventsSlider: View {
                 
                 ForEach(sortedEvents) { event in
                     
-                    if event.eventCategory.eventType != .hostel || (event.dateDetails?.hasEventPassed == false) {
+//                    if event.eventCategory.eventType != .hostel || (event.dateDetails?.hasEventPassed == false) {
                         if #available(iOS 18, *) {
                             NavigationLink(destination: NewEventPageViewIOS18(event: event)) {
                                 NewEventCard(
@@ -86,8 +86,7 @@ struct EventsSlider: View {
                             }
                            
                         }
-                    }
-                    
+//                    }
                 }
             }
             .padding(.horizontal)
@@ -111,7 +110,7 @@ struct EventsSlider: View {
     }
     
     var searchResults: [EventDetails] {
-        var filteredEvents = events
+        var filteredEvents = Fornecedor.allEvents
         
         if !searchText.isEmpty {
             filteredEvents = filteredEvents.filter { $0.name.localizedCaseInsensitiveContains(searchText) }

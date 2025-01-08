@@ -35,18 +35,20 @@ extension Array: CRUDGroup where Element: CRUDItem {
         let querySnapshot = try await Self.collectionReference.getDocuments()
         var documents: [Element] = []
         
-        for document in querySnapshot.documents {
-            if let elementDoc = try? document.data(as: Element.self) {
+        do {
+            for document in querySnapshot.documents {
+                let elementDoc = try document.data(as: Element.self) // TODO: Erro está acontecendo nessa linha
                 documents.append(elementDoc)
             }
+        } catch {
+            print("🤬 ERRO AO DECODAR EVENTO: ", error)
         }
-        
         return documents
     }
     
     // MARK: Cached Storage Methods
     private func getAll_Cache() -> Self {
-        return self
+        return []
     }
     
     // TODO: Melhorar depois de colocar o event

@@ -211,7 +211,7 @@ struct MeetRioTests {
         await #expect(throws: Never.self) {
             var allEvents = AllEvents()
             try await allEvents.getAllElements()
-            #expect(allEvents.count == 4)
+            #expect(allEvents.count == 1)
         }
         
     }

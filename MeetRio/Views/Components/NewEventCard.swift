@@ -73,7 +73,7 @@ struct NewEventCard: View {
     
     @ViewBuilder
     var eventImage: some View {
-        CachedAsyncImage(url: URL(string: event.photoURL!), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
+        CachedAsyncImage(url: URL(string: event.photoURL ?? ""), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
             switch phase {
             case .success(let image):
                 image
