@@ -89,7 +89,7 @@ struct EventPageContent: View {
 
     var background: some View {
         ZStack {
-            CachedAsyncImage(url: URL(string: event.photoURL!), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
+            CachedAsyncImage(url: URL(string: event.photoURL ?? ""), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
                 switch phase {
                 case .success(let image):
                     ZStack{
@@ -288,6 +288,8 @@ struct NewEventPageViewIOS18: View {
     @State var isNotDismissable = true
     
     @State var changeSheetShare = false
+    
+    @State var willRefreshWhoIsAlsoGoing: Bool = true
 
     var body: some View {
         VStack{
@@ -340,18 +342,19 @@ struct NewEventPageViewIOS18: View {
                     await translationManager.translateAllAtOnce(using: session, isShowing: $changeSheet)
                 }
             
-            EventPageDetaislView(event: event, isPresented: $changeSheetShare)
+            EventPageDetaislView(event: event, willRefreshWhoIsAlsoGoing: $willRefreshWhoIsAlsoGoing, isPresented: $changeSheetShare)
                 .offset(y: -30)
         }
     }
     
+    // TODO: (1) O código da action desse botao ta sendo repetido que nem no NewEventCard, Ajeitar!
     var buttonGoing: some View {
         Button(action: {
             let userID = Fornecedor.shared.userVariable!.id
             if !going {
                 going = true
                 Task {
-                    let _ = try await GoingEvent(eventID: userID, userID: event.id, isNewGoingEvent: true)
+                    let _ = try await GoingEvent(eventID: event.id, userID: userID, isNewGoingEvent: true)
                     PostHogSDK.shared.capture("MarcouPresenca(PageiOS18)")
                 }
                 // Liga o TOAST
@@ -368,6 +371,7 @@ struct NewEventPageViewIOS18: View {
                 // Desliga o TOAST
                 ToastVariables.shared.isOnRemove = true
             }
+            willRefreshWhoIsAlsoGoing.toggle()
         }, label: {
             Image(systemName: going ? "checkmark.seal.fill" : "checkmark.seal")
                 .foregroundStyle(going ? .green : .black)
@@ -431,7 +435,7 @@ struct NewEventPageView: View {
     var body: some View {
         ScrollView{
             EventPageContent(event: event, going: $going, calendarBool: $calendarBool, translatedTexts: .constant([nil, nil]))
-            EventPageDetaislView(event: event, isPresented: $changeSheetShare)
+            EventPageDetaislView(event: event, willRefreshWhoIsAlsoGoing: .constant(false), isPresented: $changeSheetShare)
                 .offset(y: -30)
             
         }

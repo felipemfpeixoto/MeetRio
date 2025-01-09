@@ -37,8 +37,6 @@ extension Array: CRUDGroup where Element: CRUDItem {
     private func getAll_DB() async throws -> [Element] {
         let querySnapshot = try await Self.collectionReference.getDocuments()
         var documents: [Element] = []
-        print("☢️ QuerySnapshot Documents: \(querySnapshot.documents.count)")
-        
         for document in querySnapshot.documents {
             do {
                 let elementDoc = try document.data(as: Element.self) // TODO: Erro está acontecendo nessa linha
@@ -48,8 +46,6 @@ extension Array: CRUDGroup where Element: CRUDItem {
                 continue
             }
         }
-        
-        print("☢️ Documents: \(documents)")
         return documents
     }
     

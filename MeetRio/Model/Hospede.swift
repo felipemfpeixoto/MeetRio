@@ -10,9 +10,9 @@ import FirebaseFirestore
 import FirebaseStorage
 import FirebaseAuth
 
+// TODO: (0) Criar um CodingKeys pra essa porra
 @Observable
 class Hospede: UserProtocol {
-    
     
     // MARK: Propriedades derivadas dos protocolos
     var id: String

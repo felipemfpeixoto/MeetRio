@@ -38,13 +38,19 @@ class GoingEvent: Codable, CRUDItem {
         }
     }
     
+    enum CodingKeys: String, CodingKey {
+        case _id = "id"
+        case _eventID = "eventID"
+        case _userID = "userID"
+    }
+    
     init(id: String, eventID: String, userID: String) {
         self.id = id
         self.eventID = eventID
         self.userID = userID
     }
     
-    // TODO: (1) Provavelmente essa função não deveria estar aqui
+    // TODO: (1) Provavelmente essas funções não deveriam estar aqui
     static func getGoingEvent(_ eventID: String) async -> [Hospede] {
         do {
             let collectionName = String(describing: Self.self)
@@ -75,8 +81,12 @@ class GoingEvent: Codable, CRUDItem {
     
     /// - Returns: Valor booleano que indica se o record com o eventID e userID passados existe na DataBase
     static func getGoingEvent(eventID: String, userID: String) async throws -> Bool {
-        let querySnapshot = try await db.collection("going").whereField("eventID", isEqualTo: eventID).whereField("userID", isEqualTo: userID).getDocuments()
-        return !querySnapshot.isEmpty
+        let querySnapshot = try await db.collection("GoingEvent")
+            .whereField("eventID", isEqualTo: eventID)
+            .whereField("userID", isEqualTo: userID)
+            .getDocuments()
+        
+        return !querySnapshot.documents.isEmpty
     }
     
     

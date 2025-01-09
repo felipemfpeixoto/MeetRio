@@ -59,10 +59,12 @@ struct NewEventCard: View {
         .onAppear {
             if Hospede.loggedCase == .registered {
                 Task {
+                    isLoading = true
                     let userID = Fornecedor.shared.userVariable!.id
                     do {
                         let going = try await GoingEvent.getGoingEvent(eventID: event.id, userID: userID)
                         self.going = going
+                        isLoading = false
                     } catch {
                         print("Erro ao tentar marcar o evento como 'indo': \(error.localizedDescription)")
                     }
@@ -73,7 +75,7 @@ struct NewEventCard: View {
     
     @ViewBuilder
     var eventImage: some View {
-        CachedAsyncImage(url: URL(string: event.photoURL ?? ""), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
+        CachedAsyncImage(url: URL(string: event.photoURL ?? "xxx"), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
             switch phase {
             case .success(let image):
                 image
@@ -243,8 +245,6 @@ struct NewEventCard: View {
 
     var buttonGoing: some View {
         Button(action: {
-            going.toggle()
-            let eventID = event.id
             guard let userID = Fornecedor.shared.userVariable?.id else {
                 // Mostre um alerta ou toast informando que o usuário ou o evento não foi carregado corretamente
                 print("Erro: Usuário ou evento não carregado corretamente.")
@@ -260,7 +260,7 @@ struct NewEventCard: View {
             if !going {
                 going = true
                 Task {
-                    let _ = try await GoingEvent(eventID: userID, userID: event.id, isNewGoingEvent: true)
+                    let _ = try await GoingEvent(eventID: event.id, userID: userID, isNewGoingEvent: true)
                     PostHogSDK.shared.capture("MarcouPresenca(PageiOS18)")
                 }
                 // Liga o TOAST
@@ -296,7 +296,7 @@ struct NewEventCard: View {
                     )
             }
         })
-        .disabled(Fornecedor.shared.userVariable == nil || isLoading)
+        .disabled(isLoading)
     }
 }
 

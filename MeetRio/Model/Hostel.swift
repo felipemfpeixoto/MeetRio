@@ -9,6 +9,7 @@ import Foundation
 import FirebaseFirestore
 import FirebaseAuth
 
+// TODO: (0) Criar um CodingKeys pra essa porra
 @Observable
 class Hostel: Codable, UserProtocol {
     

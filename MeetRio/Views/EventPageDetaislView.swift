@@ -12,6 +12,8 @@ import PostHog
 import CachedAsyncImage
 import Combine
 
+// TODO: (0) Esse arquivo ta com muita repetição de código, o que ta gerando inconsistências em versões de IOS diferentes
+
 struct EventPageDetaislView: View {
     let screenWidth = UIScreen.main.bounds.width
     let screenHeight = UIScreen.main.bounds.height
@@ -25,6 +27,7 @@ struct EventPageDetaislView: View {
     let reviewList: [Review] = [Review(rate: 4, date: Date.now, description: "Muito bom, gostei bastante do local."), Review(rate: 2, date: Date.now, description: "Não gostei.")]
     
     @State var isLoading = false
+    @Binding var willRefreshWhoIsAlsoGoing: Bool
     
     @Binding var isPresented: Bool
     
@@ -40,6 +43,9 @@ struct EventPageDetaislView: View {
                 Spacer()
             }
         }
+        .onChange(of: willRefreshWhoIsAlsoGoing, { oldValue, newValue in
+            loadPeopleGoing()
+        })
         .onAppear {
             loadPeopleGoing()
         }
@@ -57,7 +63,7 @@ struct EventPageDetaislView: View {
                
             } else{
                 //TODO: Falta colocar a review
-                PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
+                PeopleGoingView(isLoading: $isLoading, isAlsoGoing: $isAlsoGoing)
             }
         }
         .padding()
@@ -87,84 +93,88 @@ struct EventPageDetaislView: View {
     }
 }
 
-@available(iOS 18, *)
-struct EventPageDetaislViewIOS18: View {
-    let screenWidth = UIScreen.main.bounds.width
-    let screenHeight = UIScreen.main.bounds.height
-    
-    @State var isSheetOpen: Bool = false
-    @State var isAlsoGoing: [Hospede] = []
-    
-    let event: EventDetails
-    let reviewList: [Review] = [Review(rate: 4, date: Date.now, description: "Muito bom, gostei bastante do local."), Review(rate: 2, date: Date.now, description: "Não gostei.")]
-    
-    @State var isLoading = false
-    let translationManager: TranslationManager
-    
-    @Binding var changeSheet: Bool
-    
-    var body: some View {
-        ZStack{
-            Color("BackgroundWhite")
-                .ignoresSafeArea()
-            scrollView
-        }
-    }
-    
-    func loadPeopleGoingAndTranslateTips() {
-        Task {
-            isLoading = true
-            isAlsoGoing = await GoingEvent.getGoingEvent(event.id)
-            isLoading = false
-            // MARK: EU APENAS COMENTEI PQ AS TIPS AGORA SÃO BULLETS
-            translationManager.translatedTexts[1] = event.tips.first
-        }
-    }
-    
-    @ViewBuilder
-    var scrollView: some View{
-        ScrollView {
-            VStack(spacing: 15) {
-                
-                HStack{
-                    if let buyURL = event.buyURL {
-                        BuyButtonView(buyURL: buyURL)
-                    }
-                    
-                }
-                .padding(.horizontal)
-                .padding(.top, 30)
-                
-                content
-                
-            }
-            .onAppear {
-                loadPeopleGoingAndTranslateTips()
-            }
-        }
-    }
-    
-    @ViewBuilder
-    var content: some View{
-        PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
-            .padding()
-        
-        if event.otherPictureURLs != nil{
-            OtherPhotos(photos: event.otherPictureURLs!)
-                .padding()
-        }
-        
-        LocationView(event: event)
-            .padding()
-        
-        TipsView(tips: event.tips)
-            .padding()
-    }
-}
+//@available(iOS 18, *)
+//struct EventPageDetaislViewIOS18: View {
+//    let screenWidth = UIScreen.main.bounds.width
+//    let screenHeight = UIScreen.main.bounds.height
+//    
+//    @State var isSheetOpen: Bool = false
+//    @State var isAlsoGoing: [Hospede] = []
+//    
+//    let event: EventDetails
+//    let reviewList: [Review] = [Review(rate: 4, date: Date.now, description: "Muito bom, gostei bastante do local."), Review(rate: 2, date: Date.now, description: "Não gostei.")]
+//    
+//    @State var isLoading = false
+//    let translationManager: TranslationManager
+//    
+//    @Binding var changeSheet: Bool
+//    @Binding var atualizaWhoIsAlsoGoing: Bool
+//    
+//    var body: some View {
+//        ZStack{
+//            Color("BackgroundWhite")
+//                .ignoresSafeArea()
+//            scrollView
+//        }
+//        .onChange(of: $atualizaWhoIsAlsoGoing, { oldValue, newValue in
+//            loadPeopleGoingAndTranslateTips()
+//        })
+//    }
+//    
+//    @ViewBuilder
+//    var scrollView: some View{
+//        ScrollView {
+//            VStack(spacing: 15) {
+//                
+//                HStack{
+//                    if let buyURL = event.buyURL {
+//                        BuyButtonView(buyURL: buyURL)
+//                    }
+//                    
+//                }
+//                .padding(.horizontal)
+//                .padding(.top, 30)
+//                
+//                content
+//                
+//            }
+//            .onAppear {
+//                loadPeopleGoingAndTranslateTips()
+//            }
+//        }
+//    }
+//    
+//    @ViewBuilder
+//    var content: some View{
+//        PeopleGoingView(isLoading: isLoading, isAlsoGoing: isAlsoGoing)
+//            .padding()
+//        
+//        if event.otherPictureURLs != nil{
+//            OtherPhotos(photos: event.otherPictureURLs!)
+//                .padding()
+//        }
+//        
+//        LocationView(event: event)
+//            .padding()
+//        
+//        TipsView(tips: event.tips)
+//            .padding()
+//    }
+//    
+//    func loadPeopleGoingAndTranslateTips() {
+//        Task {
+//            isLoading = true
+//            isAlsoGoing = await GoingEvent.getGoingEvent(event.id)
+//            isLoading = false
+//            
+//            translationManager.translatedTexts[1] = event.tips.first
+//        }
+//    }
+//}
 
 struct PeopleGoingView: View {
-    let isLoading: Bool
-    let isAlsoGoing: [Hospede]
+    @Binding var isLoading: Bool
+    @Binding var isAlsoGoing: [Hospede]
     
     var body: some View {
         VStack {
@@ -181,9 +191,8 @@ struct PeopleGoingView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(isAlsoGoing, id: \.self.id) { hospede in
-                            // MARK: DESCOMENTAR
-                            // PersonWhoGoes(hospede: hospede)
-//                                .padding(.leading, 1)
+                             PersonWhoGoes(hospede: hospede)
+                                .padding(.leading, 1)
                         }
                     }
                 }
@@ -458,9 +467,9 @@ struct TipsView: View {
     }
 }
 
-#Preview{
-    EventPageDetaislView(event: MockData.Event, isPresented: .constant(false))
-}
+//#Preview{
+//    EventPageDetaislView(event: MockData.Event, isPresented: .constant(false))
+//}
 
 
 struct CustomSegmentedControl: View {
