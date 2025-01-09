@@ -59,6 +59,7 @@ extension UserProtocol {
     }
     
     mutating func deleteUser() async throws { // TODO: Precisamos ter um método dentro do fornecedor que, após a exclusão ter sido completada, seta o valor de User para nil
+        try await GoingEvent.deleteAllGoing(for: self.id)
         try await self.deleteItem()
         try await self.deleteAccount()
         try await Self.signOut()

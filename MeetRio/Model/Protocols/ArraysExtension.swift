@@ -10,15 +10,6 @@ import FirebaseFirestore
 
 extension Array: CRUDGroup where Element: CRUDItem {
     
-    static var collectionReference: CollectionReference {
-        // TODO: (0) Substituir isso quando a coluna dos eventos for concertada
-        let collectionName = String(describing: Element.self) == "EventDetails" ? "TesteEvents" : String(describing: Element.self)
-        
-//        let collectionName = String(describing: Element.self)
-        let collection = db.collection(collectionName)
-        return collection
-    }
-    
     // TODO: Não ta funcionando com a cache ainda
     mutating func getAllElements() async throws {
         var myReturn = getAll_Cache()
@@ -35,7 +26,7 @@ extension Array: CRUDGroup where Element: CRUDItem {
 
     // MARK: DB Storage Methods
     private func getAll_DB() async throws -> [Element] {
-        let querySnapshot = try await Self.collectionReference.getDocuments()
+        let querySnapshot = try await Element.collectionReference.getDocuments()
         var documents: [Element] = []
         for document in querySnapshot.documents {
             do {

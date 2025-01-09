@@ -93,7 +93,7 @@ class GoingEvent: Codable, CRUDItem {
     
     // TODO: (0) Não foi testada
     static func getAllUserGoingEvents(userID: String) async throws -> [EventDetails] {
-        let querySnapshot = try await db.collection("going").whereField("userID", isEqualTo: userID).getDocuments()
+        let querySnapshot = try await db.collection("GoingEvent").whereField("userID", isEqualTo: userID).getDocuments()
         
         var allEventIDs: [String] = []
         
@@ -111,5 +111,27 @@ class GoingEvent: Codable, CRUDItem {
         }
         
         return allEvents
+    }
+    
+    static private func getAllGoingEvents(userID: String) async throws -> [GoingEvent] {
+        let querySnapshot = try await db.collection("GoingEvent").whereField("userID", isEqualTo: userID).getDocuments()
+        
+        var allGoingEvents: [GoingEvent] = []
+        
+        for document in querySnapshot.documents {
+            if let goingEvent = try? document.data(as: GoingEvent.self) {
+                allGoingEvents.append(goingEvent)
+            }
+        }
+        
+        return allGoingEvents
+    }
+    
+    static func deleteAllGoing(for userID: String) async throws {
+        let allGoing = try await Self.getAllGoingEvents(userID: userID)
+        
+        for goingEvent in allGoing {
+            try await goingEvent.deleteItem()
+        }
     }
 }
