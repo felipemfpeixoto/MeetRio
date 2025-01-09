@@ -11,7 +11,10 @@ import FirebaseFirestore
 extension Array: CRUDGroup where Element: CRUDItem {
     
     static var collectionReference: CollectionReference {
-        let collectionName = String(describing: Element.self)
+        // TODO: (0) Substituir isso quando a coluna dos eventos for concertada
+        let collectionName = String(describing: Element.self) == "EventDetails" ? "TesteEvents" : String(describing: Element.self)
+        
+//        let collectionName = String(describing: Element.self)
         let collection = db.collection(collectionName)
         return collection
     }
@@ -34,15 +37,19 @@ extension Array: CRUDGroup where Element: CRUDItem {
     private func getAll_DB() async throws -> [Element] {
         let querySnapshot = try await Self.collectionReference.getDocuments()
         var documents: [Element] = []
+        print("☢️ QuerySnapshot Documents: \(querySnapshot.documents.count)")
         
-        do {
-            for document in querySnapshot.documents {
+        for document in querySnapshot.documents {
+            do {
                 let elementDoc = try document.data(as: Element.self) // TODO: Erro está acontecendo nessa linha
                 documents.append(elementDoc)
+            } catch {
+                print("🤬 Erro ao decodar evento \(document.documentID): \(error.localizedDescription)")
+                continue
             }
-        } catch {
-            print("🤬 ERRO AO DECODAR EVENTO: ", error)
         }
+        
+        print("☢️ Documents: \(documents)")
         return documents
     }
     
