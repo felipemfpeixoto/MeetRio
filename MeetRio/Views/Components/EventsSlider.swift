@@ -34,9 +34,7 @@ struct EventsSlider: View {
         }
         .onChange(of: deuRefresh) {
             Task {
-                Task {
-                    try await Fornecedor.allEvents.getAllElements()
-                }
+                try await Fornecedor.allEvents.getAllElements()
             }
         }
         .onAppear {

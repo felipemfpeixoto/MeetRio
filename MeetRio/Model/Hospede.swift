@@ -40,4 +40,9 @@ class Hospede: UserProtocol {
         self.email = user.email ?? ""
         self.imageURL = user.photoURL?.absoluteString
     }
+    
+    func addHostel(_ hostel: String) async throws {
+        self.hostel = hostel
+        try await self.updateItem()
+    }
 }

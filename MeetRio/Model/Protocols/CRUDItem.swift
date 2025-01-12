@@ -32,7 +32,7 @@ extension FirebaseCRUDItem {
     
     static var collectionReference: CollectionReference {
         // TODO: (0) Substituir isso quando a coluna dos eventos for concertada
-        let collectionName = String(describing: Self.self) == "EventDetails" ? "TesteEvents" : String(describing: Self.self)
+        let collectionName = String(describing: Self.self)
         
 //        let collectionName = String(describing: Element.self)
         let collection = db.collection(collectionName)

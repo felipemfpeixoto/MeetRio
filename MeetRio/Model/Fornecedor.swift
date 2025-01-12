@@ -24,6 +24,8 @@ class Fornecedor {
     
 //    private(set) static var allEvents = AllEvents()
     static var allEvents = AllEvents() // MARK: Ver qual a melhor forma de atualizar pequenos atributos, como nome, CountryDetails, etc
+    
+    var allHostels = AllHostels()
 }
 
 // MARK: Extension de autenticação
@@ -55,4 +57,17 @@ extension Fornecedor{
         userVariable = try await Hospede(email: email, password: password, isNewUser: true)
     }
     
+}
+
+extension Fornecedor {
+    func addHostel(_ hostelID: String) async throws {
+        // Garantir que userVariable é do tipo Hospede
+        guard let hospede = self.userVariable as? Hospede else {
+            // Se userVariable não for um Hospede, podemos lançar um erro ou retornar
+            throw NSError(domain: "FornecedorError", code: 1, userInfo: [NSLocalizedDescriptionKey: "User is not a Hospede"])
+        }
+        
+        // Agora podemos usar 'hospede' que é garantido ser do tipo Hospede
+        try await hospede.addHostel(hostelID)
+    }
 }

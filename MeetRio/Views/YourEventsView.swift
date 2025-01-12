@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 import PostHog
 
+// TODO: (0) Está carregando eternamente, nunca mostrando nada
+
 struct YourEventsView: View{
     @State var yourEvents: [EventDetails] = []
     

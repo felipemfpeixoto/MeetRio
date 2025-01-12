@@ -7,15 +7,12 @@
 
 import Foundation
 
-//typealias AllHostels = [Hostel]
-//
-//extension AllHostels {
-//    
-//    init() {
-//        self = []
-//    }
-//    
-//}
+typealias AllHostels = [Hostel]
 
-
-// AllEvents ou AllHostels
+extension AllHostels {
+    
+    init() {
+        self = []
+    }
+    
+}

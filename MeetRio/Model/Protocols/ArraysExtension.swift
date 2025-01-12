@@ -16,6 +16,7 @@ extension Array: CRUDGroup where Element: CRUDItem {
         if myReturn.isEmpty {
             try myReturn = await getAll_DB()
         }
+        print("MyReturn \(String(describing: Element.self))", myReturn)
         self = myReturn
     }
     

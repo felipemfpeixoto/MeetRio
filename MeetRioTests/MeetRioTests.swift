@@ -215,4 +215,17 @@ struct MeetRioTests {
         }
         
     }
+    
+    @Test func allHostelsTest() async throws {
+        
+        await #expect(throws: Never.self) {
+            var allHostels = AllHostels()
+            try await allHostels.getAllElements()
+            for hostel in allHostels {
+                print(hostel.name)
+            }
+            #expect(allHostels.count > 0)
+        }
+        
+    }
 }
