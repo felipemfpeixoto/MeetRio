@@ -22,8 +22,6 @@ struct NewEventCard: View {
     
     @State var going: Bool = false
     
-    @Binding var selectedFavorite: EventDetails?
-    
     @Binding var clicouGoing: Bool
     
     var size: Sizes = .normal
@@ -301,19 +299,19 @@ struct NewEventCard: View {
 }
 
 #Preview("Normal Registered") {
-    NewEventCard(selectedFavorite: .constant(nil), clicouGoing: .constant(false), event: MockData.Event)
+    NewEventCard(clicouGoing: .constant(false), event: MockData.Event)
 }
 
 #Preview("Large Registered") {
-    NewEventCard(selectedFavorite: .constant(nil), clicouGoing: .constant(false), size: .large, event: MockData.Event)
+    NewEventCard(clicouGoing: .constant(false), size: .large, event: MockData.Event)
 }
 
 #Preview("Normal Anonymous") {
-    NewEventCard(selectedFavorite: .constant(nil), clicouGoing: .constant(false), event: MockData.Event)
+    NewEventCard(clicouGoing: .constant(false), event: MockData.Event)
 }
 
 #Preview("Large Anonymous") {
-    NewEventCard(selectedFavorite: .constant(nil), clicouGoing: .constant(false), size: .large, event: MockData.Event)
+    NewEventCard(clicouGoing: .constant(false), size: .large, event: MockData.Event)
 }
 
 extension ContentSizeCategory {

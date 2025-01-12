@@ -11,7 +11,6 @@ import SwiftUI
 struct EventSearch: View {
     
     @Binding var searchText: String
-    @Binding var selectedFavorite: EventDetails?
     @Binding var clicouGoing: Bool
     
     @State private var events: [EventDetails] = []
@@ -32,7 +31,6 @@ struct EventSearch: View {
                                 if #available(iOS 18, *) {
                                     NavigationLink(destination: NewEventPageViewIOS18(event: event)) {
                                         NewEventCard(
-                                            selectedFavorite: $selectedFavorite,
                                             clicouGoing: $clicouGoing,
                                             size: .large,
                                             event: event
@@ -42,7 +40,6 @@ struct EventSearch: View {
                                 } else {
                                     NavigationLink(destination: NewEventPageView(event: event)) {
                                         NewEventCard(
-                                            selectedFavorite: $selectedFavorite,
                                             clicouGoing: $clicouGoing,
                                             size: .large,
                                             event: event
@@ -76,5 +73,5 @@ struct EventSearch: View {
     }
 }
 #Preview {
-    EventSearch(searchText: .constant(""), selectedFavorite: .constant(nil), clicouGoing: .constant(false))
+    EventSearch(searchText: .constant(""), clicouGoing: .constant(false))
 }

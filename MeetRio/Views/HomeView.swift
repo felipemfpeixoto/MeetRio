@@ -25,8 +25,6 @@ struct HomeView: View {
     
     @Binding var isAuthenticated: Bool
     
-    @State var selectedFavorite: EventDetails? = nil
-    
     @Binding var deuRefresh: Bool
     
     @Binding var arbiuPrimeiraVez: Bool
@@ -125,13 +123,30 @@ struct HomeView: View {
     }
     
     var container: some View{
-        VStack{
+        VStack {
+            
+//            if let user = Fornecedor.shared.userVariable as? Hospede, user.hostel != nil {
+//                EventsSliderHostel(
+//                    title: <#String#>,
+//                    isLoading: <#Binding<Bool>#>,
+//                    searchText: $searchText,
+//                    deuRefresh: <#Binding<Bool>#>,
+//                    clicouGoing: <#Binding<Bool>#>
+//                )
+//            }
+            
             if searchText.isEmpty {
-                EventsSlider(title: "Bem Brasil Events", eventCategory: EventType.hostel.rawValue, isLoading: $isLoadingBemBrazil, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
-                EventsSlider(title: "Nightlife", eventCategory: EventType.nightlife.rawValue, isLoading: $isLoadingNightLife, searchText: $searchText, selectedFavorite: $selectedFavorite, deuRefresh: $deuRefresh, clicouGoing: $clicouGoing)
+                EventsSlider(
+                    title: "Nightlife",
+                    eventCategory: EventType.nightlife.rawValue,
+                    isLoading: $isLoadingNightLife,
+                    searchText: $searchText,
+                    deuRefresh: $deuRefresh,
+                    clicouGoing: $clicouGoing
+                )
             }
             else {
-                EventSearch(searchText: $searchText, selectedFavorite: $selectedFavorite, clicouGoing: $clicouGoing)
+                EventSearch(searchText: $searchText, clicouGoing: $clicouGoing)
                     .frame(maxWidth: .infinity)
             }
             Rectangle()

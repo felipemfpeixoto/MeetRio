@@ -9,14 +9,12 @@ import Foundation
 import SwiftUI
 import PostHog
 
-struct EventsSlider: View {
+struct EventsSliderHostel: View {
     
     let title: String
-    let eventCategory: String
     
     @Binding var isLoading: Bool
     @Binding var searchText: String
-    @Binding var selectedFavorite: EventDetails?
     @Binding var deuRefresh: Bool
     @Binding var clicouGoing: Bool
     
@@ -64,11 +62,10 @@ struct EventsSlider: View {
                 
                 ForEach(sortedEvents) { event in
                     
-//                    if event.eventCategory.eventType != .hostel || (event.dateDetails?.hasEventPassed == false) {
+                    if event.eventCategory.eventType.rawValue == "hostel" /*|| (event.dateDetails?.hasEventPassed == false)*/ {
                         if #available(iOS 18, *) {
                             NavigationLink(destination: NewEventPageViewIOS18(event: event)) {
                                 NewEventCard(
-                                    selectedFavorite: $selectedFavorite,
                                     clicouGoing: $clicouGoing,
                                     event: event
                                 )
@@ -77,14 +74,13 @@ struct EventsSlider: View {
                         } else {
                             NavigationLink(destination: NewEventPageView(event: event)) {
                                 NewEventCard(
-                                    selectedFavorite: $selectedFavorite,
                                     clicouGoing: $clicouGoing,
                                     event: event
                                 )
                             }
                            
                         }
-//                    }
+                    }
                 }
             }
             .padding(.horizontal)
@@ -119,7 +115,7 @@ struct EventsSlider: View {
 }
 
 #Preview {
-    EventsSlider(title: "Teste", eventCategory: "Nightlife", isLoading: .constant(false), searchText: .constant(""), selectedFavorite: .constant(nil), deuRefresh: .constant(false), clicouGoing: .constant(false))
+    EventsSlider(title: "Teste", eventCategory: "Nightlife", isLoading: .constant(false), searchText: .constant(""), deuRefresh: .constant(false), clicouGoing: .constant(false))
 }
 
 
