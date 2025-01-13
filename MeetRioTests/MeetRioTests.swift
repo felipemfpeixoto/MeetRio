@@ -228,4 +228,29 @@ struct MeetRioTests {
         }
         
     }
+    
+    @Test func hostelCRUDItemTest() async throws {
+        await #expect(throws: Never.self) {
+            let hostel = Hostel(
+                email: "socialhostel@gmail.com",
+                name: "Social Hostel",
+                description: "The coolest hostel in Rio de Janeiro",
+                phone: "2125132048",
+                addressDetails: AddressDetails(
+                    street: "R. Francisco Otaviano",
+                    number: "56",
+                    neighborhood: "Copacabana",
+                    location: LocationDetails(latitude: -22.98663697704957, longitude: -43.19108877116395)
+                ),
+                services: [
+                    "Free Wifi",
+                    "Luggage Storage",
+                    "24 Hour Reception"
+                ],
+                imageURL: "https://storage.googleapis.com/meetrio.appspot.com/HotelPics/bvKiWCn1HsejIPr3jCy9/SocialHostel.jpg"
+            )
+            
+            try await hostel.create()
+        }
+    }
 }

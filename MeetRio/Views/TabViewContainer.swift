@@ -36,15 +36,6 @@ struct TabViewContainer: View {
                         Text("Events")
                     }
                     .tag(SelectedScreen.home)
-                    
-                
-                YourEventsView()
-                    .tabItem {
-                        Image(systemName: "checkmark.seal")
-                            .environment(\.symbolVariants, .none)
-                        Text("Your Events")
-                    }
-                    .tag(SelectedScreen.yourEvents)
                 
                 HostelView()
                     .tabItem {
@@ -53,6 +44,15 @@ struct TabViewContainer: View {
                         Text("Your Hostel")
                     }
                     .tag(SelectedScreen.hostel)
+                
+                
+                YourEventsView()
+                    .tabItem {
+                        Image(systemName: "checkmark.seal")
+                            .environment(\.symbolVariants, .none)
+                        Text("Your Events")
+                    }
+                    .tag(SelectedScreen.yourEvents)
                     
             }
             .accentColor(.black)

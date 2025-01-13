@@ -63,7 +63,7 @@ struct HostelPopulatedView: View {
     
     var headerContainer: some View {
         VStack {
-            CachedAsyncImage(url: URL(string: userHostel?.imageURL ?? ""), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
+            CachedAsyncImage(url: URL(string: userHostel?.imageURL ?? "xx"), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
                 switch phase {
                 case .success(let image):
                     image
