@@ -18,7 +18,7 @@ struct HomeView: View {
     
     @State var searchText = ""
     
-    @State var isLoadingBemBrazil: Bool = false
+    @State var isLoadingHostel: Bool = false
     @State var isLoadingNightLife: Bool = false
     
     @Binding var selectedScreen: SelectedScreen
@@ -125,15 +125,15 @@ struct HomeView: View {
     var container: some View{
         VStack {
             
-//            if let user = Fornecedor.shared.userVariable as? Hospede, user.hostel != nil {
-//                EventsSliderHostel(
-//                    title: <#String#>,
-//                    isLoading: <#Binding<Bool>#>,
-//                    searchText: $searchText,
-//                    deuRefresh: <#Binding<Bool>#>,
-//                    clicouGoing: <#Binding<Bool>#>
-//                )
-//            }
+            if let user = Fornecedor.shared.userVariable as? Hospede, user.hostel != nil {
+                EventsSliderHostel(
+                    hostelID: user.hostel!,
+                    isLoading: $isLoadingHostel,
+                    searchText: $searchText,
+                    deuRefresh: $deuRefresh,
+                    clicouGoing: $clicouGoing
+                )
+            }
             
             if searchText.isEmpty {
                 EventsSlider(

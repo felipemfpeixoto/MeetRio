@@ -8,10 +8,13 @@
 import Foundation
 import SwiftUI
 import PostHog
+import CachedAsyncImage
 
 struct EventsSliderHostel: View {
     
-    let title: String
+    let hostelID: String
+    
+    @State var hostel: Hostel?
     
     @Binding var isLoading: Bool
     @Binding var searchText: String
@@ -39,6 +42,7 @@ struct EventsSliderHostel: View {
             if !viuPrimeira {
                 Task {
                     try await Fornecedor.allEvents.getAllElements()
+                    hostel = try await Hostel.getItem(for: hostelID)
                     viuPrimeira = true
                 }
             }
@@ -46,10 +50,42 @@ struct EventsSliderHostel: View {
     }
     
     var header: some View {
-        HStack{
-            Text(title)
-                .font(Font.custom("Bricolage Grotesque", size: 24))
-                .fontWeight(.bold)
+        HStack(spacing: 16) {
+            
+            CachedAsyncImage(url: URL(string: hostel?.imageURL ?? "xxx"), transaction: Transaction(animation: .easeInOut.speed(1.5))) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                case .failure(_):
+                    Image("defaultImageCard")
+                        .resizable()
+                default:
+                    ZStack {
+                        Image("defaultImageCard")
+                            .resizable()
+                        Color.black.opacity(0.5)
+                        ProgressView()
+                            .tint(.white)
+                            .scaleEffect(1.3)
+                    }
+                }
+            }
+            .scaledToFill()
+            .frame(width: 41, height: 41)
+            .clipShape(Circle())
+            .shadow(color: .black.opacity(0.5), radius: 3, y: 3)
+            
+            VStack(alignment: .leading) {
+                Text("Guest at")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.gray)
+                    .fontWeight(.medium)
+                
+                Text(hostel?.name ?? "")
+                    .font(Font.custom("Bricolage Grotesque", size: 20))
+                    .fontWeight(.bold)
+            }
             Spacer()
         }
         .padding()
@@ -107,7 +143,10 @@ struct EventsSliderHostel: View {
         var filteredEvents = Fornecedor.allEvents
         
         if !searchText.isEmpty {
-            filteredEvents = filteredEvents.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            filteredEvents = filteredEvents.filter {
+                $0.eventCategory.eventType.rawValue == "hostel"
+                && $0.eventCategory.hostelID == hostelID
+            }
         }
         
         return filteredEvents
@@ -115,7 +154,13 @@ struct EventsSliderHostel: View {
 }
 
 #Preview {
-    EventsSlider(title: "Teste", eventCategory: "Nightlife", isLoading: .constant(false), searchText: .constant(""), deuRefresh: .constant(false), clicouGoing: .constant(false))
+    EventsSliderHostel(
+        hostelID: "47O8cVGWD0OmpMqyY2BQV2fxdMj1",
+        isLoading: .constant(false),
+        searchText: .constant(""),
+        deuRefresh: .constant(false),
+        clicouGoing: .constant(false)
+    )
 }
 
 
