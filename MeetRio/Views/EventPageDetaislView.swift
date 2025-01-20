@@ -31,6 +31,8 @@ struct EventPageDetaislView: View {
     
     @Binding var isPresented: Bool
     
+    let hostelPhoneNumber: String?
+    
     var body: some View {
         ZStack {
             Color("BackgroundWhite")
@@ -54,8 +56,30 @@ struct EventPageDetaislView: View {
     @ViewBuilder
     var SegmentedControlContent: some View {
         VStack{
-            if selectedSegment == 0{
+            if selectedSegment == 0 {
                 buyButton
+                
+                if let hostelPhoneNumber {
+                    Button(action: {
+                        // TODO: (0) Botao que vai redirecionar para o whatsapp com uma mensagem pré pronta
+                        buttonWhatsappTapped(hostelPhoneNumber)
+                    }, label: {
+                        HStack{
+                            Image(systemName: "message.fill")
+                            Text("Contact now")
+                        }
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .padding(8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10.0)
+                                .foregroundStyle(Color("DarkGreen"))
+                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    })
+                }
+                
                 photoCarrosel
                 LocationView(event: event)
                 TipsView(tips: event.tips)
@@ -91,6 +115,30 @@ struct EventPageDetaislView: View {
             isLoading = false
         }
     }
+    
+    func buttonWhatsappTapped(_ hostelPhoneNumber: String) {
+        print("whatsapp tapped")
+        // TODO: (0) Colocar o posthog aqui para mapear quantas pessoas entraram em contato
+
+       // Check if WhatsApp is installed
+        if let whatsappURL = URL(string: "https://wa.me/\(hostelPhoneNumber)?text=Hey!\n\n I just saw the *\(event.name)* in *MeetRio* and was interested.\n\n Could you tell me more about it?") {
+           if UIApplication.shared.canOpenURL(whatsappURL) {
+               UIApplication.shared.open(whatsappURL, options: [:], completionHandler: nil)
+           } else {
+               // WhatsApp is not installed. You can redirect to the App Store or show an alert.
+               // For example:
+//               showWhatsAppNotInstalledAlert()
+               print("Whatsapp not installed")
+           }
+       }
+    }
+    
+    //whatsapp not installed check method
+//    func showWhatsAppNotInstalledAlert() {
+//        let alert = UIAlertController(title: "WhatsApp Not Installed", message: "WhatsApp is not installed on your device.", preferredStyle: .alert)
+//        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+//        alert.addAction(okAction)
+//    }
 }
 
 //@available(iOS 18, *)

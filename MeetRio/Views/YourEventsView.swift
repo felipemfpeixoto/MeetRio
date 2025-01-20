@@ -119,7 +119,7 @@ struct YourEventsView: View{
             VStack(spacing: 10) {
                 ForEach(searchResults, id: \.name) { event in
                     if #available(iOS 18, *) {
-                        NavigationLink(destination: NewEventPageViewIOS18(event: event)) {
+                        NavigationLink(destination: NewEventPageViewIOS18(event: event, hostelPhoneNumber: nil)) {
                             LateralCard(event: event, showingAlert: $showingAlert, eventToDelete: $eventToDelete)
                                 .padding(.horizontal)
                                 .padding(.vertical, 5)
@@ -128,7 +128,7 @@ struct YourEventsView: View{
                             PostHogSDK.shared.capture("ClicouEvento(YourEvents)")
                         }
                     } else {
-                        NavigationLink(destination: NewEventPageView(event: event)) {
+                        NavigationLink(destination: NewEventPageView(event: event, hostelPhoneNumber: nil)) {
                             LateralCard(event: event, showingAlert: $showingAlert, eventToDelete: $eventToDelete)
                                 .padding(.horizontal)
                                 .padding(.vertical, 5)

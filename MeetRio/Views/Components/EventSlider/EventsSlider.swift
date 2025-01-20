@@ -65,7 +65,7 @@ struct EventsSlider: View {
                     
                     if event.eventCategory.eventType.rawValue == eventCategory /*|| (event.dateDetails?.hasEventPassed == false)*/ {
                         if #available(iOS 18, *) {
-                            NavigationLink(destination: NewEventPageViewIOS18(event: event)) {
+                            NavigationLink(destination: NewEventPageViewIOS18(event: event, hostelPhoneNumber: nil)) {
                                 NewEventCard(
                                     clicouGoing: $clicouGoing,
                                     event: event
@@ -73,7 +73,7 @@ struct EventsSlider: View {
                             }
                             
                         } else {
-                            NavigationLink(destination: NewEventPageView(event: event)) {
+                            NavigationLink(destination: NewEventPageView(event: event, hostelPhoneNumber: nil)) {
                                 NewEventCard(
                                     clicouGoing: $clicouGoing,
                                     event: event

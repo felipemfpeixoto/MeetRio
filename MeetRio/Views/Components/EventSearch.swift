@@ -29,7 +29,7 @@ struct EventSearch: View {
                     ForEach(sortedEvents) { event in
                             if event.eventCategory.eventType.rawValue != "bemBrazil" || (event.dateDetails?.hasEventPassed == false) {
                                 if #available(iOS 18, *) {
-                                    NavigationLink(destination: NewEventPageViewIOS18(event: event)) {
+                                    NavigationLink(destination: NewEventPageViewIOS18(event: event, hostelPhoneNumber: nil)) {
                                         NewEventCard(
                                             clicouGoing: $clicouGoing,
                                             size: .large,
@@ -38,7 +38,7 @@ struct EventSearch: View {
                                     }
                                     .padding(.bottom)
                                 } else {
-                                    NavigationLink(destination: NewEventPageView(event: event)) {
+                                    NavigationLink(destination: NewEventPageView(event: event, hostelPhoneNumber: nil)) {
                                         NewEventCard(
                                             clicouGoing: $clicouGoing,
                                             size: .large,

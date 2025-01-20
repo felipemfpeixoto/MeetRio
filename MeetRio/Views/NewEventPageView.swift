@@ -290,6 +290,8 @@ struct NewEventPageViewIOS18: View {
     @State var changeSheetShare = false
     
     @State var willRefreshWhoIsAlsoGoing: Bool = true
+    
+    let hostelPhoneNumber: String?
 
     var body: some View {
         VStack{
@@ -318,7 +320,7 @@ struct NewEventPageViewIOS18: View {
     }
 
     var content: some View {
-        ScrollView{
+        ScrollView {
             EventPageContent(event: event, going: $going, calendarBool: $calendarBool, translatedTexts: $translationManager.translatedTexts)
                 .overlay(alignment: .topTrailing) {
                     VStack {
@@ -342,7 +344,7 @@ struct NewEventPageViewIOS18: View {
                     await translationManager.translateAllAtOnce(using: session, isShowing: $changeSheet)
                 }
             
-            EventPageDetaislView(event: event, willRefreshWhoIsAlsoGoing: $willRefreshWhoIsAlsoGoing, isPresented: $changeSheetShare)
+            EventPageDetaislView(event: event, willRefreshWhoIsAlsoGoing: $willRefreshWhoIsAlsoGoing, isPresented: $changeSheetShare, hostelPhoneNumber: hostelPhoneNumber)
                 .offset(y: -30)
         }
     }
@@ -431,11 +433,13 @@ struct NewEventPageView: View {
     
     @State var changeSheetShare = false
     
+    let hostelPhoneNumber: String?
+    
 
     var body: some View {
         ScrollView{
             EventPageContent(event: event, going: $going, calendarBool: $calendarBool, translatedTexts: .constant([nil, nil]))
-            EventPageDetaislView(event: event, willRefreshWhoIsAlsoGoing: .constant(false), isPresented: $changeSheetShare)
+            EventPageDetaislView(event: event, willRefreshWhoIsAlsoGoing: .constant(false), isPresented: $changeSheetShare, hostelPhoneNumber: hostelPhoneNumber)
                 .offset(y: -30)
             
         }
